@@ -38,12 +38,33 @@ export default defineConfig({
           {
             text: '面试题目汇总',
             items: [
+              { text: 'HTML', link: '/interview/html' },
               {
-                text: 'JS 手写题',
+                text: 'CSS',
                 items: [
-                  { text: 'Array 篇', link: '/interview/js/array' },
-                  { text: 'Promise 篇', link: '/interview/js/promise' },
-                  { text: 'Fucntion 篇', link: '/interview/js/function' }
+                  { text: '常见面试题', link: '/interview/css' },
+                  {
+                    text: 'Flex 布局',
+                    link: 'https://www.ruanyifeng.com/blog/2015/07/flex-grammar.html'
+                  },
+                  {
+                    text: 'Grid 布局',
+                    link: 'https://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html'
+                  }
+                ]
+              },
+              {
+                text: 'JavaScript',
+                items: [
+                  { text: '常见面试题', link: '/interview/js/index' },
+                  {
+                    text: 'JavaScript 手写题',
+                    items: [
+                      { text: 'Array 篇', link: '/interview/js/array' },
+                      { text: 'Promise 篇', link: '/interview/js/promise' },
+                      { text: 'Fucntion 篇', link: '/interview/js/function' }
+                    ]
+                  }
                 ]
               }
             ]
@@ -73,6 +94,13 @@ export default defineConfig({
     image: {
       // 默认禁用图片懒加载
       lazyLoading: true
+    },
+    container: {
+      tipLabel: '提示',
+      warningLabel: '警告',
+      dangerLabel: '危险',
+      infoLabel: '信息',
+      detailsLabel: '详细信息'
     }
   }
 });
