@@ -37,10 +37,12 @@ export default defineConfig({
         items: [
           {
             text: '面试题目汇总',
+            collapsed: true,
             items: [
               { text: 'HTML', link: '/interview/html' },
               {
                 text: 'CSS',
+                collapsed: true,
                 items: [
                   { text: '常见面试题', link: '/interview/css' },
                   {
@@ -55,10 +57,12 @@ export default defineConfig({
               },
               {
                 text: 'JavaScript',
+                collapsed: true,
                 items: [
                   { text: '常见面试题', link: '/interview/js/index' },
                   {
                     text: 'JavaScript 手写题',
+                    collapsed: true,
                     items: [
                       { text: 'Array 篇', link: '/interview/js/array' },
                       { text: 'Promise 篇', link: '/interview/js/promise' },
@@ -66,7 +70,16 @@ export default defineConfig({
                     ]
                   }
                 ]
-              }
+              },
+              { text: 'Vue2', link: '/vue2' },
+              { text: 'Vue3', link: '/vue3' },
+              { text: 'Webpack', link: '/webpack' },
+              { text: 'Vite', link: '/vite' },
+              { text: '浏览器', link: '/browser' },
+              { text: 'HTTP', link: '/http' },
+              { text: 'Node.js', link: '/node' },
+              { text: 'React', link: '/react' },
+              { text: 'Typescript', link: '/typescript' }
             ]
           },
           { text: '百度', link: '/baidu' },
@@ -81,7 +94,12 @@ export default defineConfig({
       }
     ],
 
-    socialLinks: [{ icon: 'github', link: 'https://github.com/renelyy/blog' }]
+    socialLinks: [{ icon: 'github', link: 'https://github.com/renelyy/blog' }],
+
+    footer: {
+      message: 'Released under the MIT License.',
+      copyright: 'Copyright © 2024-present YY'
+    }
   },
 
   base: '/blog/',
@@ -102,5 +120,8 @@ export default defineConfig({
       infoLabel: '信息',
       detailsLabel: '详细信息'
     }
-  }
+  },
+
+  // 最近一条内容的更新时间会显示在页面右下角。要启用它，将 lastUpdated 选项添加到配置中。
+  lastUpdated: true
 });
