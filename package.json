@@ -12,6 +12,7 @@
   "author": "yy",
   "license": "ISC",
   "devDependencies": {
+    "markdown-it-mathjax3": "^4.3.2",
     "vitepress": "^1.3.1"
   }
 }
