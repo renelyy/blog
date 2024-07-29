@@ -7,20 +7,22 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/fets' }
+      { text: '首页', link: '/' },
+      { text: '前端技术', link: '/fets' },
+      { text: '后端技术', link: '/bkts' }
     ],
 
     sidebar: [
       {
         text: '前端技术',
         items: [
-          { text: 'Markdown Examples', link: '/fets' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
+          { text: 'HTML', link: '/fets' },
+          { text: 'CSS', link: '/api-examples' }
         ]
       },
       {
-        text: '后端技术'
+        text: '后端技术',
+        link: '/bkts'
       },
       {
         text: '数据结构与算法',
@@ -58,9 +60,7 @@ export default defineConfig({
       }
     ],
 
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
-    ]
+    socialLinks: [{ icon: 'github', link: 'https://github.com/renelyy/blog' }]
   },
 
   base: '/blog/',

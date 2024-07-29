@@ -277,6 +277,310 @@ var reverseList = function (head) {
 };
 ```
 
+:::
+
+> 中等题
+
+> 困难题
+
+# 二叉树
+
+> 简单题
+
+## 1. [144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/description/)
+
+::: code-group
+
+```js [递归]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var preorderTraversal = function (root) {
+  // 定义返回结果数组
+  const ret = [];
+  // 边界特判
+  if (root === null) return ret;
+  const preOrderTraversalHelper_I = root => {
+    if (root === null) return;
+    ret.push(root.val);
+    preOrderTraversalHelper_I(root.left);
+    preOrderTraversalHelper_I(root.right);
+  };
+};
+```
+
+```js [非递归-借助栈1]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var preorderTraversal = function (root) {
+  // 定义返回结果数组
+  const ret = [];
+  // 边界特判
+  if (root === null) return ret;
+  // 左右一起入栈
+  const preOrderTraversalHelper_II = root => {
+    const stack = [root];
+    while (stack.length) {
+      let top = stack.pop();
+      ret.push(top.val);
+      if (top.right) stack.push(top.right);
+      if (top.left) stack.push(top.left);
+    }
+  };
+};
+```
+
+```js [非递归-借助栈2]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var preorderTraversal = function (root) {
+  // 定义返回结果数组
+  const ret = [];
+  // 边界特判
+  if (root === null) return ret;
+  const preOrderTraversalHelper_III = root => {
+    let stack = [],
+      cur = root;
+    while (stack.length || cur) {
+      if (cur) {
+        // 可以深入左孩子时，先访问，再深入
+        ret.push(cur.val);
+        stack.push(cur);
+        cur = cur.left;
+      } else {
+        // 否则，深入栈中的右孩子
+        let top = stack.pop();
+        cur = top.right;
+      }
+    }
+  };
+
+  preOrderTraversalHelper_III(root);
+};
+```
+
+```js [Morris 遍历]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var preorderTraversal = function (root) {
+  // 定义返回结果数组
+  const ret = [];
+  // 边界特判
+  if (root === null) return ret;
+  const morrisPreOrderTraversalHelper_IV = root => {
+    let cur = root,
+      prev = null;
+    while (cur) {
+      if (cur.left === null) {
+        ret.push(cur.val);
+        cur = cur.right;
+      } else {
+        prev = cur.left;
+        while (prev.right !== null && prev.right !== cur) prev = prev.right;
+        if (prev.right === null) {
+          ret.push(cur.val);
+          prev.right = cur;
+          cur = cur.left;
+        } else {
+          prev.right = null;
+          cur = cur.right;
+        }
+      }
+    }
+  };
+};
+morrisPreOrderTraversalHelper_IV(root);
+```
+
+:::
+
+## 2. [94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/description/)
+
+::: code-group
+
+```js [迭代实现]
+const inorderTraversalIteratively = root => {
+  const ret = [];
+  const stack = [];
+  while (root || stack.length) {
+    while (root) {
+      stack.push(root);
+      root = root.left;
+    }
+    root = stack.pop();
+    ret.push(root.val);
+    root = root.right;
+  }
+  return ret;
+};
+```
+
+```js [递归实现]
+const inorderTraversalRecursively = root => {
+  const ret = [];
+  const helper = root => {
+    if (!root) return;
+    helper(root.left);
+    ret.push(root.val);
+    helper(root.right);
+  };
+  helper(root);
+  return ret;
+};
+```
+
+```js [Mirrors 中序遍历]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var inorderTraversal = function (root) {
+  // Mirrors 中序遍历
+  if (root === null) return [];
+  const ret = [];
+  const mirrorsInorderTraversal = root => {
+    let prev = null,
+      cur = root;
+    while (cur) {
+      if (cur.left === null) {
+        ret.push(cur.val);
+        cur = cur.right;
+      } else {
+        prev = cur.left;
+        while (prev.right !== null && prev.right !== cur) prev = prev.right;
+        if (prev.right === null) {
+          prev.right = cur;
+          cur = cur.left;
+        } else {
+          ret.push(cur.val);
+          prev.right = null;
+          cur = cur.right;
+        }
+      }
+    }
+  };
+  mirrorsInorderTraversal(root);
+  return ret;
+};
+```
+
+:::
+
+## 3. [145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/description/)
+
+::: code-group
+
+```js [迭代实现1]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+var postorderTraversal = function (root) {
+  let ret = [];
+  // 特判
+  if (!root) return ret;
+
+  // 方法二：迭代 通过栈
+  // 后序 左右根 => 根右左
+  let stack = [root];
+  while (stack.length) {
+    let top = stack.pop();
+    ret.push(top.val);
+    top.left && stack.push(top.left);
+    top.right && stack.push(top.right);
+  }
+  return ret.reverse();
+};
+```
+
+```js [迭代实现2]
+const postorderTraversalIteratively = root => {
+  const ret = [];
+  const stack = [];
+  while (root || stack.length) {
+    while (root) {
+      stack.push(root);
+      ret.unshift(root.val);
+      root = root.right;
+    }
+    root = stack.pop();
+    root = root.left;
+  }
+  return ret;
+};
+```
+
+```js [递归实现]
+const postorderTraversalRecursively = root => {
+  const ret = [];
+  const helper = root => {
+    if (!root) return;
+    helper(root.left);
+    helper(root.right);
+    ret.push(root.val);
+  };
+  helper(root);
+  return ret;
+};
+```
+
+:::
+
 > 中等题
 
 > 困难题
@@ -290,8 +594,6 @@ var reverseList = function (head) {
 # 哈希表
 
 # 字符串
-
-# 树
 
 # 图
 
