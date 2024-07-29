@@ -27,6 +27,10 @@ export default defineConfig({
         items: [{ text: 'Leetcode 刷题', link: '/leetcode' }]
       },
       {
+        text: 'Git',
+        link: '/git'
+      },
+      {
         text: '面试',
         items: [
           {
@@ -60,5 +64,15 @@ export default defineConfig({
   },
 
   base: '/blog/',
-  srcDir: './src'
+  srcDir: './src',
+
+  markdown: {
+    lineNumbers: true,
+    // 启用数学方程 需要给项目安装依赖：npm add -D markdown-it-mathjax3
+    math: true,
+    image: {
+      // 默认禁用图片懒加载
+      lazyLoading: true
+    }
+  }
 });
