@@ -4,25 +4,25 @@
 
 前端工程化是指在前端开发中，通过使用一系列工具、流程和规范来<b>提高开发效率</b>、<b>代码质量</b>和<b>团队协作能力</b>。其目标是使前端开发过程更加系统化、规范化和自动化，从而减少人为错误，提高开发和维护的效率。以下是前端工程化的几个关键方面：
 
-1. [自动化构建](./tool/webpack)
+1. [自动化构建](./automated-build/webpack)
 2. [包管理](./package-management)
 3. [自动化测试](./automated-testing)
 4. [持续集成/持续部署（CI/CD）](./CI-CD)
 5. [代码质量](./code-quality)
 
-- [代码规范](./code-quality/#代码规范)
-- [代码审查](./code-quality/#代码审查)
+- [代码规范](./code-quality#代码规范)
+- [代码审查](./code-quality#代码审查)
 
 6. [版本控制](./version-control)
 7. [文档和规范](./documentation-and-specification)
 8. [性能优化](./performance-optimization)
 
-- [代码优化](./performance-optimization/#代码优化)
-- [代码压缩](./performance-optimization/#代码压缩)
-- [资源优化（图片等）](./performance-optimization/#资源优化)
-- [懒加载](./performance-optimization/#懒加载)
-- [代码分割](./performance-optimization/#代码分割)
-- [缓存策略](./performance-optimization/#缓存策略)
+- [代码优化](./performance-optimization#代码优化)
+- [代码压缩](./performance-optimization#代码压缩)
+- [资源优化（图片等）](./performance-optimization#资源优化)
+- [懒加载](./performance-optimization#懒加载)
+- [代码分割](./performance-optimization#代码分割)
+- [缓存策略](./performance-optimization#缓存策略)
 
 9. [模块化和组件化开发](./modularization-and-componentization)
 10. [前端安全](./security)
