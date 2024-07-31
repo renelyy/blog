@@ -46,6 +46,64 @@
 
 ## 2. 如何理解 TCP/IP 协议？
 
+> TCP/IP 协议（Transmission Control Protocol/Internet Protocol）是一套广泛使用的网络通信协议，用于连接互联网上的设备。它由多个层次的协议组成，通过分层模型实现数据传输。虽然与 OSI 七层模型有相似之处，但 TCP/IP 模型更简化，通常分为四层。
+
+::: warning 注意
+
+`TCP/IP` 协议不仅仅指的是 `TCP`(传输控制协议) 和 `IP`(网际协议) 两个协议，而是指一个由 `FTP`、`SMTP`、`TCP`、`UDP`、`IP` 等协议构成的协议簇
+
+:::
+
+1. <b>应用层</b>（Application Layer）
+
+   - 功能：提供网络服务和应用接口，直接与用户交互。每种应用都有自己的协议。
+   - 协议：
+
+     - `HTTP`（Hypertext Transfer Protocol）：用于 Web 浏览。
+     - `FTP`（File Transfer Protocol）：用于文件传输。
+     - `SMTP`（Simple Mail Transfer Protocol）：用于电子邮件传输。
+     - `DNS`（Domain Name System）：用于域名解析。
+
+   - 设备：通常在软件中实现，不需要特殊硬件设备。
+
+2. <b>传输层</b>（Transport Layer）
+
+   - 功能：提供端到端的可靠数据传输服务，负责数据段的分组和重组、流量控制、错误检测与恢复。
+   - 协议：
+     - `TCP`（Transmission Control Protocol）：<b>提供可靠的、面向连接的</b>传输，确保数据的完整性和顺序。
+     - `UDP`（User Datagram Protocol）：<b>提供不可靠的、无连接的</b>传输，适用于对速度要求高、但对可靠性要求低的应用。
+   - 设备：通常在软件中实现，不需要特殊硬件设备。
+
+3. <b>网络层</b>（Internet Layer）
+
+   - 功能：负责数据包的路由选择和转发，通过 IP 地址进行逻辑寻址，决定数据包的路径，提供跨越多个网络的数据传输。
+   - 协议：
+     - `IP`（Internet Protocol）：负责数据包的寻址和路由。
+     - `ICMP`（Internet Control Message Protocol）：用于发送错误报告和网络诊断（如 ping）。
+     - `ARP`（Address Resolution Protocol）：用于将 IP 地址解析为物理地址（MAC 地址）。
+   - 设备：路由器
+
+4. <b>链路层</b>（Link Layer）
+
+   - 功能：负责设备之间的数据传输，定义了在本地网络上如何使用物理介质传输数据，包括硬件地址（MAC 地址）的管理、帧的组装和拆解。
+   - 协议：以太网（Ethernet）、Wi-Fi 等。
+   - 设备：网卡、交换机、集线器。
+
+::: tip TCP/IP 模型与 OSI 模型的比较
+
+> TCP/IP 模型与 OSI 模型的层次划分不同，但功能上有相似之处：
+
+- 应用层：OSI 模型的应用层、表示层、会话层在 TCP/IP 模型中合并为应用层。
+- 传输层：两者都包含传输层，负责端到端的通信。
+- 网络层：OSI 模型的网络层对应于 TCP/IP 模型的网络层。
+- 链路层：OSI 模型的物理层和数据链路层在 TCP/IP 模型中合并为链路层。
+
+:::
+
+::: tip 总结
+TCP/IP 协议是互联网通信的基础，通过其四个层次模型，实现了不同网络设备和应用之间的数据传输。其分层设计使得网络通信更具模块化和灵活性，每一层都有特定的协议和功能，确保数据能够可靠、有效地传输。
+:::
+
 ## 3. 如何理解 UDP 和 TCP？区别？应用场景？
 
 ## 4. 说一下 Get 和 Post 的区别？
