@@ -5,20 +5,20 @@ layout: home
 hero:
   name: '羊了个羊'
   text: '技术文档'
-  tagline: My great project tagline
+  tagline: 小舟从此逝，江海寄余生
   actions:
     - theme: brand
       text: 快速学习
-      link: /fets
+      link: /frontend/html
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: 面试复习
+      link: /interview/html
 
 features:
-  - title: Feature A
+  - title: 目标1
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
+  - title: 目标2
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
+  - title: 目标3
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
