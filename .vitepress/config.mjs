@@ -151,16 +151,19 @@ export default defineConfig({
                   }
                 ]
               },
-              { text: '浏览器', link: '/browser' },
-              { text: 'HTTP', link: '/http' },
-              { text: 'Node.js', link: '/node' },
-              { text: 'React', link: '/react' },
-              { text: 'Typescript', link: '/typescript' },
-              { text: '微信小程序', link: '/wechat' },
-              { text: '前端性能优化', link: '/frontend-optimization' },
-              { text: '微前端', link: '/micro-frontend' },
-              { text: '设计模式', link: '/design-pattern' },
-              { text: '职业发展', link: '/career' }
+              { text: '浏览器', link: '/interview/browser' },
+              { text: 'HTTP', link: '/interview/http' },
+              { text: 'Node.js', link: '/interview/node' },
+              { text: 'React', link: '/interview/react' },
+              { text: 'Typescript', link: '/interview/typescript' },
+              { text: '微信小程序', link: '/interview/wechat' },
+              {
+                text: '前端性能优化',
+                link: '/interview/frontend-optimization'
+              },
+              { text: '微前端', link: '/interview/micro-frontend' },
+              { text: '设计模式', link: '/interview/design-pattern' },
+              { text: '职业发展', link: '/interview/career' }
             ]
           },
           {
