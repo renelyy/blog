@@ -254,6 +254,107 @@ TCP 的三次握手和四次挥手过程确保了通信双方都能可靠地建�
 
 ## 7. 说说 HTTP 常见的请求头有哪些？作用？
 
+> HTTP 请求头是客户端向服务器发送请求时附带的键值对信息，用于传递关于客户端、资源和请求本身的额外信息。
+
+### 常见请求头
+
+1. `Host`
+
+   - 作用：指定请求的目标主机和端口。
+   - 示例：`Host: www.example.com:80`
+
+2. `User-Agent`
+
+   - 作用：标识客户端浏览器的类型、版本和操作系统等信息。
+   - 示例：`User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3`
+
+3. `Accept`
+
+   - 作用：指定客户端能够接收的内容类型。
+   - 示例：`Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8`
+
+4. `Accept-Language`
+
+   - 作用：指定客户端能够接收的自然语言。
+   - 示例：`Accept-Language: en-US,en;q=0.5`
+
+5. `Accept-Encoding`
+
+   - 作用：指定客户端能够接收的内容编码。
+   - 示例：`Accept-Encoding: gzip, deflate`
+
+6. `Cookie`
+
+   - 作用：携带客户端的 Cookie 信息，用于身份验证和状态管理。
+   - 示例：`Cookie: sessionId=12345; user=JohnDoe`
+
+7. `Authorization`
+
+   - 作用：提供 HTTP 认证信息，用于身份验证。
+   - 示例：`Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=`
+
+8. `Referer`
+
+   - 作用：指定请求的来源页面。
+   - 示例：`Referer: https://www.example.com/page1`
+
+9. `Connection`
+
+   - 作用：控制当前连接的持久性。
+   - 示例：`Connection: keep-alive`
+
+10. `Cache-Control`
+
+    - 作用：指定缓存指令，用于控制缓存行为。
+    - 示例：`Cache-Control: no-cache`
+
+11. `Content-Type`
+
+    - 作用：指定请求体的媒体类型。
+    - 示例：`Content-Type: application/json`
+
+12. `Content-Length`
+
+    - 作用：指定请求体的长度。
+    - 示例：`Content-Length: 123`
+
+13. `Origin`
+
+    - 作用：指定请求的来源域。
+    - 示例：`Origin: https://www.example.com`
+
+14. `If-Modified-Since`
+
+    - 作用：指定请求的资源在指定时间之后是否被修改。
+    - 示例：`If-Modified-Since: Wed, 21 Oct 2015 07:28:00 GMT`
+
+15. `If-None-Match`
+    - 作用：指定请求的资源与指定的 ETag 值是否匹配。
+    - 示例：`If-None-Match: "123456789"`
+
+### 使用场景
+
+::: tip 提示
+通过使用请求头和响应头的相关字段，可以满足一些场景，例如身份验证、缓存控制、内容协商等。
+:::
+
+1. 协商缓存
+   - `If-Modified-Since` 和 `If-None-Match` 用于协商缓存，客户端可以通过这两个请求头向服务器发送上次请求时返回的 ETag 或 Last-Modified 值，服务器根据这些值判断资源是否被修改，如果没有修改则返回 304 状态码，否则返回新的资源。
+2. 内容协商
+   - `Accept`、`Accept-Language` 和 `Accept-Encoding` 用于内容协商，客户端可以通过这些请求头向服务器发送自己能够接收的内容类型、语言和编码，服务器根据这些信息返回最合适的内容。
+3. 身份验证
+   - `Authorization` 用于身份验证，客户端可以通过这个请求头向服务器发送身份验证信息，例如用户名和密码的 Base64 编码。
+4. 缓存控制
+   - `Cache-Control` 用于缓存控制，客户端可以通过这个请求头向服务器发送缓存指令，例如 `no-cache` 每次请求都要向服务器验证资源的有效性（通常通过发送 `If-None-Match` 或 `If-Modified-Since` 头信息来实现，如果服务器确认资源没有更改，它会返回 304 Not Modified 状态码，并且不需要重新传输资源内容，这样可以节省带宽），no-store：不缓存任何响应数据，`max-age=3600` 表示缓存有效期为 3600 秒。
+5. 跨域请求
+   - `Origin` 用于跨域请求，客户端可以通过这个请求头向服务器发送请求的来源域，服务器可以根据这个信息判断是否允许跨域请求。
+6. 请求体
+   - `Content-Type` 和 `Content-Length` 用于指定请求体的媒体类型和长度，客户端可以通过这些请求头向服务器发送请求体，例如 POST 请求的表单数据或 JSON 数据。
+
+### 总结
+
+HTTP 请求头和响应头是 HTTP 协议的重要组成部分，它们用于传递客户端和服务器之间的元数据，例如<b>身份验证</b>、<b>缓存控制</b>、<b>内容协商</b>等。通过使用这些请求头和响应头，可以满足各种场景的需求，提高 HTTP 通信的效率和安全性。
+
 ## 8. 说说 HTTP 常见的状态码有哪些，适用场景？
 
 ## 9. 说说 HTTP1.0/1.1/2.0 的区别？
