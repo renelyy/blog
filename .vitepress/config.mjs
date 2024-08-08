@@ -11,7 +11,7 @@ export default defineConfig({
       { text: '前端技术', link: '/html' },
       { text: '后端技术', link: '/bkts' }
     ],
-
+    outline: 'deep',
     sidebar: [
       {
         text: '前端技术',
