@@ -161,7 +161,9 @@ var mergeTwoLists = function (list1, list2) {
 
 ## 2. [141. 环形链表](https://leetcode.cn/problems/linked-list-cycle/description/)
 
-```js
+::: code-group
+
+```js [使用 set 存储访问过的节点]
 /**
  * Definition for singly-linked list.
  * function ListNode(val) {
@@ -178,51 +180,75 @@ var hasCycle = function (head) {
   // 使用 set 存储访问过的节点
   // 时间复杂度 O(N)
   // 空间复杂度 O(N)
-  function _hasCycle_1() {
-    if (head === null) return false;
-    const set = new Set();
-    let p = head;
-    while (p) {
-      if (set.has(p)) return true;
-      set.add(p);
-      p = p.next;
-    }
-    return false;
+  if (head === null) return false;
+  const set = new Set();
+  let p = head;
+  while (p) {
+    if (set.has(p)) return true;
+    set.add(p);
+    p = p.next;
   }
+  return false;
+};
+```
 
+```js [快慢指针]
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+var hasCycle = function (head) {
   // 快慢指针
   // 时间复杂度 O(N)
   // 空间复杂度 O(1)
-  function _hasCycle_2() {
-    if (head === null || head.next === null) return false;
-    let p = head,
-      q = head.next;
-    // 如果在没有环的情况下，快指针会率先等于 null，所以这里没必要 判断满指针
-    // while (p && q && q.next && p !== q) {
-    while (q && q.next && p !== q) {
-      p = p.next;
-      q = q.next.next;
-    }
-
-    return p === q;
+  if (head === null || head.next === null) return false;
+  let p = head,
+    q = head.next;
+  // 如果在没有环的情况下，快指针会率先等于 null，所以这里没必要 判断满指针
+  // while (p && q && q.next && p !== q) {
+  while (q && q.next && p !== q) {
+    p = p.next;
+    q = q.next.next;
   }
 
-  // 换个写法也行
-  function _hasCycle_3() {
-    if (head === null || head.next === null) return false;
-    let fast = (slow = head);
-    do {
-      fast = fast.next.next;
-      slow = slow.next;
-    } while (fast && fast.next && fast !== slow);
-    return fast === slow;
-  }
-
-  return _hasCycle_3();
-  // return _hasCycle_2()
-  // return _hasCycle_1()
+  return p === q;
 };
 ```
+
+```js [快慢指针2]
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} head
+ * @return {boolean}
+ */
+var hasCycle = function (head) {
+  // 换个写法也行
+  if (head === null || head.next === null) return false;
+  let fast = (slow = head);
+  do {
+    fast = fast.next.next;
+    slow = slow.next;
+  } while (fast && fast.next && fast !== slow);
+  return fast === slow;
+};
+```
+
+:::
 
 ## 3. [206. 反转链表](https://leetcode.cn/problems/reverse-linked-list/description/)
 
