@@ -31,7 +31,66 @@ export default defineConfig({
         items: [
           {
             text: 'Leetcode 刷题',
-            link: '/data-structures-and-algorithms/leetcode'
+            link: '/data-structures-and-algorithms/leetcode',
+            collapsed: true,
+            items: [
+              {
+                text: '链表',
+                link: '/data-structures-and-algorithms/leetcode/linked-list'
+              },
+              {
+                text: '二叉树',
+                link: '/data-structures-and-algorithms/leetcode/binary-tree'
+              },
+              {
+                text: '二分查找',
+                link: '/data-structures-and-algorithms/leetcode/binary-search'
+              },
+              {
+                text: '动态规划',
+                link: '/data-structures-and-algorithms/leetcode/dynamic-programming'
+              },
+              {
+                text: '贪心算法',
+                link: '/data-structures-and-algorithms/leetcode/greedy'
+              },
+              {
+                text: '回溯算法',
+                link: '/data-structures-and-algorithms/leetcode/backtracking'
+              },
+              {
+                text: '双指针',
+                link: '/data-structures-and-algorithms/leetcode/two-pointers'
+              },
+              {
+                text: '滑动窗口',
+                link: '/data-structures-and-algorithms/leetcode/sliding-window'
+              },
+              {
+                text: '栈',
+                link: '/data-structures-and-algorithms/leetcode/stack'
+              },
+              {
+                text: '队列',
+                link: '/data-structures-and-algorithms/leetcode/queue'
+              },
+              {
+                text: '哈希表',
+                link: '/data-structures-and-algorithms/leetcode/hash-table'
+              },
+              {
+                text: '字符串',
+                link: '/data-structures-and-algorithms/leetcode/string'
+              },
+              {
+                text: '数组',
+                link: '/data-structures-and-algorithms/leetcode/array'
+              },
+              {
+                text: '数学',
+                link: '/data-structures-and-algorithms/leetcode/math'
+              }
+            ]
           }
         ]
       },
@@ -150,6 +209,10 @@ export default defineConfig({
                     link: '/interview/frontend-engineering/deployment-and-release'
                   }
                 ]
+              },
+              {
+                text: '前端基建',
+                link: '/interview/frontend-infrastructure'
               },
               { text: '浏览器', link: '/interview/browser' },
               { text: 'HTTP', link: '/interview/http' },
