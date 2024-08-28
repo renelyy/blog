@@ -242,6 +242,10 @@ export default defineConfig({
               { text: '滴滴', link: '/interview/company/didichuxing' },
               { text: '华为', link: '/interview/company/huawei' }
             ]
+          },
+          {
+            text: '札记',
+            link: '/notes'
           }
         ]
       }

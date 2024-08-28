@@ -534,4 +534,12 @@ var connect = function (root) {
 
 :::
 
+## 3. [449. 序列化和反序列化二叉搜索树](https://leetcode.cn/problems/serialize-and-deserialize-bst/description/)
+
 # 困难题
+
+## 1. [297. 二叉树的序列化与反序列化](https://leetcode.cn/problems/serialize-and-deserialize-binary-tree/description/)
+
+# 15 分钟没有思路的题目
+
+## 1. [331. 验证二叉树的前序序列化](https://leetcode.cn/problems/verify-preorder-serialization-of-a-binary-tree/description/)
