@@ -90,6 +90,47 @@ module.exports = {
 
 ## 39. webpack tree-shaking 在什么情况下会失效？【热度:71】
 
+1. 使用了动态引入（Dynamic Imports）语法
+
+```js
+import('./moduleA').then(module => {
+  // 使用 module
+});
+```
+
+2. 使用了函数式编程的方式，⽐如使⽤了 map、filter、reduce 等⾼阶函数，⽽这些函数很难通
+   过静态分析确定代码的执⾏路径，所以可能会导致 tree shaking 失效
+
+```js 8
+import { sum } from './sum.js';
+import { filter } from 'lodash';
+
+const arr = [1, 2, 3, 4, 5];
+const result = filter(arr, item => {
+  if (item > 10) {
+    // 这块可能永远执行不到，但是无法 tree-shaking
+    return sum(item, 1);
+  } else {
+    return item;
+  }
+});
+```
+
+3. 使用了 webpack 无法识别的模块系统，比如：AMD, CommonJS
+
+   `Tree-Shaking 主要是针对 ES6 模块（ESM）设计的，因为 ESM 支持静态分析，能够在编译时确定哪些代码可以被移除。而 CommonJS 模块（require 和 module.exports）是动态的，Webpack 无法在编译时安全地确定哪些导入是未使用的。因此，如果你的项目中有使用 CommonJS 模块，则 Tree-Shaking 可能无法生效。`
+
+4. 使用了 side effect，模块中含有副作用代码，比如改变全局变量或者改变函数的参数
+5. 死代码（Dead Code）和条件代码
+
+```js 4
+if (false) {
+  // 理论上来说代码块永远不会执行，但是 Webpack 在处理复杂条件时
+  // 不一定能够安全地移除这些代码
+  doSomething();
+}
+```
+
 ## 40. 浏览器本⾝是不⽀持模块化的, webpack 是如何通过⽂件打包，让浏览器可以读取到前端各个模块的代码的？【热度: 1,153】
 
 ## 41. webpack5 Module Federation 了解多少
