@@ -96,7 +96,34 @@ export default defineConfig({
       },
       {
         text: 'Git',
-        link: '/git'
+        link: '/reading-notes'
+      },
+      {
+        text: '读书笔记',
+        items: [
+          {
+            text: '技术类',
+            link: '/reading-notes/technology',
+            collapsed: true,
+            items: [
+              {
+                text: '《JavaScript 高级程序设计（第4版本）》',
+                link: '/reading-notes/technology/javascript'
+              }
+            ]
+          },
+          {
+            text: '文学类',
+            link: '/reading-notes/literature',
+            collapsed: true,
+            items: [
+              {
+                text: '《活着》',
+                link: '/reading-notes/literature/living'
+              }
+            ]
+          }
+        ]
       },
       {
         text: '面试',

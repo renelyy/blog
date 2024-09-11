@@ -369,16 +369,6 @@ const height = root => {
 
 :::
 
-::: code-group
-
-````js [递归实现]
-/**
- * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
-:::
-
 # 中等题
 
 ## 1. [116. 填充每个节点的下一个右侧节点指针](https://leetcode.cn/problems/populating-next-right-pointers-in-each-node/description/)
@@ -419,7 +409,7 @@ var connect = function (root) {
 
   return root;
 };
-````
+```
 
 ```js [使用已建立的 next 指针1]
 /**
