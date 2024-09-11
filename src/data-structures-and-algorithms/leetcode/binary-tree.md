@@ -304,6 +304,81 @@ const postorderTraversalRecursively = root => {
 
 :::
 
+## 4. [面试题 04.04. 检查二叉树的平衡性](https://leetcode.cn/problems/check-balance-lcci/description/)
+
+::: code-group
+
+```js [自顶向下]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+var isBalanced = function (root) {
+  if (!root) return true; // 空树是平衡的
+  const left = height(root.left);
+  const right = height(root.right);
+  return (
+    Math.abs(left - right) <= 1 &&
+    isBalanced(root.left) &&
+    isBalanced(root.right)
+  );
+};
+
+const height = root => {
+  if (!root) return 0;
+  return Math.max(height(root.left), height(root.right)) + 1;
+};
+```
+
+```js [自底向上]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+var isBalanced = function (root) {
+  return height(root) >= 0;
+};
+
+/**
+ * 返回树的高度，如果树不是平衡的，返回 -1
+ */
+const height = root => {
+  if (!root) return 0;
+  const left = height(root.left);
+  const right = height(root.right);
+  if (left === -1 || right === -1 || Math.abs(left - right) > 1) {
+    return -1;
+  }
+  return Math.max(left, right) + 1;
+};
+```
+
+:::
+
+::: code-group
+
+````js [递归实现]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+:::
+
 # 中等题
 
 ## 1. [116. 填充每个节点的下一个右侧节点指针](https://leetcode.cn/problems/populating-next-right-pointers-in-each-node/description/)
@@ -344,7 +419,7 @@ var connect = function (root) {
 
   return root;
 };
-```
+````
 
 ```js [使用已建立的 next 指针1]
 /**
