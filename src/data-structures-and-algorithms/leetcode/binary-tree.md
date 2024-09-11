@@ -369,6 +369,49 @@ const height = root => {
 
 :::
 
+## 5. [面试题 17.12. BiNode 二叉树转链表](https://leetcode.cn/problems/binode-lcci/description/)
+
+```js
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+
+/**
+ * @param {TreeNode} root
+ * @return {TreeNode}
+ */
+var convertBiNode = function (root) {
+  // 初始化一个哨兵节点，用于链表头的初始化
+  let dummyNode = new TreeNode(0);
+  let prev = dummyNode; // prev表示链表的前一个节点
+
+  // 中序遍历并调整指针
+  const inOrder = node => {
+    if (node === null) return;
+
+    // 遍历左子树
+    inOrder(node.left);
+
+    // 当前节点
+    node.left = null; // 将左子节点置空，符合单向链表的要求
+    prev.right = node; // 前一个节点的右指针指向当前节点
+    prev = node; // 移动prev指针
+
+    // 遍历右子树
+    inOrder(node.right);
+  };
+
+  inOrder(root);
+
+  // 返回单向链表的头节点（哨兵节点的right指向真正的头节点）
+  return dummyNode.right;
+};
+```
+
 # 中等题
 
 ## 1. [116. 填充每个节点的下一个右侧节点指针](https://leetcode.cn/problems/populating-next-right-pointers-in-each-node/description/)
