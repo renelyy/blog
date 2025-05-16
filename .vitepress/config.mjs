@@ -158,6 +158,7 @@ export default defineConfig({
                     collapsed: true,
                     items: [
                       { text: 'Array 篇', link: '/interview/js/array' },
+                      { text: 'Object 篇', link: '/interview/js/object' },
                       { text: 'Promise 篇', link: '/interview/js/promise' },
                       { text: 'Fucntion 篇', link: '/interview/js/function' }
                     ]
