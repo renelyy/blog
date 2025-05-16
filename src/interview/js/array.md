@@ -815,3 +815,16 @@ function cartesianProduct(arr) {
 ```
 
 :::
+
+## 数组乱序/洗牌
+
+```javascript
+// 洗牌算法
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+```
