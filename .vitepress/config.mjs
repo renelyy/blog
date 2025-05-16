@@ -161,6 +161,7 @@ export default defineConfig({
                       { text: 'Object 篇', link: '/interview/js/object' },
                       { text: 'Promise 篇', link: '/interview/js/promise' },
                       { text: 'Fucntion 篇', link: '/interview/js/function' },
+                      { text: '场景题', link: '/interview/js/scene' },
                       { text: '其他', link: '/interview/js/other' },
                     ]
                   }
