@@ -275,7 +275,14 @@ export default defineConfig({
           {
             text: '札记',
             link: '/notes'
-          }
+          },
+          {
+            text: 'VIP',
+            collapsed: true,
+            items: [
+              { text: '哲玄面试题', link: 'https://eizwbs2n02l.feishu.cn/docx/FQC8da15PodxC0xxNAsc7OuhnYe' },
+            ]
+          },
         ]
       }
     ],
