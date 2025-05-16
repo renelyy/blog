@@ -5,10 +5,10 @@
 ```javascript
 Array.prototype.forEach = function (callback, thisArg) {
   if (this == null) {
-    throw new TypeError('Array.prototype.forEach called on null or undefined');
+    throw new TypeError("Array.prototype.forEach called on null or undefined");
   }
-  if (typeof callback !== 'function') {
-    throw new TypeError(callback + ' is not a function');
+  if (typeof callback !== "function") {
+    throw new TypeError(callback + " is not a function");
   }
 
   let T, k;
@@ -37,10 +37,10 @@ Array.prototype.forEach = function (callback, thisArg) {
 ```javascript
 Array.prototype.map = function (callback, thisArg) {
   if (this == null) {
-    throw new TypeError('Array.prototype.map called on null or undefined');
+    throw new TypeError("Array.prototype.map called on null or undefined");
   }
-  if (typeof callback !== 'function') {
-    throw new TypeError(callback + ' is not a function');
+  if (typeof callback !== "function") {
+    throw new TypeError(callback + " is not a function");
   }
 
   var T,
@@ -68,10 +68,10 @@ Array.prototype.map = function (callback, thisArg) {
 ```javascript
 Array.prototype.filter = function (callback, thisArg) {
   if (this == null) {
-    throw new TypeError('Array.prototype.filter called on null or undefined');
+    throw new TypeError("Array.prototype.filter called on null or undefined");
   }
-  if (typeof callback !== 'function') {
-    throw new TypeError(callback + ' is not a function');
+  if (typeof callback !== "function") {
+    throw new TypeError(callback + " is not a function");
   }
 
   let T,
@@ -101,10 +101,10 @@ Array.prototype.filter = function (callback, thisArg) {
 ```javascript
 Array.prototype.some = function (callback, thisArg) {
   if (this == null) {
-    throw new TypeError('Array.prototype.some called on null or undefined');
+    throw new TypeError("Array.prototype.some called on null or undefined");
   }
-  if (typeof callback !== 'function') {
-    throw new TypeError(callback + ' is not a function');
+  if (typeof callback !== "function") {
+    throw new TypeError(callback + " is not a function");
   }
 
   let T;
@@ -130,10 +130,10 @@ Array.prototype.some = function (callback, thisArg) {
 ```javascript
 Array.prototype.reduce = function (callback, initialValue) {
   if (this == null) {
-    throw new TypeError('Array.prototype.reduce called on null or undefined');
+    throw new TypeError("Array.prototype.reduce called on null or undefined");
   }
-  if (typeof callback !== 'function') {
-    throw new TypeError(callback + ' is not a function');
+  if (typeof callback !== "function") {
+    throw new TypeError(callback + " is not a function");
   }
   let O = Object(this);
   let len = O.length >>> 0;
@@ -146,7 +146,7 @@ Array.prototype.reduce = function (callback, initialValue) {
       k++;
     }
     if (k >= len) {
-      throw new TypeError('Reduce of empty array with no initial value');
+      throw new TypeError("Reduce of empty array with no initial value");
     }
     accumulator = O[k++];
   }
@@ -165,10 +165,10 @@ Array.prototype.reduce = function (callback, initialValue) {
 ```javascript
 Array.prototype.every = function (callback, thisArg) {
   if (this == null) {
-    throw new TypeError('Array.prototype.every called on null or undefined');
+    throw new TypeError("Array.prototype.every called on null or undefined");
   }
-  if (typeof callback !== 'function') {
-    throw new TypeError(callback + ' is not a function');
+  if (typeof callback !== "function") {
+    throw new TypeError(callback + " is not a function");
   }
 
   let T;
@@ -194,10 +194,10 @@ Array.prototype.every = function (callback, thisArg) {
 ```javascript
 Array.prototype.find = function (predicate, thisArg) {
   if (this == null) {
-    throw new TypeError('Array.prototype.find called on null or undefined');
+    throw new TypeError("Array.prototype.find called on null or undefined");
   }
-  if (typeof predicate !== 'function') {
-    throw new TypeError('predicate must be a function');
+  if (typeof predicate !== "function") {
+    throw new TypeError("predicate must be a function");
   }
 
   let list = Object(this);
@@ -219,7 +219,7 @@ Array.prototype.find = function (predicate, thisArg) {
 ```javascript
 Array.prototype.indexOf = function (searchElement, fromIndex) {
   if (this == null) {
-    throw new TypeError('Array.prototype.indexOf called on null or undefined');
+    throw new TypeError("Array.prototype.indexOf called on null or undefined");
   }
 
   let O = Object(this);
@@ -264,7 +264,7 @@ Array.prototype.push = function () {
   let argCount = arguments.length;
   if (len + argCount > 2 ** 53 - 1) {
     throw new TypeError(
-      'The number of array elements exceeds the maximum array size'
+      "The number of array elements exceeds the maximum array size"
     );
   }
   for (let i = 0; i < argCount; i++) {
@@ -509,7 +509,7 @@ Array.prototype.v8sort = function (compareFn) {
 
 const innerV8ArraySort = (array, length, compareFn) => {
   // 未传入比较函数
-  if (Object.prototype.toString.call(compareFn) !== '[object Function]') {
+  if (Object.prototype.toString.call(compareFn) !== "[object Function]") {
     compareFn = function (x, y) {
       x = x.toString();
       y = y.toString();
@@ -719,3 +719,99 @@ function array2Tree(arr, parentId) {
   return tree;
 }
 ```
+
+## 求笛卡尔积
+
+> 问题描述
+
+```js
+const list = [
+  ["戴尔", "联想", "华为"],
+  ["笔记本", "台式机"],
+  ["黑色", "白色"]
+];
+
+const result = [
+  ["戴尔", "笔记本", "黑色"],
+  ["戴尔", "笔记本", "白色"],
+  ["戴尔", "台式机", "黑色"],
+  ["戴尔", "台式机", "白色"],
+  ["联想", "笔记本", "黑色"],
+  ["联想", "笔记本", "白色"],
+  ["联想", "台式机", "黑色"],
+  ["联想", "台式机", "白色"],
+  ["华为", "笔记本", "黑色"],
+  ["华为", "笔记本", "白色"],
+  ["华为", "台式机", "黑色"]
+];
+```
+
+> 代码实现
+
+::: code-group
+
+```javascript [递归实现]
+// 递归实现
+function cartesianProduct(arr) {
+  if (arr.length === 0) return [];
+  if (arr.length === 1) return arr[0].map(item => [item]);
+
+  const result = [];
+  const first = arr[0];
+  const rest = arr.slice(1);
+
+  const restProduct = cartesianProduct(rest);
+
+  for (let i = 0; i < first.length; i++) {
+    for (let j = 0; j < restProduct.length; j++) {
+      result.push([first[i], ...restProduct[j]]);
+    }
+  }
+
+  return result;
+}
+```
+
+```javascript [非递归实现]
+// 非递归实现
+// 思路：
+// 1. 先将第一个数组中的每个元素与第二个数组中的每个元素组合
+// 2. 然后将结果与第三个数组中的每个元素组合
+// 3. 依次类推，直到所有数组都被组合完毕
+function cartesianProduct(arr) {
+  if (arr.length === 0) return [];
+  if (arr.length === 1) return arr[0].map(item => [item]);
+
+  let result = arr[0].map(item => [item]);
+
+  for (let i = 1; i < arr.length; i++) {
+    const current = arr[i];
+    const newResult = [];
+
+    for (let j = 0; j < result.length; j++) {
+      for (let k = 0; k < current.length; k++) {
+        newResult.push([...result[j], current[k]]);
+      }
+    }
+
+    result = newResult;
+  }
+
+  return result;
+}
+```
+
+```js [使用 reduce + flatMap + map + concat 实现]
+// 使用 reduce + flatMap + map + concat 实现
+function cartesianProduct(arr) {
+  return arr.reduce((acc, curr) => {
+    return acc.flatMap(item => {
+      return curr.map(subItem => {
+        return [].concat(item, subItem);
+      });
+    });
+  });
+}
+```
+
+:::
