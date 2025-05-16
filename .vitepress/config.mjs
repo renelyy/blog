@@ -160,7 +160,8 @@ export default defineConfig({
                       { text: 'Array 篇', link: '/interview/js/array' },
                       { text: 'Object 篇', link: '/interview/js/object' },
                       { text: 'Promise 篇', link: '/interview/js/promise' },
-                      { text: 'Fucntion 篇', link: '/interview/js/function' }
+                      { text: 'Fucntion 篇', link: '/interview/js/function' },
+                      { text: '其他', link: '/interview/js/other' },
                     ]
                   }
                 ]
