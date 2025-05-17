@@ -345,3 +345,99 @@ uploadAll({
 ```
 
 :::
+
+## 将原生 ajax 封装为 Promise
+
+```js
+/**
+ * 将原生AJAX封装为Promise
+ * @param {string} method - HTTP方法 (GET, POST, PUT, DELETE等)
+ * @param {string} url - 请求URL
+ * @param {*} [data=null] - 请求数据
+ * @param {Object} [headers={}] - 请求头
+ * @param {string} [responseType=''] - 响应类型 (如 'json', 'text', 'blob'等)
+ * @returns {Promise} 返回Promise对象
+ */
+function ajax({
+  method = "GET",
+  url,
+  data = null,
+  headers = {},
+  responseType = ""
+}) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(method, url);
+
+    // 设置响应类型
+    if (responseType) {
+      xhr.responseType = responseType;
+    }
+
+    // 设置请求头
+    Object.keys(headers).forEach(key => {
+      xhr.setRequestHeader(key, headers[key]);
+    });
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        // 根据响应类型返回相应数据
+        let responseData;
+        try {
+          responseData =
+            responseType === "json" ? xhr.response : xhr.responseText;
+
+          // 如果是JSON字符串但未设置responseType，尝试解析
+          if (
+            !responseType &&
+            xhr.getResponseHeader("Content-Type")?.includes("application/json")
+          ) {
+            responseData = JSON.parse(responseData);
+          }
+        } catch (e) {
+          reject(new Error("Failed to parse response data"));
+          return;
+        }
+
+        resolve({
+          data: responseData,
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers: xhr.getAllResponseHeaders(),
+          xhr: xhr
+        });
+      } else {
+        reject(
+          new Error(
+            `Request failed with status ${xhr.status}: ${xhr.statusText}`
+          )
+        );
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Network error occurred"));
+    };
+
+    xhr.ontimeout = () => {
+      reject(new Error("Request timeout"));
+    };
+
+    // 处理请求数据
+    let requestData = data;
+    if (data && typeof data === "object" && !(data instanceof FormData)) {
+      headers["Content-Type"] = headers["Content-Type"] || "application/json";
+      if (headers["Content-Type"].includes("application/json")) {
+        requestData = JSON.stringify(data);
+      } else if (
+        headers["Content-Type"].includes("application/x-www-form-urlencoded")
+      ) {
+        requestData = new URLSearchParams(data).toString();
+      }
+    }
+
+    xhr.send(requestData);
+  });
+}
+```
