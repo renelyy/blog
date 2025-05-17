@@ -441,3 +441,156 @@ function ajax({
   });
 }
 ```
+
+## 实现图片下载功能
+
+::: code-group
+
+```js [纯前端实现]
+/**
+ * 实现图片下载
+ * 方案一：纯前端实现（适用于同源图片或已有跨域权限的图片）
+ * @param {string} url 图片地址
+ * @param {string} filename 下载的文件名
+ */
+function downloadImage(url, filename) {
+  fetch(url, {
+    mode: "cors" // 如果图片在不同源，需要设置cors
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      // 创建 blob URL
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // 创建下载链接
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download =
+        filename.endsWith(".jpg") || filename.endsWith(".png")
+          ? filename
+          : `${filename}.jpg`;
+
+      // 触发下载
+      document.body.appendChild(a);
+      a.click();
+
+      // 清理
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(blobUrl);
+    })
+    .catch(error => {
+      console.log("下载失败:", error);
+      // 备用方案：直接打开图片在新窗口
+      window.open(url, "_blank");
+    });
+}
+```
+
+```js [Canvas 方案]
+/**
+ * 方案二：Canvas 方案（适用于要处理图片的情况）
+ */
+function downloadImageWithCanvas(url, filename) {
+  const img = new Image();
+  img.crossOrigin = "Anonymous"; // 跨域图片需要设置
+  img.src = url;
+  img.onload = () => {
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+
+      // 转化为 blob
+      canvas.toBlob(blob => {
+        // 创建 blob URL
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        // 创建下载链接
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download =
+          filename.endsWith(".jpg") || filename.endsWith(".png")
+            ? filename
+            : `${filename}.jpg`;
+
+        // 触发下载
+        document.body.appendChild(a);
+        a.click();
+
+        // 清理
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+      });
+    } catch (error) {
+      console.error("Canvas 处理失败:", error);
+      window.open(url, "_blank");
+    }
+  };
+
+  img.onerror = () => {
+    console.error("图片加载失败");
+    window.open(url, "_blank");
+  };
+}
+```
+
+```js [后端配合方案]
+/**
+ * 方案三：后端配合实现（适用于需要跨域权限等复杂场景）
+ */
+function downloadImageWithServer(url, filename) {
+  // 先获取有权限的下载 URL
+  fetch("/api/get-download-url", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer your-token"
+    },
+    body: JSON.stringify({
+      url
+    })
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      // 后端返回的临时下载地址
+      const downloadUrl = data.downloadUrl;
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    })
+    .catch(error => {
+      console.log("下载失败:", error);
+    });
+}
+```
+
+```js [base64 下载]
+function downloadBase64Image(base64, filename = "download") {
+  const extension = base64.match(/^data:image\/(\w+);base64,/);
+  const ext = extension ? extension[1] : "png";
+
+  const a = document.createElement("a");
+  a.href = base64;
+  a.download = filename.endsWith(`.${ext}`) ? filename : `${filename}.${ext}`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+```
+
+:::
