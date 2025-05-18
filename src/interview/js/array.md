@@ -699,7 +699,9 @@ Array.prototype.flat = function (depth = 1) {
 
 ## 数组转树
 
-```javascript
+:::code-group
+
+```javascript [for 循环实现]
 // 定义一个函数，用于将数组转换为树形结构
 function array2Tree(arr, parentId) {
   const tree = [];
@@ -719,6 +721,226 @@ function array2Tree(arr, parentId) {
   return tree;
 }
 ```
+
+```js [filter + map + 递归]
+function arrayToTree(arr, parentId = "0") {
+  return arr
+    .filter(item => item.parentId === parentId)
+    .map(item => {
+      let children = arrayToTree(arr, item.id);
+      if (children.length > 0) {
+        item.children = children;
+      }
+      return item;
+    });
+}
+```
+
+```js [使用对象引用]
+/**
+ * 非递归，更高效
+ */
+function arrayToTree(arr, parentId = "0") {
+  const tree = []; // 存放结果
+  const itemMap = {}; // 存放所有节点映射表
+
+  // 先转成 map 存储
+  for (const item of arr) {
+    itemMap[item.id] = { ...item, children: [] };
+  }
+
+  // 遍历数组
+  for (const item of arr) {
+    if (item.parentId === parentId) {
+      tree.push(itemMap[item.id]);
+    } else {
+      itemMap[item.parentId].children.push(itemMap[item.id]);
+    }
+  }
+
+  return tree;
+}
+```
+
+```js [进阶：自定义字段名]
+function arrayToTreeAdvanced(
+  items,
+  options = {
+    idKey: "id",
+    parentKey: "pid",
+    childrenKey: "children",
+    rootParentValue: 0
+  }
+) {
+  const {
+    idKey = "id",
+    parentKey = "pid",
+    childrenKey = "children",
+    rootParentValue = 0
+  } = options;
+
+  const result = [];
+  const itemMap = {};
+
+  // 初始化所有节点
+  for (const item of items) {
+    itemMap[item[idKey]] = {
+      ...item,
+      [childrenKey]: []
+    };
+  }
+
+  // 构建树结构
+  for (const item of items) {
+    const id = item[idKey];
+    const parentId = item[parentKey];
+    const treeItem = itemMap[id];
+
+    if (parentId === rootParentValue) {
+      result.push(treeItem);
+    } else {
+      if (!itemMap[parentId]) {
+        itemMap[parentId] = { [childrenKey]: [] };
+      }
+      itemMap[parentId][childrenKey].push(treeItem);
+    }
+  }
+
+  return result;
+}
+```
+
+```js [复杂版本（参考）]
+/**
+ * deepCopy
+ * @param data
+ * @returns {{}|*}
+ */
+const deepCopy = data => {
+  const t = typeOf(data);
+  let o;
+
+  if (t === "array") {
+    o = [];
+  } else if (t === "object") {
+    o = {};
+  } else {
+    return data;
+  }
+
+  if (t === "array") {
+    for (let i = 0; i < data.length; i++) {
+      o.push(deepCopy(data[i]));
+    }
+  } else if (t === "object") {
+    for (let i in data) {
+      o[i] = deepCopy(data[i]);
+    }
+  }
+  return o;
+};
+
+/**
+ *
+ * @param obj
+ * @returns {*}
+ */
+const typeOf = obj => {
+  const toString = Object.prototype.toString;
+  const map = {
+    "[object Boolean]": "boolean",
+    "[object Number]": "number",
+    "[object String]": "string",
+    "[object Function]": "function",
+    "[object Array]": "array",
+    "[object Date]": "date",
+    "[object RegExp]": "regExp",
+    "[object Undefined]": "undefined",
+    "[object Null]": "null",
+    "[object Object]": "object"
+  };
+  return map[toString.call(obj)];
+};
+
+const THRESHOLD_VALUE = 1000;
+
+/**
+ * @description 构造树型结构数据
+ * @param {Array} data
+ * @param {Object} options
+ * @param {Number|String} valueOfRoot
+ * @param {String} keyOfId
+ * @param {String} keyOfPid
+ * @param {String} keyOfChilren
+ * @returns
+ */
+const formatToTree = (
+  data,
+  {
+    valueOfRoot = null,
+    keyOfId = "id",
+    keyOfPid = "pid",
+    keyOfChilren = "children"
+  } = {}
+) => {
+  const O = Object(data);
+  const l = O.length >>> 0;
+  if (l < THRESHOLD_VALUE) {
+    // 小于阈值，使用递归
+    const parents = O.filter(o => o[keyOfPid] === valueOfRoot);
+    const children = O.filter(c => c[keyOfPid] !== valueOfRoot);
+    const data2Tree = (parents, children) => {
+      parents.map(p => {
+        children.map((c, i) => {
+          if (p[keyOfId] === c[keyOfPid]) {
+            const _c = deepCopy(children);
+            _c.splice(i, 1);
+            data2Tree([c], _c);
+            if (p[keyOfChilren]) p[keyOfChilren].push(c);
+            else p[keyOfChilren] = [c];
+          }
+        });
+      });
+    };
+    data2Tree(parents, children);
+    return parents;
+  } else {
+    // 大于阈值，使用循环
+    let childrenListMap = {};
+    let nodeIds = {};
+    const tree = [];
+
+    for (let d of data) {
+      let parentId = d[keyOfPid];
+      if (!childrenListMap[parentId]) childrenListMap[parentId] = [];
+      nodeIds[d[keyOfId]] = d;
+      childrenListMap[parentId].push(d);
+
+      // 如果节点的 parentId 为 [valueOfRoot]，直接添加到第一级
+      if (d[keyOfPid] == valueOfRoot) tree.push(d);
+    }
+
+    const adaptToChildrenList = o => {
+      if (childrenListMap[o[keyOfId]]) {
+        o[keyOfChilren] = childrenListMap[o[keyOfId]];
+      }
+      if (o[keyOfChilren]) {
+        for (let c of o[keyOfChilren]) {
+          adaptToChildrenList(c);
+        }
+      }
+    };
+
+    for (let t of tree) {
+      adaptToChildrenList(t);
+    }
+
+    return tree;
+  }
+};
+```
+
+:::
 
 ## 求笛卡尔积
 
