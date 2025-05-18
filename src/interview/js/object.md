@@ -254,3 +254,143 @@ function myInstanceof(obj, constructor) {
   return false;
 }
 ```
+
+## 实现一个 set 方法，支持根据路径设置对象的属性值
+
+::: code-group
+
+```js [循环遍历]
+/**
+ * 根据路径设置对象的属性值
+ * @param {object} obj 要设置的对象
+ * @param {string} path 属性路径，例如 'a.b.c'
+ * @param {*} value 要设置的值
+ * @returns {object} 设置后的对象
+ */
+function setByPath(obj, path, value) {
+  const keys = path.split(".");
+  let current = obj;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    if (current[key] === undefined) {
+      current[key] = {};
+    }
+    current = current[key];
+  }
+
+  current[keys[keys.length - 1]] = value;
+
+  return obj;
+}
+```
+
+```js [reduce]
+/**
+ * 根据路径设置对象的属性值
+ * @param {object} obj 要设置的对象
+ * @param {string} path 属性路径，例如 'a.b.c'
+ * @param {*} value 要设置的值
+ * @returns {object} 设置后的对象
+ */
+function setByPath(obj, path, value) {
+  return path.split(".").reduce((acc, key, index, arr) => {
+    if (index === arr.length - 1) {
+      acc[key] = value;
+    } else {
+      acc[key] = acc[key] || {};
+    }
+    return acc[key];
+  }, obj);
+}
+```
+
+```js [递归]
+/**
+ * 根据路径设置对象的属性值
+ * @param {object} obj 要设置的对象
+ * @param {string} path 属性路径，例如 'a.b.c'
+ * @param {*} value 要设置的值
+ * @returns {object} 设置后的对象
+ */
+function setByPath(obj, path, value) {
+  const keys = path.split(".");
+  const key = keys.shift();
+
+  if (keys.length === 0) {
+    obj[key] = value;
+  } else {
+    setByPath(obj[key], keys.join("."), value);
+  }
+
+  return obj;
+}
+```
+
+:::
+
+## 实现一个 get 方法，支持根据路径获取对象的属性值
+
+::: code-group
+
+```js [循环遍历]
+/**
+ * 根据路径获取对象的属性值
+ * @param {object} obj 要获取的对象
+ * @param {string} path 属性路径，例如 'a.b.c'
+ * @returns {*} 获取到的属性值
+ * */
+function getByPath(obj, path) {
+  const keys = path.split(".");
+  let current = obj;
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    if (current[key] === undefined) {
+      return undefined;
+    }
+    current = current[key];
+  }
+
+  return current;
+}
+```
+
+```js [reduce]
+/**
+ * 根据路径获取对象的属性值
+ * @param {object} obj 要获取的对象
+ * @param {string} path 属性路径，例如 'a.b.c'
+ * @returns {*} 获取到的属性值
+ * */
+function getByPath(obj, path) {
+  return path
+    .split(".")
+    .reduce((acc, key) => (acc ? acc[key] : undefined), obj);
+}
+```
+
+```js [递归]
+/**
+ * 根据路径获取对象的属性值
+ * @param {object} obj 要获取的对象
+ * @param {string} path 属性路径，例如 'a.b.c'
+ * @returns {*} 获取到的属性值
+ * */
+function getByPath(obj, path) {
+  const keys = path.split(".");
+  const key = keys.shift();
+
+  if (obj === undefined) {
+    return undefined;
+  }
+
+  if (keys.length === 0) {
+    return obj[key];
+  } else {
+    return getByPath(obj[key], keys.join("."));
+  }
+}
+```
+
+:::
