@@ -17,9 +17,9 @@ export default defineConfig({
         text: '前端技术',
         collapsed: true,
         items: [
-          { text: 'HTML', link: '/frontend/html' },
-          { text: 'CSS', link: '/frontend/css' },
-          { text: 'JS', link: '/frontend/js' }
+          { text: 'HTML', link: 'https://developer.mozilla.org/zh-CN/docs/Web/HTML' },
+          { text: 'CSS', link: 'https://developer.mozilla.org/zh-CN/docs/Web/CSS' },
+          { text: 'JS', link: 'https://developer.mozilla.org/zh-CN/docs/Web/JavaScript' }
         ]
       },
       {
@@ -96,7 +96,7 @@ export default defineConfig({
       },
       {
         text: 'Git',
-        link: '/reading-notes'
+        link: '/git'
       },
       {
         text: '读书笔记',
