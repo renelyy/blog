@@ -98,33 +98,33 @@ export default defineConfig({
         text: 'Git',
         link: '/git'
       },
-      {
-        text: '读书笔记',
-        items: [
-          {
-            text: '技术类',
-            link: '/reading-notes/technology',
-            collapsed: true,
-            items: [
-              {
-                text: '《JavaScript 高级程序设计（第4版本）》',
-                link: '/reading-notes/technology/javascript'
-              }
-            ]
-          },
-          {
-            text: '文学类',
-            link: '/reading-notes/literature',
-            collapsed: true,
-            items: [
-              {
-                text: '《活着》',
-                link: '/reading-notes/literature/living'
-              }
-            ]
-          }
-        ]
-      },
+      // {
+      //   text: '读书笔记',
+      //   items: [
+      //     {
+      //       text: '技术类',
+      //       link: '/reading-notes/technology',
+      //       collapsed: true,
+      //       items: [
+      //         {
+      //           text: '《JavaScript 高级程序设计（第4版本）》',
+      //           link: '/reading-notes/technology/javascript'
+      //         }
+      //       ]
+      //     },
+      //     {
+      //       text: '文学类',
+      //       link: '/reading-notes/literature',
+      //       collapsed: true,
+      //       items: [
+      //         {
+      //           text: '《活着》',
+      //           link: '/reading-notes/literature/living'
+      //         }
+      //       ]
+      //     }
+      //   ]
+      // },
       {
         text: '面试',
         items: [
@@ -315,7 +315,7 @@ export default defineConfig({
       detailsLabel: '详细信息'
     },
     toc: {
-      level: [1, 2, 3]
+      level: [1, 2, 3],
     }
   },
 
