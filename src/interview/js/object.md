@@ -222,3 +222,35 @@ deepClonePlus.utils = {
 ```
 
 :::
+
+## 实现 instanceof
+
+```js
+/**
+ * 自定义实现 instanceof 操作符
+ * @param {object} obj 要检查的对象
+ * @param {Function} constructor 构造函数
+ * @returns {boolean} 是否是构造函数的实例
+ */
+function myInstanceof(obj, constructor) {
+  if (typeof constructor !== "function") {
+    throw new TypeError("Right-hand side of 'instanceof' is not callable");
+  }
+
+  // 基本类型直接返回 false
+  if (obj === null || typeof obj !== "object" || typeof obj !== "function") {
+    return false;
+  }
+
+  // 获取对象的原型
+  let proto = Object.getPrototypeOf(obj);
+
+  // 循环查找原型链
+  while (proto !== null) {
+    if (proto === constructor.prototype) return true;
+    proto = Object.getPrototypeOf(proto);
+  }
+
+  return false;
+}
+```
