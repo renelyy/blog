@@ -61,7 +61,7 @@ var lengthOfLongestSubstring = function (s) {
       arr = arr.slice(l);
     }
     arr.push(char);
-    // 注意这里不能用 r - l + 1，因为 r arr 数组中的下标
+    // 注意这里不能用 r - l + 1，因为 r 是 arr 数组中的下标
     // 而 r 是字符串的下标，直接取窗口的大小即可
     ans = Math.max(arr.length, ans);
     r++;
