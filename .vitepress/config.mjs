@@ -163,6 +163,7 @@ export default defineConfig({
                       { text: 'Fucntion 篇', link: '/interview/js/function' },
                       { text: '场景题', link: '/interview/js/scene' },
                       { text: '其他', link: '/interview/js/other' },
+                      { text: '高频算法', link: '/interview/js/algorithm' },
                     ]
                   }
                 ]
