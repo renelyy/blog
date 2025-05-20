@@ -95,4 +95,36 @@ var permuteUnique = function (nums) {
 };
 ```
 
+```js [含重复数字(不排序)]
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var permuteUnique = function (nums) {
+  const result = [];
+  const backtrack = (path, used) => {
+    if (path.length === nums.length) {
+      result.push([...path]);
+      return;
+    }
+
+    const usedInCurrentLevel = new Set(); // 当前层级已使用的数字
+    for (let i = 0; i < nums.length; i++) {
+      if (used[i] || usedInCurrentLevel.has(nums[i])) {
+        continue; // 如果数字已被全局或当前层级使用，跳过
+      }
+      usedInCurrentLevel.add(nums[i]); // 标记当前层级已使用
+      used[i] = true; // 标记全局已使用
+      path.push(nums[i]);
+      backtrack(path, used);
+      path.pop();
+      used[i] = false;
+    }
+  };
+
+  backtrack([], new Array(nums.length).fill(false));
+  return result;
+};
+```
+
 :::
