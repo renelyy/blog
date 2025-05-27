@@ -95,6 +95,29 @@ export default defineConfig({
         ]
       },
       {
+        text: '设计模式',
+        collapsed: true,
+        items: [
+          { text: '单例模式', link: '/design-patterns/singleton' },
+          { text: '工厂模式', link: '/design-patterns/factory' },
+          { text: '观察者模式', link: '/design-patterns/observer' },
+          { text: '发布订阅模式', link: '/design-patterns/publish-subscribe' },
+          { text: '策略模式', link: '/design-patterns/strategy' },
+          { text: '装饰器模式', link: '/design-patterns/decorator' },
+          { text: '代理模式', link: '/design-patterns/proxy' },
+          { text: '适配器模式', link: '/design-patterns/adapter' },
+          { text: '外观模式', link: '/design-patterns/facade' },
+          { text: '组合模式', link: '/design-patterns/composite' },
+          { text: '享元模式', link: '/design-patterns/flyweight' },
+          { text: '命令模式', link: '/design-patterns/command' },
+          { text: '模版方法模式', link: '/design-patterns/template-method' },
+          { text: '迭代器模式', link: '/design-patterns/iterator' },
+          { text: '状态模式', link: '/design-patterns/state' },
+          { text: '中介者模式', link: '/design-patterns/mediator' },
+          { text: '职责链模式', link: '/design-patterns/chain-of-responsibility' }
+        ]
+      },
+      {
         text: 'Git',
         link: '/git'
       },
