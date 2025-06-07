@@ -91,11 +91,20 @@ export default defineConfig({
                 link: '/data-structures-and-algorithms/leetcode/math'
               }
             ]
+          },
+          {
+            text: '剑指 Offer 刷题',
+            link: '/data-structures-and-algorithms/offer',
+          },
+          {
+            text: '常用技巧',
+            link: '/data-structures-and-algorithms/tricks',
           }
         ]
       },
       {
         text: '设计模式',
+        link: '/design-patterns',
         collapsed: true,
         items: [
           { text: '单例模式', link: '/design-patterns/singleton' },
