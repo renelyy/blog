@@ -206,3 +206,43 @@ function lcm(a, b) {
   return (a * b) / gcd(a, b);
 }
 ```
+
+## 进制转换
+```js [进制转换]
+// toString 可以将数字转换为指定进制的字符串
+// 例如：n.toString(2) 将数字 n 转换为二进制字符串
+// parseInt 可以将字符串转以指定进制转为数字
+// 例如：parseInt("1010", 2) 将二进制字符串 "1010" 转换为十进制数字 10
+//      parseInt("ff", 16) 将十六进制字符串 "ff" 转换为十进制数字 255
+// 需要注意：其他进制转化时，需要借助十进制进行中转
+
+// 十进制转二进制
+function decimalToBinary(n) {
+  return n.toString(2);
+}
+
+// 二进制转十进制
+function binaryToDecimal(n) {
+  return parseInt(n, 2);
+}
+
+// 十进制转八进制
+function decimalToOctal(n) {
+  return n.toString(8);
+}
+
+// 八进制转十进制
+function octalToDecimal(n) {
+  return parseInt(n, 8);
+}
+
+// 十进制转十六进制
+function decimalToHex(n) {
+  return n.toString(16);
+}
+
+// 十六进制转十进制
+function hexToDecimal(n) {
+  return parseInt(n, 16);
+}
+```
