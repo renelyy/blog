@@ -185,3 +185,24 @@ function getPrimeFactors(n) {
   }
 }
 ```
+
+## 求最大公约数
+```js [求最大公约数]
+// 思路：使用辗转相除法，即用较大数除以较小数，然后用余数替换较大数，继续除以较小数，直到余数为 0 为止。
+// 最后的除数即为最大公约数。
+function gcd(a, b) {
+  if (b === 0) {
+    return a;
+  }
+  return gcd(b, a % b);
+}
+```
+
+## 求最小公倍数
+
+```js [求最小公倍数]
+// 思路：最小公倍数 = (a * b) / 最大公约数
+function lcm(a, b) {
+  return (a * b) / gcd(a, b);
+}
+```
