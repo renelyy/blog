@@ -1,6 +1,7 @@
 # 高频算法题
 
-## [全排列](/data-structures-and-algorithms/leetcode/backtracking/#_1-46-全排列)
+<!-- ## [全排列](/src/data-structures-and-algorithms/leetcode/backtracking) -->
+## [全排列]()
 
 :::code-group
 
