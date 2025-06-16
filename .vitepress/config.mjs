@@ -97,9 +97,13 @@ export default defineConfig({
             link: '/data-structures-and-algorithms/offer',
           },
           {
+            text: '牛客刷题',
+            link: '/data-structures-and-algorithms/nowcoder'
+          },
+          {
             text: '常用技巧',
             link: '/data-structures-and-algorithms/tricks',
-          }
+          },
         ]
       },
       {
