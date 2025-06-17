@@ -107,7 +107,140 @@ void (async function () {
 
 ### [HJ18 识别有效的 IP 地址和掩码并进行分类统计](https://www.nowcoder.com/practice/de538edd6f7e4bc3a5689723a7435682?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :x:
 
-### [HJ24 合唱队](https://www.nowcoder.com/practice/6d9d69e3898f45169a441632b325c7b4?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :x:
+### [HJ24 合唱队](https://www.nowcoder.com/practice/6d9d69e3898f45169a441632b325c7b4?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :white_check_mark:
+
+### 问题分析
+
+我们需要找到一个最长的合唱队形，即一个先严格递增再严格递减的序列。换句话说，我们需要找到一个“山峰”位置 `i`，使得：
+
+1. 在 `i` 左侧的所有同学身高严格递增（`h[1] < h[2] < ... < h[i]`）。
+2. 在 `i` 右侧的所有同学身高严格递减（`h[i] > h[i+1] > ... > h[k]`）。
+
+目标是让剩下的同学尽可能多，也就是需要删除的同学尽可能少。
+
+### 解题思路
+
+1. **动态规划（DP）**：
+
+   - 对于每个位置 `i`，计算以 `i` 为“山峰”的最长合唱队形长度。
+   - 这可以分为两部分：
+     - 从左到右的 **最长递增子序列（LIS）**，记录每个位置 `i` 左侧的最长递增序列长度。
+     - 从右到左的 **最长递减子序列（LDS）**，记录每个位置 `i` 右侧的最长递减序列长度。
+   - 合唱队形的长度为 `LIS[i] + LDS[i] - 1`（因为 `i` 被计算了两次）。
+   - 最少需要删除的同学数为 `n - max(LIS[i] + LDS[i] - 1)`。
+
+2. **算法步骤**：
+   - 计算 `LIS` 数组：
+     - `LIS[i]` 表示以 `h[i]` 结尾的最长严格递增子序列的长度。
+     - 初始化 `LIS[i] = 1`（每个同学至少可以单独构成一个长度为 1 的序列）。
+     - 对于每个 `i`，遍历 `j` 从 `0` 到 `i-1`，如果 `h[j] < h[i]`，则更新 `LIS[i] = max(LIS[i], LIS[j] + 1)`。
+   - 计算 `LDS` 数组：
+     - `LDS[i]` 表示以 `h[i]` 开头的最长严格递减子序列的长度。
+     - 初始化 `LDS[i] = 1`。
+     - 对于每个 `i`，从 `n-1` 反向遍历到 `i+1`，如果 `h[j] < h[i]`，则更新 `LDS[i] = max(LDS[i], LDS[j] + 1)`。
+   - 遍历所有 `i`，计算 `max_len = max(LIS[i] + LDS[i] - 1)`。
+   - 最少删除人数为 `n - max_len`。
+
+### 代码实现
+
+```javascript
+const readline = require("readline");
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+let n = 0;
+let heights = [];
+
+rl.on("line", function (line) {
+  if (n === 0) {
+    n = parseInt(line.trim());
+  } else {
+    heights = line.trim().split(" ").map(Number);
+    solve();
+    rl.close();
+  }
+});
+
+function solve() {
+  const LIS = new Array(n).fill(1);
+  const LDS = new Array(n).fill(1);
+
+  // 计算 LIS（从左到右）
+  for (let i = 1; i < n; i++) {
+    for (let j = 0; j < i; j++) {
+      if (heights[j] < heights[i]) {
+        LIS[i] = Math.max(LIS[i], LIS[j] + 1);
+      }
+    }
+  }
+
+  // 计算 LDS（从右到左）
+  for (let i = n - 2; i >= 0; i--) {
+    for (let j = n - 1; j > i; j--) {
+      if (heights[j] < heights[i]) {
+        LDS[i] = Math.max(LDS[i], LDS[j] + 1);
+      }
+    }
+  }
+
+  let max_len = 0;
+  for (let i = 0; i < n; i++) {
+    max_len = Math.max(max_len, LIS[i] + LDS[i] - 1);
+  }
+
+  console.log(n - max_len);
+}
+```
+
+### 代码解释
+
+1. **输入处理**：
+
+   - 使用 `readline` 读取输入，第一行是同学数量 `n`，第二行是身高数组 `heights`。
+
+2. **动态规划数组初始化**：
+
+   - `LIS` 和 `LDS` 初始化为全 1 数组，表示每个同学至少可以单独构成长度为 1 的序列。
+
+3. **计算 LIS**：
+
+   - 从左到右遍历，对于每个 `i`，检查所有 `j < i`，如果 `h[j] < h[i]`，则更新 `LIS[i]`。
+
+4. **计算 LDS**：
+
+   - 从右到左遍历，对于每个 `i`，检查所有 `j > i`，如果 `h[j] < h[i]`，则更新 `LDS[i]`。
+
+5. **计算最长合唱队形**：
+
+   - 遍历所有 `i`，计算 `LIS[i] + LDS[i] - 1` 的最大值 `max_len`。
+
+6. **输出结果**：
+   - 最少删除人数为 `n - max_len`。
+
+### 示例解析
+
+**输入**：
+
+```
+8
+186 186 150 200 160 130 197 200
+```
+
+**计算过程**：
+
+- `LIS`（从左到右）：`[1, 1, 1, 2, 2, 1, 3, 4]`
+- `LDS`（从右到左）：`[3, 3, 2, 3, 2, 1, 1, 1]`
+- `LIS + LDS - 1`：`[3, 3, 2, 4, 3, 1, 3, 4]`
+- `max_len = 4`
+- 最少删除人数：`8 - 4 = 4`。
+
+### 复杂度分析
+
+- **时间复杂度**：O(n²)，因为需要两层循环计算 `LIS` 和 `LDS`。
+- **空间复杂度**：O(n)，用于存储 `LIS` 和 `LDS` 数组。
 
 ### [HJ29 字符串加解密](https://www.nowcoder.com/practice/2aa32b378a024755a3f251e75cbf233a?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :white_check_mark:
 
