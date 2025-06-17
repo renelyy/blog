@@ -1,6 +1,6 @@
 {
   "name": "blog",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "技术文档汇总",
   "main": "index.js",
   "type": "module",
