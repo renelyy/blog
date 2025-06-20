@@ -370,7 +370,7 @@ function formatStr(s) {
 }
 ```
 
-### [HJ37 统计每个月兔子的总数](https://www.nowcoder.com/practice/1221ec77125d4370833fd3ad5ba72395?tpId=37&tqId=21260&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=)
+### [HJ37 统计每个月兔子的总数](https://www.nowcoder.com/practice/1221ec77125d4370833fd3ad5ba72395?tpId=37&tqId=21260&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=) :white_check_mark:
 
 #### 描述
 
@@ -433,6 +433,174 @@ function getTotalRabbit(n) {
 ```
 
 ### [HJ52 计算字符串的编辑距离](https://www.nowcoder.com/practice/3959837097c7413a961a135d7104c314?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :x:
+
+### [HJ53 杨辉三角的变形](https://www.nowcoder.com/practice/8ef655edf42d4e08b44be4d777edbf43?tpId=37&tqId=21276&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=) :white_check_mark:
+
+1. **描述**
+
+定义变形的杨辉三角规则：
+
+- 第一行为固定的整数 1
+- 第二行开始，每行的数字数量均比上一行多两个，且中心对称（也可以看作是在上一行的基础上首尾增加了一个数字）；每个位置上的数字是它正上方、左上角和右上角这三个数之和（如果不存在某个数，认为该数就是 0）。
+  下方展示了计算的过程：
+  ![alt text](image.png)
+  现在，你需要输出第 n 行中第一个偶数出现的位置。从 1 开始计数。
+
+2. **输入描述：**
+   输入一个整数 n（1 ≤ n ≤ 10^9）代表询问的行数。
+
+3. **输出描述：**
+   输出一个整数代表第 n 行第一个偶数出现的位置。
+
+4. **示例 1**
+
+输入：
+
+```
+4
+```
+
+输出：
+
+```
+3
+```
+
+**代码**
+
+::: code-group
+
+```js [构造数组（超出内存限制）]
+const rl = require("readline").createInterface({ input: process.stdin });
+var iter = rl[Symbol.asyncIterator]();
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  // Write your code here
+  while ((line = await readline())) {
+    const n = parseInt(line.trim());
+    if (n === 1) {
+      console.log(-1);
+      continue;
+    }
+    const arr = buildTriangle(n);
+    for (let i = 0; i < arr.length; i++) {
+      let num = arr[i];
+      if (num % 2 === 0) {
+        console.log(i + 1);
+        return;
+      }
+    }
+    console.log(-1);
+  }
+})();
+
+/**
+ * 创建 n 行的杨辉三角变形
+ */
+function buildTriangle(n) {
+  let colCount = 2 * n - 1;
+  const arr = new Array(n).fill(0).map(() => new Array(colCount).fill(0));
+  arr[0][colCount >> 1] = 1;
+
+  for (let i = 1; i < n; i++) {
+    for (j = 0; j < colCount; j++) {
+      let left = j === 0 ? 0 : arr[i - 1][j - 1];
+      let top = arr[i - 1][j];
+      let right = j === colCount - 1 ? 0 : arr[i - 1][j + 1];
+      arr[i][j] = left + top + right;
+    }
+  }
+  return arr[n - 1];
+}
+```
+
+```js [构造数组-滚动数组（运行超时）]
+const rl = require("readline").createInterface({ input: process.stdin });
+var iter = rl[Symbol.asyncIterator]();
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  // Write your code here
+  while ((line = await readline())) {
+    const n = parseInt(line.trim());
+    if (n === 1) {
+      console.log(-1);
+      continue;
+    }
+    const arr = buildTriangle(n);
+    for (let i = 0; i < arr.length; i++) {
+      let num = arr[i];
+      if (num % 2 === 0) {
+        console.log(i + 1);
+        return;
+      }
+    }
+    console.log(-1);
+  }
+})();
+
+/**
+ * 创建 n 行的杨辉三角变形
+ */
+function buildTriangle(n) {
+  let colCount = 2 * n - 1;
+  let preArr = new Array(colCount).fill(0);
+  let nextArr = new Array(colCount).fill(0);
+
+  preArr[colCount >> 1] = 1;
+
+  for (let i = 1; i < n; i++) {
+    for (j = 0; j < colCount; j++) {
+      let left = j === 0 ? 0 : preArr[j - 1];
+      let top = preArr[j];
+      let right = j === colCount - 1 ? 0 : preArr[j + 1];
+      nextArr[j] = left + top + right;
+    }
+    preArr = [...nextArr];
+  }
+  return nextArr;
+}
+```
+
+```js [数学思维-找规律]
+// 这个问题要求我们找到变形杨辉三角第 n 行中第一个偶数的位置。由于 n 可以达到 10^9，
+// 直接计算整个三角形是不现实的，我们需要找到数学规律。前面尝试均以内存超限和运行
+// 超时结束，因此需要寻找更高效的解决方案。
+
+// 通过观察变形杨辉三角的前几行，我们可以发现以下模式：
+// 第 1 行: [1] → 无偶数 → -1
+// 第 2 行: [1,1,1] → 无偶数 → -1
+// 第 3 行: [1,2,3,2,1] → 第一个偶数 2 在位置 2
+// 第 4 行: [1,3,6,7,6,3,1] → 第一个偶数 6 在位置 3
+// 第 5 行: [1,4,10,16,19,16,10,4,1] → 第一个偶数 4 在位置 2
+// 第 6 行: [1,5,15,30,45,51,45,30,15,5,1] → 第一个偶数 30 在位置 4
+
+// 从这些观察中，我们可以得出以下规律：
+// 当 n ≤ 2时，没有偶数，返回 -1
+// 当 n > 2时，第一个偶数的位置遵循特定模式：
+//    如果 n 是奇数，第一个偶数位置是2
+//    如果 n 是偶数且 n/2 是奇数，第一个偶数位置是 n/2
+//    如果 n 是偶数且 n/2 是偶数，第一个偶数位置是 3
+const rl = require("readline").createInterface({ input: process.stdin });
+var iter = rl[Symbol.asyncIterator]();
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  // Write your code here
+  while ((line = await readline())) {
+    const n = parseInt(line.trim());
+    if (n <= 2) console.log(-1);
+    else if (n % 2 !== 0) console.log(2);
+    else {
+      if ((n / 2) % 2 === 0) console.log(3);
+      else console.log(4);
+    }
+  }
+})();
+```
+
+:::
 
 ### [HJ61 放苹果](https://www.nowcoder.com/practice/bfd8234bb5e84be0b493656e390bdebf?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :white_check_mark:
 
