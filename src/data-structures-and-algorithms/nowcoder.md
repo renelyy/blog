@@ -109,7 +109,7 @@ void (async function () {
 
 ### [HJ24 合唱队](https://www.nowcoder.com/practice/6d9d69e3898f45169a441632b325c7b4?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :white_check_mark:
 
-### 问题分析
+#### 问题分析
 
 我们需要找到一个最长的合唱队形，即一个先严格递增再严格递减的序列。换句话说，我们需要找到一个“山峰”位置 `i`，使得：
 
@@ -118,7 +118,7 @@ void (async function () {
 
 目标是让剩下的同学尽可能多，也就是需要删除的同学尽可能少。
 
-### 解题思路
+#### 解题思路
 
 1. **动态规划（DP）**：
 
@@ -141,7 +141,7 @@ void (async function () {
    - 遍历所有 `i`，计算 `max_len = max(LIS[i] + LDS[i] - 1)`。
    - 最少删除人数为 `n - max_len`。
 
-### 代码实现
+#### 代码实现
 
 ```javascript
 const readline = require("readline");
@@ -195,7 +195,7 @@ function solve() {
 }
 ```
 
-### 代码解释
+#### 代码解释
 
 1. **输入处理**：
 
@@ -220,7 +220,7 @@ function solve() {
 6. **输出结果**：
    - 最少删除人数为 `n - max_len`。
 
-### 示例解析
+#### 示例解析
 
 **输入**：
 
@@ -237,7 +237,7 @@ function solve() {
 - `max_len = 4`
 - 最少删除人数：`8 - 4 = 4`。
 
-### 复杂度分析
+#### 复杂度分析
 
 - **时间复杂度**：O(n²)，因为需要两层循环计算 `LIS` 和 `LDS`。
 - **空间复杂度**：O(n)，用于存储 `LIS` 和 `LDS` 数组。
@@ -367,6 +367,68 @@ function formatStr(s) {
     }
   }
   return result;
+}
+```
+
+### [HJ37 统计每个月兔子的总数](https://www.nowcoder.com/practice/1221ec77125d4370833fd3ad5ba72395?tpId=37&tqId=21260&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=)
+
+#### 描述
+
+有一只兔子，从出生后第 3 个月起每个月都生一只兔子，小兔子长到第三个月后每个月又生一只兔子，假如兔子都不死，问第 n 个月兔子的总数为多少？
+
+#### 输入描述：
+
+输入 int 型一个 n。
+
+#### 输出描述：
+
+输出 n 个月后的兔子总数。
+
+#### 示例 1
+
+输入：
+
+```
+3
+```
+
+输出：
+
+```
+3
+```
+
+#### 解题思路：
+
+1. 第`i`个月兔子的总数 = 第`i - 1`兔子的总数 + 新出生的兔子数量
+2. `i - 2, i - 1, i`
+3. 由于差三个月，且兔子从出生后的第三个月起，都会出生一只兔子
+4. 所以在 `i - 2` 出生的兔子，在第 `i` 个月也会出生兔子
+5. 故 `dp[i] = dp[i - 1] + dp[i - 2];`
+
+#### 代码实现：
+
+```js
+const rl = require("readline").createInterface({ input: process.stdin });
+var iter = rl[Symbol.asyncIterator]();
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  // Write your code here
+  while ((line = await readline())) {
+    const n = Number(line);
+    console.log(getTotalRabbit(n));
+  }
+})();
+
+function getTotalRabbit(n) {
+  if (n <= 0) return 0;
+  if (n === 1 || n === 2) return 1;
+  let dp = [0, 1, 1];
+  for (let i = 3; i <= n; i++) {
+    dp[i] = dp[i - 1] + dp[i - 2];
+  }
+  return dp[n];
 }
 ```
 
