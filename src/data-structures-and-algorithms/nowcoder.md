@@ -711,3 +711,214 @@ Yes
 ```
 
 ### [HJ68 成绩排序](https://www.nowcoder.com/practice/8e400fd9905747e4acc2aeed7240978b?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :white_check_mark:
+
+### [HJ85 最长回文子串](https://www.nowcoder.com/practice/12e081cd10ee4794a2bd70c7d68f5507?tpId=37&tqId=21308&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=) :white_check_mark:
+
+1. **描述**
+
+给定一个仅包含小写字母的字符串，求它的最长回文子串的长度。
+
+2. **输入描述：**
+
+输入一个字符串，长度不超过 1000，字符串中的字符仅由小写字母组成。
+
+3. **输出描述：**
+
+输出一个整数，表示最长回文子串的长度。
+
+4. **示例 1**
+   输入：
+
+```
+abc1234321abc
+```
+
+输出：
+
+```
+7
+```
+
+**代码**
+
+::: code-group
+
+```js [暴力法]
+const rl = require("readline").createInterface({ input: process.stdin });
+var iter = rl[Symbol.asyncIterator]();
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  const str = await readline();
+  console.log(longestPalindrome(str));
+})();
+
+/**
+ * 返回：字符串 s 的最长回文子串的长度
+ * 时间复杂度 O(n^3)
+ * 空间复杂度 O(1)
+ */
+function longestPalindrome(s) {
+  const n = s.length;
+  if (n < 2) return n;
+  let maxLen = 1;
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      if (j - i + 1 > maxLen && isPalindrome(s, i, j)) {
+        maxLen = j - i + 1;
+      }
+    }
+  }
+  return maxLen;
+}
+
+/**
+ * 返回：字符串 s 在区间 [left, right] 是否是回文串
+ */
+function isPalindrome(s, left, right) {
+  while (left < right) {
+    if (s[left] !== s[right]) {
+      return false;
+    }
+    left++;
+    right--;
+  }
+  return true;
+}
+```
+
+```js [动态规划+滑动窗口]
+const rl = require("readline").createInterface({ input: process.stdin });
+var iter = rl[Symbol.asyncIterator]();
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  const str = await readline();
+  console.log(longestPalindrome(str));
+})();
+
+/**
+ * 返回：字符串 s 的最长回文子串的长度
+ * 
+ * 时间复杂度 O(n^2)
+ * 空间复杂度 O(n^2)
+ */
+function longestPalindrome(s) {
+  // dp[i][j] 表示 i 到 j 的子串是否是回文串
+  // dp[i][i] = true 长度为 1 的字串是回文串
+  const n = s.length;
+  const dp = Array.from({ length: n }, () => new Array(n).fill(false));
+
+  let maxLen = 1;
+  // 长度为 1 的字串是回文串
+  for (let i = 0; i < n; i++) dp[i][i] = true;
+
+  // 处理长度为 2 的子串
+  for (let i = 0; i < n - 1; i++) {
+    if (s[i] === s[i + 1]) {
+      dp[i][i + 1] = true;
+      maxLen = 2;
+    }
+  }
+
+  // 处理长度大于 3 的子串
+  for (let len = 3; len <= n; len++) {
+    for (let i = 0; i < n - len + 1; i++) {
+      let j = i + len - 1;
+      // 收尾相同且内部是子串，则该子串是回文串
+      if (s[i] === s[j] && dp[i + 1][j - 1]) {
+        dp[i][j] = true;
+        maxLen = Math.max(maxLen, j - i + 1);
+      }
+    }
+  }
+  return maxLen;
+}
+```
+
+```js [动态规划+从左到右单侧扩展]
+const rl = require("readline").createInterface({ input: process.stdin });
+var iter = rl[Symbol.asyncIterator]();
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  const str = await readline();
+  console.log(longestPalindrome(str));
+})();
+
+/**
+ * 返回：字符串 s 的最长回文子串的长度
+ * 
+ * 时间复杂度 O(n^2)
+ * 空间复杂度 O(n^2)
+ */
+function longestPalindrome(s) {
+  const n = s.length;
+  if (n < 2) return n;
+  const dp = Array.from({ length: n }, () => Array(n).fill(false));
+  let maxLen = 1;
+  for (let i = 0; i < n; i++) {
+    dp[i][i] = true;
+  }
+  for (let j = 1; j < n; j++) {
+    for (let i = 0; i < j; i++) {
+      if (s[i] !== s[j]) {
+        dp[i][j] = false;
+      } else {
+        if (j - i < 3) {
+          dp[i][j] = true;
+        } else {
+          dp[i][j] = dp[i + 1][j - 1];
+        }
+      }
+      if (dp[i][j]) {
+        maxLen = Math.max(maxLen, j - i + 1);
+      }
+    }
+  }
+  return maxLen;
+}
+```
+
+```js [中心扩展算法]
+const rl = require("readline").createInterface({ input: process.stdin });
+var iter = rl[Symbol.asyncIterator]();
+const readline = async () => (await iter.next()).value;
+
+void (async function () {
+  const str = await readline();
+  console.log(longestPalindrome(str));
+})();
+
+/**
+ * 返回：字符串 s 的最长回文子串的长度
+ * 
+ * 时间复杂度 O(n^2)
+ * 空间复杂度 O(1)
+ */
+function longestPalindrome(s) {
+  if (s.length < 2) return s.length;
+  let maxLen = 1;
+  for (let i = 0; i < s.length; i++) {
+    // 奇数长度的回文串
+    let l = i - 1,
+      r = i + 1;
+    while (l >= 0 && r < s.length && s[l] === s[r]) {
+      maxLen = Math.max(maxLen, r - l + 1);
+      l--;
+      r++;
+    }
+    // 偶数长度的回文串
+    l = i;
+    r = i + 1;
+    while (l >= 0 && r < s.length && s[l] === s[r]) {
+      maxLen = Math.max(maxLen, r - l + 1);
+      l--;
+      r++;
+    }
+  }
+  return maxLen;
+}
+```
+
+:::
