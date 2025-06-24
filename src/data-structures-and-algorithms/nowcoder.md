@@ -801,7 +801,7 @@ void (async function () {
 
 /**
  * 返回：字符串 s 的最长回文子串的长度
- * 
+ *
  * 时间复杂度 O(n^2)
  * 空间复杂度 O(n^2)
  */
@@ -850,7 +850,7 @@ void (async function () {
 
 /**
  * 返回：字符串 s 的最长回文子串的长度
- * 
+ *
  * 时间复杂度 O(n^2)
  * 空间复杂度 O(n^2)
  */
@@ -894,7 +894,7 @@ void (async function () {
 
 /**
  * 返回：字符串 s 的最长回文子串的长度
- * 
+ *
  * 时间复杂度 O(n^2)
  * 空间复杂度 O(1)
  */
@@ -924,3 +924,29 @@ function longestPalindrome(s) {
 ```
 
 :::
+
+### [HJ109 最小循环节](https://www.nowcoder.com/practice/761f78551b854037abe412c2de615c05?tpId=37&tqId=43247&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=) :x:
+
+1. **描述**
+
+   给定一个长度为 n、由大小写字母混合构成的字符串 s，你可以无限次的往字符串的任何地方插入任意字符。求新字符串 s 的最小循环节。
+
+   对于字符串 b，找到最短长度的子串 a，使得字符串 b 是由子串 a 拼接若干次得到的，即 b = aa……a。这里的子串 a 的长度即为字符串 b 的最小循环节。
+
+2. **输入描述**
+
+在一行上输入一个长度不超过 10^5、由大小写字母混合构成的字符串 s，代表初始字符串。
+
+3. **输出描述**
+
+在一行上输出一个整数，代表字符串 s 的最小循环节的长度。
+
+4. **示例**
+
+```
+输入: abcabcD
+输出: 4
+说明: 在字符串"abcDabcD"中，最小循环节为"abcD"，其长度为4。
+```
+
+5. **代码实现**
