@@ -953,3 +953,5 @@ function longestPalindrome(s) {
 
 ### [HJ110 宝石手串](https://www.nowcoder.com/practice/9648c918da794be28575dd121efa1c50?tpId=37&tqId=43248&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=) :x:
 
+### [HJ115 小红的区间构造](https://www.nowcoder.com/practice/df1bbce22cad4d2a8b69b7db3715e651?tpId=37&tqId=43253&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=) :x:
+
