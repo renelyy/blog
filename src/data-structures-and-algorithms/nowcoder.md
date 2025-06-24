@@ -109,7 +109,7 @@ void (async function () {
 
 ### [HJ24 合唱队](https://www.nowcoder.com/practice/6d9d69e3898f45169a441632b325c7b4?tpId=37&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fpage%3D3%26tpId%3D37%26type%3D37&difficulty=&judgeStatus=&tags=&title=&gioEnter=menu) :white_check_mark:
 
-#### 问题分析
+1. **问题分析**
 
 我们需要找到一个最长的合唱队形，即一个先严格递增再严格递减的序列。换句话说，我们需要找到一个“山峰”位置 `i`，使得：
 
@@ -118,9 +118,9 @@ void (async function () {
 
 目标是让剩下的同学尽可能多，也就是需要删除的同学尽可能少。
 
-#### 解题思路
+2. **解题思路**
 
-1. **动态规划（DP）**：
+2.1. **动态规划（DP）**：
 
    - 对于每个位置 `i`，计算以 `i` 为“山峰”的最长合唱队形长度。
    - 这可以分为两部分：
@@ -129,7 +129,7 @@ void (async function () {
    - 合唱队形的长度为 `LIS[i] + LDS[i] - 1`（因为 `i` 被计算了两次）。
    - 最少需要删除的同学数为 `n - max(LIS[i] + LDS[i] - 1)`。
 
-2. **算法步骤**：
+2.2. **算法步骤**：
    - 计算 `LIS` 数组：
      - `LIS[i]` 表示以 `h[i]` 结尾的最长严格递增子序列的长度。
      - 初始化 `LIS[i] = 1`（每个同学至少可以单独构成一个长度为 1 的序列）。
@@ -141,7 +141,7 @@ void (async function () {
    - 遍历所有 `i`，计算 `max_len = max(LIS[i] + LDS[i] - 1)`。
    - 最少删除人数为 `n - max_len`。
 
-#### 代码实现
+3. **代码实现**
 
 ```javascript
 const readline = require("readline");
@@ -195,7 +195,7 @@ function solve() {
 }
 ```
 
-#### 代码解释
+4. **代码解释**
 
 1. **输入处理**：
 
@@ -220,7 +220,7 @@ function solve() {
 6. **输出结果**：
    - 最少删除人数为 `n - max_len`。
 
-#### 示例解析
+5. **示例解析**
 
 **输入**：
 
@@ -237,7 +237,7 @@ function solve() {
 - `max_len = 4`
 - 最少删除人数：`8 - 4 = 4`。
 
-#### 复杂度分析
+6. **复杂度分析**
 
 - **时间复杂度**：O(n²)，因为需要两层循环计算 `LIS` 和 `LDS`。
 - **空间复杂度**：O(n)，用于存储 `LIS` 和 `LDS` 数组。
@@ -372,19 +372,19 @@ function formatStr(s) {
 
 ### [HJ37 统计每个月兔子的总数](https://www.nowcoder.com/practice/1221ec77125d4370833fd3ad5ba72395?tpId=37&tqId=21260&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=) :white_check_mark:
 
-#### 描述
+1. **描述**
 
 有一只兔子，从出生后第 3 个月起每个月都生一只兔子，小兔子长到第三个月后每个月又生一只兔子，假如兔子都不死，问第 n 个月兔子的总数为多少？
 
-#### 输入描述：
+2. **输入描述**
 
 输入 int 型一个 n。
 
-#### 输出描述：
+3. **输出描述**
 
 输出 n 个月后的兔子总数。
 
-#### 示例 1
+4. **示例 1**
 
 输入：
 
@@ -398,7 +398,7 @@ function formatStr(s) {
 3
 ```
 
-#### 解题思路：
+5. **解题思路**
 
 1. 第`i`个月兔子的总数 = 第`i - 1`兔子的总数 + 新出生的兔子数量
 2. `i - 2, i - 1, i`
@@ -406,7 +406,7 @@ function formatStr(s) {
 4. 所以在 `i - 2` 出生的兔子，在第 `i` 个月也会出生兔子
 5. 故 `dp[i] = dp[i - 1] + dp[i - 2];`
 
-#### 代码实现：
+6. **代码实现**
 
 ```js
 const rl = require("readline").createInterface({ input: process.stdin });
@@ -950,3 +950,6 @@ function longestPalindrome(s) {
 ```
 
 5. **代码实现**
+
+### [HJ110 宝石手串](https://www.nowcoder.com/practice/9648c918da794be28575dd121efa1c50?tpId=37&tqId=43248&rp=1&sourceUrl=%2Fexam%2Foj%2Fta%3Fdifficulty%3D2%26judgeStatus%3D3%26page%3D1%26pageSize%3D50%26search%3D%26tpId%3D37%26type%3D37&difficulty=2&judgeStatus=3&tags=&title=) :x:
+
