@@ -104,6 +104,10 @@ export default defineConfig({
             text: '常用技巧',
             link: '/data-structures-and-algorithms/tricks',
           },
+          {
+            text: '常用数据结构封装',
+            link: '/data-structures-and-algorithms/data-structures',
+          }
         ]
       },
       {
