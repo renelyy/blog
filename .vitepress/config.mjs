@@ -97,6 +97,10 @@ export default defineConfig({
             link: '/data-structures-and-algorithms/offer',
           },
           {
+            text: '腾讯精选练习 50 题',
+            link: '/data-structures-and-algorithms/tencent50'
+          },
+          {
             text: '牛客刷题',
             link: '/data-structures-and-algorithms/nowcoder'
           },
