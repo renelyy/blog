@@ -225,3 +225,56 @@ var findKthLargest = function (nums, k) {
 ```
 
 :::
+
+## [15. 三数之和](https://leetcode.cn/problems/3sum/description/) :white_check_mark:
+
+1. **问题描述**
+
+给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i != j、i != k 且 j != k ，同时还满足 nums[i] + nums[j] + nums[k] == 0 。请
+
+你返回所有和为 0 且不重复的三元组。
+注意：答案中不可以包含重复的三元组。
+
+2. **示例 1:**
+
+```
+输入：nums = [-1,0,1,2,-1,-4]
+输出：[[-1,-1,2],[-1,0,1]]
+```
+
+3. **代码实现**
+
+:::code-group
+
+```js [双指针]
+/**
+ * @param {number[]} nums
+ * @return {number[][]}
+ */
+var threeSum = function (nums) {
+  const ans = [];
+  const n = nums.length;
+  nums.sort((a, b) => a - b);
+  for (let i = 0; i < nums.length; i++) {
+    if (i > 0 && nums[i - 1] === nums[i]) continue;
+    let L = i + 1, R = n - 1;
+    while (L < R) {
+      let sum = nums[i] + nums[L] + nums[R];
+      if (sum === 0) {
+        ans.push([nums[i], nums[L], nums[R]]);
+        // 去重
+        while (L < R && nums[L] === nums[L + 1]) L++;
+        while (L < R && nums[R - 1] === nums[R]) R--;
+        L++;
+        R--;
+      }
+      else if (sum < 0) L++;
+      else R--;
+    }
+  }
+
+  return ans;
+};
+```
+
+:::
