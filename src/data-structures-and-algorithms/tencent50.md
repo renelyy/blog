@@ -257,7 +257,8 @@ var threeSum = function (nums) {
   nums.sort((a, b) => a - b);
   for (let i = 0; i < nums.length; i++) {
     if (i > 0 && nums[i - 1] === nums[i]) continue;
-    let L = i + 1, R = n - 1;
+    let L = i + 1,
+      R = n - 1;
     while (L < R) {
       let sum = nums[i] + nums[L] + nums[R];
       if (sum === 0) {
@@ -267,13 +268,67 @@ var threeSum = function (nums) {
         while (L < R && nums[R - 1] === nums[R]) R--;
         L++;
         R--;
-      }
-      else if (sum < 0) L++;
+      } else if (sum < 0) L++;
       else R--;
     }
   }
 
   return ans;
+};
+```
+
+:::
+
+## [124. 二叉树中的最大路径和](https://leetcode.cn/problems/binary-tree-maximum-path-sum/description/) :white_check_mark:
+
+1. **问题描述**
+
+路径 被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。同一个节点在一条路径序列中 至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
+路径和 是路径中各节点值的总和。
+给你一个二叉树的根节点 root ，返回其 最大路径和 。
+
+2. **示例 1:**
+
+```
+输入：root = [1,2,3]
+输出：6
+解释：最优路径是 2 -> 1 -> 3 ，路径和为 2 + 1 + 3 = 6
+```
+
+3. **代码实现**
+
+:::code-group
+
+```js [递归]
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var maxPathSum = function (root) {
+  let maxSum = Number.MIN_SAFE_INTEGER;
+
+  function maxGain(node) {
+    if (node === null) {
+      return 0;
+    }
+
+    // 递归计算左右子节点的最大贡献值
+    // 只有在最大贡献值大于 0 时，才会选取对应子节点
+    const leftGain = Math.max(maxGain(node.left), 0);
+    const rightGain = Math.max(maxGain(node.right), 0);
+
+    // 节点的最大路径和取决于该节点的值与该节点的左右子节点的最大贡献值
+    const priceNewpath = node.val + leftGain + rightGain;
+
+    // 更新答案
+    maxSum = Math.max(maxSum, priceNewpath);
+
+    // 返回节点的最大贡献值
+    return node.val + Math.max(leftGain, rightGain);
+  }
+
+  maxGain(root);
+  return maxSum;
 };
 ```
 
