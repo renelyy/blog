@@ -113,3 +113,78 @@ const formatDate = (date, format = "YYYY-MM-DD HH:mm:ss") => {
 ```
 
 :::
+
+## 解析 Url 为参数对象
+
+::: code-group
+
+```js [正则-match]
+function parseUrl(url) {
+  const params = {};
+  const reg = /([^?&=]+)=([^?&=]*)/g;
+  const match = url.match(reg);
+  if (match) {
+    match.forEach(item => {
+      const [key, value] = item.split("=");
+      params[key] = decodeURIComponent(value);
+    });
+  }
+  return params;
+}
+```
+
+```js [正则-exec]
+function parseUrl(url) {
+  const params = {};
+  const reg = /([^?&=]+)=([^?&=]*)/g;
+  let match;
+  while ((match = reg.exec(url))) {
+    const [key, value] = match[0].split("=");
+    params[key] = decodeURIComponent(value);
+  }
+  return params;
+}
+```
+
+```js [URLSearchParams]
+function parseUrl(url) {
+  const params = new URLSearchParams(url.split("?")[1]);
+  const res = {};
+  for (const [key, value] of params.entries()) {
+    res[key] = value;
+  }
+  return res;
+}
+```
+
+```js [exec split]
+function parseParam(url) {
+  const paramsStr = /.+\?(.+)$/.exec(url)[1] // 将 ? 后面的字符串取出来
+  const paramsArr = paramsStr.split("&") // 将字符串以 & 分割后存到数组中
+  let paramsObj = {}
+  // 将 params 存到对象中
+  paramsArr.forEach(param => {
+    if (/=/.test(param)) {
+      // 处理有 value 的参数
+      let [key, val] = param.split("=") // 分割 key 和 value
+      val = decodeURIComponent(val) // 解码
+      val = /^\d+$/.test(val) ? parseFloat(val) : val // 判断是否转为数字
+
+      if (paramsObj.hasOwnProperty(key)) {
+        // 如果对象有 key，则添加一个值
+        paramsObj[key] = [].concat(paramsObj[key], val)
+      } else {
+        // 如果对象没有这个 key，创建 key 并设置值
+        paramsObj[key] = val
+      }
+    } else {
+      // 处理没有 value 的参数
+      paramsObj[param] = true
+    }
+  })
+
+  return paramsObj
+} 
+```
+
+:::

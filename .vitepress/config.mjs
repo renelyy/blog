@@ -142,6 +142,10 @@ export default defineConfig({
         text: 'Git',
         link: '/git'
       },
+      {
+        text: '正则',
+        link: '/regex'
+      },
       // {
       //   text: '读书笔记',
       //   items: [
