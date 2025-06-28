@@ -101,6 +101,10 @@ export default defineConfig({
             link: '/data-structures-and-algorithms/tencent50'
           },
           {
+            text: 'LeetCode 精选 TOP 面试题',
+            link: '/data-structures-and-algorithms/leetcode-top'
+          },
+          {
             text: '牛客刷题',
             link: '/data-structures-and-algorithms/nowcoder'
           },
