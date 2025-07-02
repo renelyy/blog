@@ -187,6 +187,7 @@ function getPrimeFactors(n) {
 ```
 
 ## 求最大公约数
+
 ```js [求最大公约数]
 // 思路：使用辗转相除法，即用较大数除以较小数，然后用余数替换较大数，继续除以较小数，直到余数为 0 为止。
 // 最后的除数即为最大公约数。
@@ -208,6 +209,7 @@ function lcm(a, b) {
 ```
 
 ## 进制转换
+
 ```js [进制转换]
 // toString 可以将数字转换为指定进制的字符串
 // 例如：n.toString(2) 将数字 n 转换为二进制字符串
@@ -246,3 +248,31 @@ function hexToDecimal(n) {
   return parseInt(n, 16);
 }
 ```
+
+## 快速幂
+
+:::code-group
+
+```js [递归法]
+function quickPow(x, n) {
+  if (n === 0) return 1;
+  let y = quickPow(x, n >>> 1);
+  return n % 2 === 0 ? y * y : y * y * x;
+}
+```
+
+```js [迭代法]
+function quickPow(x, n) {
+  let ans = 1;
+  while (n > 0) {
+    if (n % 2 === 1) {
+      ans *= x;
+    }
+    x *= x;
+    n >>>= 1;
+  }
+  return ans;
+}
+```
+
+:::
