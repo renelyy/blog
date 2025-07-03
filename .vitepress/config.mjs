@@ -338,6 +338,15 @@ export default defineConfig({
             ]
           },
         ]
+      },
+      {
+        text: '面向开发者的 Web 技术',
+        items: [
+          {
+            text: 'Web API',
+            link: '/web/web-api'
+          }
+        ]
       }
     ],
 
