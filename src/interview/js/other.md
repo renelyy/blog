@@ -159,32 +159,77 @@ function parseUrl(url) {
 
 ```js [exec split]
 function parseParam(url) {
-  const paramsStr = /.+\?(.+)$/.exec(url)[1] // 将 ? 后面的字符串取出来
-  const paramsArr = paramsStr.split("&") // 将字符串以 & 分割后存到数组中
-  let paramsObj = {}
+  const paramsStr = /.+\?(.+)$/.exec(url)[1]; // 将 ? 后面的字符串取出来
+  const paramsArr = paramsStr.split("&"); // 将字符串以 & 分割后存到数组中
+  let paramsObj = {};
   // 将 params 存到对象中
   paramsArr.forEach(param => {
     if (/=/.test(param)) {
       // 处理有 value 的参数
-      let [key, val] = param.split("=") // 分割 key 和 value
-      val = decodeURIComponent(val) // 解码
-      val = /^\d+$/.test(val) ? parseFloat(val) : val // 判断是否转为数字
+      let [key, val] = param.split("="); // 分割 key 和 value
+      val = decodeURIComponent(val); // 解码
+      val = /^\d+$/.test(val) ? parseFloat(val) : val; // 判断是否转为数字
 
       if (paramsObj.hasOwnProperty(key)) {
         // 如果对象有 key，则添加一个值
-        paramsObj[key] = [].concat(paramsObj[key], val)
+        paramsObj[key] = [].concat(paramsObj[key], val);
       } else {
         // 如果对象没有这个 key，创建 key 并设置值
-        paramsObj[key] = val
+        paramsObj[key] = val;
       }
     } else {
       // 处理没有 value 的参数
-      paramsObj[param] = true
+      paramsObj[param] = true;
     }
-  })
+  });
 
-  return paramsObj
-} 
+  return paramsObj;
+}
 ```
 
 :::
+
+## 写一个 createCancelFn
+
+```js
+const NOOP = () => {};
+
+/**
+ * 创建一个取消函数
+ * 
+ * @param {Function} fn 需要执行的函数
+ * @returns {Object} 包含 cancel 和 run 方法的对象
+ * 
+ * 核心功能：
+ * 1. 可取消的异步操作：允许在执行过程中取消正在进行的异步操作
+ * 2. 防止竞态条件：确保最新的调用会取消之前的未完成调用
+ * 
+ * 注意事项：
+ * 1. 取消操作不会实际中止网络请求，只是忽略它的结果
+ * 2. 如果需要真正中止请求，应该使用 AbortController 配合此函数
+ */
+function createCancelFn(fn) {
+  let cancel = NOOP; // 初始化为空操作
+
+  return {
+    // 取消方法
+    cancel: () => cancel(),
+
+    // 执行方法
+    run: (...args) => {
+      return new Promise((resolve, reject) => {
+        cancel(); // 取消之前的调用
+
+        // 设置新的取消函数
+        cancel = () => (resolve = reject = NOOP);
+
+        // 执行实际函数
+        fn(...args).then(
+          res => resolve(res),
+          err => reject(err)
+        );
+      });
+    }
+  };
+}
+```
