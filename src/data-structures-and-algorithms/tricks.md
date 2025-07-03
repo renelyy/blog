@@ -279,54 +279,84 @@ function quickPow(x, n) {
 
 ## 快速选择算法
 
-快速选择算法是一种用于在未排序列表中找到第k小（或第k大）元素的高效算法。它是快速排序算法的一个变种，通过不断缩小搜索范围来找到目标元素。
+快速选择算法是一种用于在未排序列表中找到第 k 小（或第 k 大）元素的高效算法。它是快速排序算法的一个变种，通过不断缩小搜索范围来找到目标元素。
 
 ```js [快速选择算法]
 /**
- * 快速选择算法：用于在无序数组中找到第 k 大的元素
+ *交换数组中两个元素的位置
+ * @param {Array} arr
+ * @param {Number} i
+ * @param {Number} j
+ * @returns {void}
  */
-var findKthLargest = function (nums, k) {
-  function swap(arr, i, j) {
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
+function swap(arr, i, j) {
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+}
 
-  /**
-   * 分区函数：将比基准大的放在左边，小的放在右边
-   * 
-   * @return 基准的最终位置
-   */
-  function partition(left, right, pivotIndex) {
-    const pivotValue = nums[pivotIndex];
-    swap(nums, pivotIndex, right); // 将 pivot 移到最右边
-    let storeIndex = left;
-
-    for (let i = left; i < right; i++) {
-      if (nums[i] > pivotValue) {
-        // 注意这里是找第 k 大，所以用 >
-        swap(nums, storeIndex, i);
-        storeIndex++;
-      }
-    }
-    swap(nums, storeIndex, right); // 将 pivot 放回正确位置
-    return storeIndex;
-  }
-
-  function quickSelect(left, right, kLargest) {
-    if (left === right) return nums[left];
-
-    // 随机选择 pivot 以避免最坏情况
-    let pivotIndex = left + Math.floor(Math.random() * (right - left + 1));
-    pivotIndex = partition(left, right, pivotIndex);
-
-    if (kLargest === pivotIndex) {
-      return nums[kLargest];
-    } else if (kLargest < pivotIndex) {
-      return quickSelect(left, pivotIndex - 1, kLargest);
-    } else {
-      return quickSelect(pivotIndex + 1, right, kLargest);
+/**
+ * 根据基准索引，将数组分为两部分，左边小于基准数，右边大于基准数
+ * 返回基准数最终所在的位置
+ * @param {Array} arr
+ * @param {Number} left
+ * @param {Number} right
+ * @param {Number} pivotIndex
+ * @return {Number} 基准数最终所在的位置
+ */
+function partition(arr, left, right, pivotIndex, compareFn) {
+  const pivot = arr[pivotIndex];
+  swap(arr, pivotIndex, right);
+  let storeIndex = left;
+  for (let i = left; i < right; i++) {
+    if (compareFn(arr[i], pivot) < 0) {
+      swap(arr, i, storeIndex);
+      storeIndex++;
     }
   }
+  swap(arr, right, storeIndex);
+  return storeIndex;
+}
 
-  return quickSelect(0, nums.length - 1, k - 1);
-};
+/**
+ * 快速选择算法
+ * @param {Array} arr
+ * @param {Number} left
+ * @param {Number} right
+ * @param {Number} k
+ * @param {Function} compareFn 比较函数 默认从小到大排序
+ * @return {Number}
+ */
+function quickSelect(arr, left, right, k, compareFn = (a, b) => a - b) {
+  if (left === right) return arr[left];
+  // 随机选择 pivot 以避免最坏情况
+  let pivotIndex = Math.floor(Math.random() * (right - left + 1)) + left;
+  pivotIndex = partition(arr, left, right, pivotIndex, compareFn);
+  if (k === pivotIndex) return arr[k];
+  else if (k < pivotIndex) return quickSelect(arr, left, pivotIndex - 1, k, compareFn);
+  else return quickSelect(arr, pivotIndex + 1, right, k, compareFn);
+}
+
+/**
+ * 无序数组中找第 K 大的元素
+ * @param {Array} nums
+ * @param {Number} k
+ * @return {Number}
+ */
+function findKthLargest(nums, k) {
+  const n = nums.length;
+  return quickSelect(nums, 0, n - 1, k - 1, (a, b) => b - a);
+}
+
+/**
+ * 无序数组中找第 K 小的元素
+ * @param {Array} nums
+ * @param {Number} k
+ * @return {Number}
+ */
+function findKthSmallest(nums, k) {
+  const n = nums.length;
+  return quickSelect(nums, 0, n - 1, k - 1);
+}
+
+console.log(findKthSmallest([3, 2, 1, 5, 6, 4], 2)); // 2
+console.log(findKthLargest([3, 2, 1, 5, 6, 4], 2)); // 5
 ```
