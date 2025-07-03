@@ -62,7 +62,8 @@ var missingNumber = function (nums) {
   // a ^ 0 = a
   // a ^ b ^ a = b // 交换律
   // [3, 0, 1] => 3 ^ 0 ^ 1 ^ 0 ^ 1 ^ 2 ^ 3 = 2
-  let ans = 0, n = nums.length;
+  let ans = 0,
+    n = nums.length;
   for (let i = 0; i < n; i++) {
     ans ^= i ^ nums[i];
   }
@@ -71,3 +72,73 @@ var missingNumber = function (nums) {
 ```
 
 ：：：
+
+## [79. 单词搜索](https://leetcode-cn.com/problems/word-search/) :white_check_mark:
+
+1. **题目描述**
+   给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+
+2. **示例**
+
+```js
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+输出：true
+```
+
+3. **解题思路**
+
+遍历二维数组，找到与单词第一个字符相同的字符，然后进行回溯，判断是否能够找到单词。
+
+4. **代码实现**
+
+```js
+var exist = function (board, word) {
+  const m = board.length;
+  const n = board[0].length;
+  const directions = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0]
+  ];
+  const visited = new Array(m).fill(0).map(() => new Array(n).fill(0));
+
+  /**
+   * @description: 检查从 (i, j) 开始，能否找到单词 word[k..]
+   */
+  const check = (i, j, k) => {
+    if (board[i][j] !== word[k]) return false;
+    if (k === word.length - 1) return true;
+
+    visited[i][j] = 1;
+    let ans = false;
+    for (const [dx, dy] of directions) {
+      const newi = i + dx,
+        newj = j + dy;
+      if (
+        newi >= 0 &&
+        newi < m &&
+        newj >= 0 &&
+        newj < n &&
+        !visited[newi][newj]
+      ) {
+        if (check(newi, newj, k + 1)) {
+          ans = true;
+          break;
+        }
+      }
+    }
+    visited[i][j] = 0;
+    return ans;
+  };
+
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      if (check(i, j, 0)) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+```
