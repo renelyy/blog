@@ -191,19 +191,21 @@ function parseParam(url) {
 
 ## 写一个 createCancelFn
 
-```js
+:::code-group
+
+```js [基础]
 const NOOP = () => {};
 
 /**
  * 创建一个取消函数
- * 
+ *
  * @param {Function} fn 需要执行的函数
  * @returns {Object} 包含 cancel 和 run 方法的对象
- * 
+ *
  * 核心功能：
  * 1. 可取消的异步操作：允许在执行过程中取消正在进行的异步操作
  * 2. 防止竞态条件：确保最新的调用会取消之前的未完成调用
- * 
+ *
  * 注意事项：
  * 1. 取消操作不会实际中止网络请求，只是忽略它的结果
  * 2. 如果需要真正中止请求，应该使用 AbortController 配合此函数
@@ -233,3 +235,46 @@ function createCancelFn(fn) {
   };
 }
 ```
+
+```js [改进版本（支持真正取消）]
+function createCancelFn(fn) {
+  let abortController = null;
+  let cancel = () => {};
+
+  return {
+    cancel: () => cancel();,
+    run(...args) {
+      cancel(); // 取消之前的请求
+      cancel = () => {
+        if (abortController) {
+          abortController.abort();
+          abortController = null;
+        }
+      };
+      abortController = new AbortController();
+      const signal = abortController.signal;
+
+      return new Promise((resolve, reject) => {
+        // 监听中止事件
+        signal.addEventListener("abort", () => {
+          console.log("监听到了中止事件...");
+          reject(new DOMException("Aborted", "AbortError"));
+        });
+
+        // 正确传递参数
+        fn(...args, { signal })
+          .then(resolve)
+          .catch(err => {
+            // 只有非中止错误才打印日志
+            if (err.name !== "AbortError") {
+              console.error("请求失败:", err);
+            }
+            reject(err);
+          });
+      });
+    }
+  };
+}
+```
+
+:::
