@@ -71,7 +71,7 @@ var missingNumber = function (nums) {
 };
 ```
 
-：：：
+:::
 
 ## [79. 单词搜索](https://leetcode-cn.com/problems/word-search/) :white_check_mark:
 
