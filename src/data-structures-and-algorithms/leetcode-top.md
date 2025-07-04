@@ -142,3 +142,169 @@ var exist = function (board, word) {
   return false;
 };
 ```
+
+## [91. 解码方法](https://leetcode-cn.com/problems/decode-ways/) :white_check_mark:
+
+1. **题目描述**
+   一条包含字母 A-Z 的消息通过以下映射进行了编码：
+
+   'A' -> 1
+   'B' -> 2
+   ...
+   'Z' -> 26
+
+   给定一个只包含数字的非空字符串，请计算解码方法的总数。
+   题目数据保证答案肯定是一个 32 位的整数。
+
+2. **示例**
+
+```js
+输入：s = "226"
+输出：3
+解释：它可以解码为 "BZ" (2 26), "VF" (22 6), 或者 "BBF" (2 2 6) 。
+```
+
+3. **解题思路**
+
+- 方法一：动态规划
+- 方法二：动态规划优化
+
+4. **代码实现**
+
+:::code-group
+
+```js [leetcode 官解]
+var numDecodings = function (s) {
+  const n = s.length;
+  const f = new Array(n + 1).fill(0);
+  f[0] = 1;
+  for (let i = 1; i <= n; ++i) {
+    if (s[i - 1] !== "0") {
+      f[i] += f[i - 1];
+    }
+    if (i > 1 && s[i - 2] != "0" && (s[i - 2] - "0") * 10 + (s[i - 1] - "0") <= 26) {
+      f[i] += f[i - 2];
+    }
+  }
+  return f[n];
+};
+```
+
+```js [方法一：动态规划]
+var numDecodings = function (s) {
+  const n = s.length;
+  const dp = new Array(n + 1).fill(0);
+  // 假设空串有一种解码方法
+  dp[0] = 1;
+  for (let i = 1; i <= n; i++) {
+    // 可以独立编码
+    if (s[i - 1] !== "0") dp[i] += dp[i - 1];
+
+    // 可以和前一个字符组合编码
+    const num = parseInt(s.slice(i - 2, i));
+    if (num >= 10 && num <= 26) {
+      dp[i] += dp[i - 2];
+    }
+  }
+  return dp[n];
+};
+```
+
+```js [方法二：动态规划优化]
+var numDecodings = function (s) {
+  const n = s.length;
+  const dp = new Array(3).fill(0);
+  dp[0] = 1;
+  for (let i = 1; i <= n; i++) {
+    dp[i % 3] = 0;
+    if (s[i - 1] !== "0") {
+      dp[i % 3] += dp[(i - 1) % 3];
+    }
+    const num = parseInt(s.slice(i - 2, i));
+    if (num >= 10 && num <= 26) {
+      dp[i % 3] += dp[(i - 2) % 3];
+    }
+  }
+  return dp[n % 3];
+};
+```
+
+```js [滚动数组的另一个写法]
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var numDecodings = function(s) {
+  if (s.length === 0 || s[0] == '0') return 0;
+
+  // 滚动数组优化
+  const n = s.length;
+  const dp = new Array(3).fill(0);
+  dp[0] = 1;
+  dp[1] = 1;
+  for (let i = 2; i <= n; i++) {
+    // 这里一定要重置状态
+    // 思考：为什么一定要重置状态？
+    // 其实很简单，因为每次都在 +=
+    // dp[i] 的结果为可以独立编码的总数 + 可以和前一个字符组合编码的总数
+    dp[i % 3] = 0; 
+    if (s[i - 1] !== "0") dp[i % 3] += dp[(i - 1) % 3];
+
+    if (s[i - 2] !== "0" && parseInt(s.slice(i - 2, i)) <= 26) {
+      dp[i % 3] += dp[(i - 2) % 3];
+    }
+  }
+  return dp[n % 3]
+};
+```
+
+:::
+
+::: tip
+引入空串的解码方式（即 dp[0] = 1）是为了在动态规划的递推过程中能够正确处理前两个字符的解码情况。具体来说，当处理到字符串的前两个字符时，可能需要用到 dp[i-2]的值，此时 i-2 可能为 0，即空串的情况。如果没有初始化 dp[0]，递推时可能会出现错误。
+:::
+
+不使用空串的解码方式，处理方式会更麻烦，需要考虑更多的边界情况。
+
+```js [不使用空串的解码方式]
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var numDecodings = function (s) {
+  // dp[i] 表示前 i 字符的编码总数
+  //      1) s[i] 可以独立编码 dp[i] = dp[i - 1]
+  //      2) s[i] 不能独立编码 dp[i] = dp[i - 2]
+  if (s.length === 1) {
+    if (s[0] === "0") return 0;
+    else return 1;
+  }
+
+  // 前导为 0，无法编码
+  if (s[0] === "0") return 0;
+
+  const n = s.length;
+  const dp = new Array(n).fill(0);
+  dp[0] = 1;
+  for (let i = 1; i < n; i++) {
+    // 可以独立编码
+    if (s[i] !== "0") dp[i] += dp[i - 1];
+
+    // 可以和前一个字符组合编码
+    const num = parseInt(s.slice(i - 1, i + 1));
+    if (num >= 10 && num <= 26) {
+      // 这里为什么要判断 i - 2 >= 0 呢？
+      // 因为 dp[i - 2] 表示前 i - 2 字符的编码总数
+      // 如果 i - 2 < 0，则 dp[i - 2] 不存在
+      // 而和前一个字符可以组合编码，本身就是一种编码方式，如 12
+      // dp[0] = 1; dp[1] = 2(1 1)(11)
+      // 但 dp[i - 2] = undefined 不存在，所以需要判断 i - 2 >= 0
+      dp[i] += dp[i - 2] || 1;
+    }
+
+    // 优化：如果有无法编码的情况，直接返回 0
+    if (dp[i] === 0) return 0;
+  }
+  return dp[n - 1];
+};
+```
