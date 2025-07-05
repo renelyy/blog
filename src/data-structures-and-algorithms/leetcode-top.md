@@ -182,7 +182,11 @@ var numDecodings = function (s) {
     if (s[i - 1] !== "0") {
       f[i] += f[i - 1];
     }
-    if (i > 1 && s[i - 2] != "0" && (s[i - 2] - "0") * 10 + (s[i - 1] - "0") <= 26) {
+    if (
+      i > 1 &&
+      s[i - 2] != "0" &&
+      (s[i - 2] - "0") * 10 + (s[i - 1] - "0") <= 26
+    ) {
       f[i] += f[i - 2];
     }
   }
@@ -234,8 +238,8 @@ var numDecodings = function (s) {
  * @param {string} s
  * @return {number}
  */
-var numDecodings = function(s) {
-  if (s.length === 0 || s[0] == '0') return 0;
+var numDecodings = function (s) {
+  if (s.length === 0 || s[0] == "0") return 0;
 
   // 滚动数组优化
   const n = s.length;
@@ -247,14 +251,14 @@ var numDecodings = function(s) {
     // 思考：为什么一定要重置状态？
     // 其实很简单，因为每次都在 +=
     // dp[i] 的结果为可以独立编码的总数 + 可以和前一个字符组合编码的总数
-    dp[i % 3] = 0; 
+    dp[i % 3] = 0;
     if (s[i - 1] !== "0") dp[i % 3] += dp[(i - 1) % 3];
 
     if (s[i - 2] !== "0" && parseInt(s.slice(i - 2, i)) <= 26) {
       dp[i % 3] += dp[(i - 2) % 3];
     }
   }
-  return dp[n % 3]
+  return dp[n % 3];
 };
 ```
 
@@ -306,5 +310,39 @@ var numDecodings = function (s) {
     if (dp[i] === 0) return 0;
   }
   return dp[n - 1];
+};
+```
+
+## [128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/) :white_check_mark:
+
+```js
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var longestConsecutive = function (nums) {
+  // 去重
+  const set = new Set(nums);
+  let max = 0;
+
+  for (const num of set) {
+    // 如果当前数字的前一个数字存在，则跳过，因为前一个数字已经计算过
+    // 换句话说就是，当前数字不是连续序列的起点，则跳过
+    if (set.has(num - 1)) continue;
+
+    let currentNum = num;
+    let currentLength = 1;
+
+    // 向后遍历，计算当前数字的连续序列长度
+    while (set.has(currentNum + 1)) {
+      currentNum++;
+      currentLength++;
+    }
+
+    // 更新最大长度
+    max = Math.max(max, currentLength);
+  }
+
+  return max;
 };
 ```
