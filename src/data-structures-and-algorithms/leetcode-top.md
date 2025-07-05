@@ -313,6 +313,101 @@ var numDecodings = function (s) {
 };
 ```
 
+## [75. 颜色分类](https://leetcode-cn.com/problems/sort-colors/) :white_check_mark:
+
+::: code-group
+
+```js [单指针]
+// 思路：单指针，两次遍历数组
+// 第一次将所有 0 放到数组前面
+// 第二次将所有 1 放到 0 后面
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var sortColors = function (nums) {
+  let index = 0;
+  // 将所有 0 放到数组前面
+  for (let i = 0; i < nums.length; i++) {
+    if (nums[i] === 0) {
+      [nums[i], nums[index]] = [nums[index], nums[i]];
+      index++;
+    }
+  }
+  // 将所有 2 放到数组后面
+  for (let i = index; i < nums.length; i++) {
+    if (nums[i] === 1) {
+      [nums[i], nums[index]] = [nums[index], nums[i]];
+      index++;
+    }
+  }
+};
+```
+
+```js [双指针 处理 0 和 2]
+// 思路：双指针，一次遍历数组
+// 定义两个指针，一个指向 0 的位置，一个指向 2 的位置
+// 遍历数组，如果遇到 0，则将其放到 0 指针的位置，0 指针后移
+// 如果遇到 2，则将其放到 2 指针的位置，2 指针前移
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var sortColors = function (nums) {
+  let p0 = 0;
+  let p2 = nums.length - 1;
+  for (let i = 0; i <= p2; i++) {
+    if (nums[i] === 0) {
+      [nums[i], nums[p0]] = [nums[p0], nums[i]];
+      p0++;
+    } else if (nums[i] === 2) {
+      [nums[i], nums[p2]] = [nums[p2], nums[i]];
+      p2--;
+      i--;
+    }
+  }
+};
+```
+
+```js [双指针 处理 0 和 1]
+// 思路：双指针，一次遍历数组
+// 定义两个指针，一个指向 0 的位置，一个指向 1 的位置
+// 遍历数组，如果遇到 0，则将其放到 0 指针的位置，0 指针后移
+// 如果遇到 1，则将其放到 1 指针的位置，1 指针后移
+/**
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ */
+var sortColors = function (nums) {
+  let p0 = 0;
+  let p1 = 0;
+  for (let i = 0; i < nums.length; i++) {
+    if (nums[i] === 0) {
+      [nums[i], nums[p0]] = [nums[p0], nums[i]];
+      // 这里为什么要这么处理？
+      // p0 < p1 p0 和 p1 没有重合，所以此时交换时将 1 给交换了出去
+      // 因此需要将交换出去的 1 在位置 i 要换到 p1 位置，然后 p1 后移
+      // 举例：
+      // 0   1   1   2   2   0
+      //    p0      p1       i
+      // 此时遍历到 i 的位置，将 0 和 p0 交换，把 1 给交换出去了
+      // 所以需要将 i 的位置和 p1 交换，把 1 换回来，然后 p1 后移
+      if (p0 < p1) {
+        [nums[i], nums[p1]] = [nums[p1], nums[i]];
+      }
+      // 因为 1 在 0 的后面，所以 0 指针和 1 指针都要后移
+      p0++;
+      p1++;
+    } else if (nums[i] === 1) {
+      [nums[i], nums[p1]] = [nums[p1], nums[i]];
+      p1++;
+    }
+  }
+};
+```
+
+:::
+
 ## [128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/) :white_check_mark:
 
 ```js
