@@ -441,3 +441,210 @@ var longestConsecutive = function (nums) {
   return max;
 };
 ```
+
+## [130. 被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/) :white_check_mark:
+
+:::code-group
+
+```js [深度优先搜索]
+/**
+ * @param {character[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+var solve = function (board) {
+  // 被 X 包围的 O 要修改为 X
+  // 位于边缘的 O 不会被修改为 X
+  // 判断包围不好判断，但是判断哪些位于边缘好判断
+  // 即位于边缘或者直接或间接的和边缘连接
+  // 第一次遍历：对于每一个位于边缘的节点 O 开始遍历，将其连接的节点标记为 F
+  // 第二次遍历：所有没被标记的 O 要变为 X，而所有标记为 F 的要还原回 O
+  const m = board.length,
+    n = board[0].length;
+  output(board);
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      // 非边缘节点且不是 O 直接跳过
+      if (i > 0 && i < m - 1 && j > 0 && j < n - 1) continue;
+      if (board[i][j] === "X") continue;
+      dfs(board, i, j);
+    }
+  }
+  output(board);
+
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      if (board[i][j] === "X") continue;
+      // 骚操作
+      board[i][j] = String.fromCharCode(board[i][j].charCodeAt() + 9);
+      // if (board[i][j] === 'O') board[i][j] = 'X';
+      // if (board[i][j] === 'F') board[i][j] = 'O'
+    }
+  }
+};
+
+// 从 (i, j) 开始深度优先搜索，标记和边缘连通的节点为 F
+function dfs(board, i, j) {
+  const m = board.length,
+    n = board[0].length;
+  const directions = [
+    [-1, 0],
+    [1, 0],
+    [0, 1],
+    [0, -1]
+  ];
+  board[i][j] = "F";
+  directions.forEach(([di, dj]) => {
+    let ni = i + di,
+      nj = j + dj;
+    if (
+      ni >= 0 &&
+      ni < m &&
+      nj >= 0 &&
+      nj < n &&
+      board[ni][nj] !== "F" &&
+      board[ni][nj] === "O"
+    ) {
+      dfs(board, ni, nj);
+    }
+  });
+}
+
+function output(arr) {
+  console.log("----------- start output arr --------------");
+  arr.forEach(row => console.log(row.join("\t")));
+}
+```
+
+```js [广度优先搜索]
+/**
+ * @param {character[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+var solve = function (board) {
+  // 被 X 包围的 O 要修改为 X
+  // 位于边缘的 O 不会被修改为 X
+  // 判断包围不好判断，但是判断哪些位于边缘好判断
+  // 即位于边缘或者直接或间接的和边缘连接
+  // 第一次遍历：对于每一个位于边缘的节点 O 开始遍历，将其连接的节点标记为 F
+  // 第二次遍历：所有没被标记的 O 要变为 X，而所有标记为 F 的要还原回 O
+  const m = board.length,
+    n = board[0].length;
+  output(board);
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      // 非边缘节点且不是 O 直接跳过
+      if (i > 0 && i < m - 1 && j > 0 && j < n - 1) continue;
+      if (board[i][j] === "X") continue;
+      bfs(board, i, j);
+    }
+  }
+  output(board);
+
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      if (board[i][j] === "X") continue;
+      // 骚操作
+      board[i][j] = String.fromCharCode(board[i][j].charCodeAt() + 9);
+      // if (board[i][j] === 'O') board[i][j] = 'X';
+      // if (board[i][j] === 'F') board[i][j] = 'O'
+    }
+  }
+};
+
+// 从 (i, j) 开始广度优先所有，标记和边缘连通的节点为 F
+function bfs(board, i, j) {
+  const m = board.length,
+    n = board[0].length;
+  const directions = [
+    [-1, 0],
+    [1, 0],
+    [0, 1],
+    [0, -1]
+  ];
+  board[i][j] = "F";
+  const queue = [[i, j]];
+  while (queue.length) {
+    // 取出队头
+    const [i, j] = queue.shift();
+    // 遍历四个方向
+    directions.forEach(([di, dj]) => {
+      let ni = i + di,
+        nj = j + dj;
+      if (ni >= 0 && ni < m && nj >= 0 && nj < n && board[ni][nj] === "O") {
+        board[ni][nj] = "F";
+        queue.push([ni, nj]);
+      }
+    });
+  }
+}
+
+function output(arr) {
+  console.log("----------- start output arr --------------");
+  arr.forEach(row => console.log(row.join("\t")));
+}
+```
+
+```js [并查集]
+// 并查集
+class UnionFind {
+  constructor(n) {
+    this.parent = new Array(n).fill(0).map((_, i) => i);
+    this.rank = new Array(n).fill(1);
+  }
+  find(x) {
+    if (this.parent[x] !== x) {
+      this.parent[x] = this.find(this.parent[x]);
+    }
+    return this.parent[x];
+  }
+  union(x, y) {
+    const rootX = this.find(x),
+      rootY = this.find(y);
+    if (rootX === rootY) return;
+    if (this.rank[rootX] < this.rank[rootY]) {
+      this.parent[rootX] = rootY;
+    } else if (this.rank[rootX] > this.rank[rootY]) {
+      this.parent[rootY] = rootX;
+    } else {
+      this.parent[rootY] = rootX;
+      this.rank[rootX]++;
+    }
+  }
+  connected(x, y) {
+    return this.find(x) === this.find(y);
+  }
+}
+
+function solve(board) {
+  const m = board.length,
+    n = board[0].length;
+  if (m < 3 || n < 3) return;
+  const uf = new UnionFind(m * n + 1);
+  const dummy = m * n;
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      if (board[i][j] === "O") {
+        if (i === 0 || i === m - 1 || j === 0 || j === n - 1) {
+          uf.union(dummy, i * n + j);
+        } else {
+          if (board[i - 1][j] === "O") uf.union(i * n + j, (i - 1) * n + j);
+          if (board[i + 1][j] === "O") uf.union(i * n + j, (i + 1) * n + j);
+          if (board[i][j - 1] === "O") uf.union(i * n + j, i * n + j - 1);
+          if (board[i][j + 1] === "O") uf.union(i * n + j, i * n + j + 1);
+        }
+      }
+    }
+  }
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      if (uf.connected(dummy, i * n + j)) {
+        board[i][j] = "O";
+      } else {
+        board[i][j] = "X";
+      }
+    }
+  }
+}
+```
+
+:::
