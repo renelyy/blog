@@ -129,3 +129,127 @@ class MinHeap {
 ```
 
 :::
+
+## 并查集
+
+::: code-group
+
+```js [染色法 QuickFind]
+class QuickFind {
+  constructor(n) {
+    this.colors = new Array(n).fill(0).map((_, i) => i);
+  }
+
+  find(x) {
+    return this.colors[x];
+  }
+
+  union(x, y) {
+    const xColor = this.find(x);
+    const yColor = this.find(y);
+
+    if (xColor === yColor) return;
+
+    for (let i = 0; i < this.colors.length; i++) {
+      if (this.colors[i] === xColor) {
+        this.colors[i] = yColor;
+      }
+    }
+  }
+
+  connected(x, y) {
+    return this.find(x) === this.find(y);
+  }
+}
+```
+
+```js [QuickUnion]
+class QuickUnion {
+  constructor(n) {
+    this.parents = new Array(n).fill(0).map((_, i) => i);
+  }
+
+  find(x) {
+    if (this.parents[x] !== x) {
+      this.parents[x] = this.find(this.parents[x]);
+    }
+    return this.parents[x];
+  }
+
+  union(x, y) {
+    const xRoot = this.find(x);
+    const yRoot = this.find(y);
+
+    if (xRoot === yRoot) return;
+
+    this.parents[xRoot] = yRoot;
+  }
+
+  connected(x, y) {
+    return this.find(x) === this.find(y);
+  }
+}
+```
+
+```js [路径压缩 QuickUnion]
+class UnionFind {
+  constructor(n) {
+    this.parents = new Array(n).fill(0).map((_, i) => i);
+  }
+
+  find(x) {
+    if (this.parents[x] !== x) {
+      this.parents[x] = this.find(this.parents[x]);
+    }
+    return this.parents[x];
+  }
+
+  union(x, y) {
+    const xRoot = this.find(x);
+    const yRoot = this.find(y);
+
+    if (xRoot === yRoot) return;
+
+    this.parents[xRoot] = yRoot;
+  }
+
+  connected(x, y) {
+    return this.find(x) === this.find(y);
+  }
+}
+```
+
+```js [带权(按秩优化) + 路径压缩 QuickUnion]
+class UnionFind {
+  constructor(n) {
+    this.parent = Array.from({ length: n }, (_, i) => i);
+    // 按秩优化
+    this.rank = Array(n).fill(1);
+  }
+
+  find(x) {
+    if (this.parent[x] === x) return x;
+    // path compression 路径压缩
+    return (this.parent[x] = this.find(this.parent[x]));
+  }
+
+  union(x, y) {
+    const px = this.find(x);
+    const py = this.find(y);
+    if (px === py) return;
+    if (this.rank[px] < this.rank[py]) {
+      this.parent[px] = py;
+      this.rank[py] += this.rank[px];
+    } else {
+      this.parent[py] = px;
+      this.rank[px] += this.rank[py];
+    }
+  }
+
+  connected(x, y) {
+    return this.find(x) === this.find(y);
+  }
+}
+```
+
+:::
