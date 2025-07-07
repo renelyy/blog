@@ -331,7 +331,8 @@ function quickSelect(arr, left, right, k, compareFn = (a, b) => a - b) {
   let pivotIndex = Math.floor(Math.random() * (right - left + 1)) + left;
   pivotIndex = partition(arr, left, right, pivotIndex, compareFn);
   if (k === pivotIndex) return arr[k];
-  else if (k < pivotIndex) return quickSelect(arr, left, pivotIndex - 1, k, compareFn);
+  else if (k < pivotIndex)
+    return quickSelect(arr, left, pivotIndex - 1, k, compareFn);
   else return quickSelect(arr, pivotIndex + 1, right, k, compareFn);
 }
 
@@ -359,4 +360,29 @@ function findKthSmallest(nums, k) {
 
 console.log(findKthSmallest([3, 2, 1, 5, 6, 4], 2)); // 2
 console.log(findKthLargest([3, 2, 1, 5, 6, 4], 2)); // 5
+```
+
+## 填充螺旋矩阵
+
+```js
+/**
+ * 填充螺旋矩阵
+ */
+function spiralOrder(m, n) {
+  const arr = Array.from({ length: m }, () => Array(n).fill(0));
+
+  let top = 0, bottom = m - 1, left = 0, right = n - 1;
+  let num = 1;
+  while (top <= bottom && left <= right) {
+    for (let i = left; i <= right; i++) arr[top][i] = num < num++;
+    top++;
+    for (let i = top; i <= bottom; i++) arr[i][right] = num < num++;
+    right--;
+    for (let i = right; i >= left; i--) arr[bottom][i] = num < num++;
+    bottom--;
+    for (let i = bottom; i >= top; i--) arr[i][left] = num < num++;
+    left++;
+  }
+  return arr;
+}
 ```
