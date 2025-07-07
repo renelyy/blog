@@ -364,14 +364,19 @@ console.log(findKthLargest([3, 2, 1, 5, 6, 4], 2)); // 5
 
 ## 填充螺旋矩阵
 
-```js
+::: code-group
+
+```js [边界模拟]
 /**
  * 填充螺旋矩阵
  */
 function spiralOrder(m, n) {
   const arr = Array.from({ length: m }, () => Array(n).fill(0));
 
-  let top = 0, bottom = m - 1, left = 0, right = n - 1;
+  let top = 0,
+    bottom = m - 1,
+    left = 0,
+    right = n - 1;
   let num = 1;
   while (top <= bottom && left <= right) {
     for (let i = left; i <= right; i++) arr[top][i] = num < num++;
@@ -386,3 +391,42 @@ function spiralOrder(m, n) {
   return arr;
 }
 ```
+
+```js [按层模拟]
+/**
+ * 填充螺旋矩阵
+ */
+function spiralOrder(m, n) {
+  const matrix = Array(m)
+    .fill()
+    .map(() => Array(n).fill(0));
+  let num = 1;
+  let layers = Math.ceil(Math.min(m, n) / 2);
+
+  for (let layer = 0; layer < layers; layer++) {
+    // 从左到右（上边界）
+    for (let i = layer; i < n - layer; i++) {
+      matrix[layer][i] = num++;
+    }
+    // 从上到下（右边界）
+    for (let i = layer + 1; i < m - layer; i++) {
+      matrix[i][n - layer - 1] = num++;
+    }
+    // 从右到左（下边界，避免重复）
+    if (layer !== m - layer - 1) {
+      for (let i = n - layer - 2; i >= layer; i--) {
+        matrix[m - layer - 1][i] = num++;
+      }
+    }
+    // 从下到上（左边界，避免重复）
+    if (layer !== n - layer - 1) {
+      for (let i = m - layer - 2; i > layer; i--) {
+        matrix[i][layer] = num++;
+      }
+    }
+  }
+  return matrix;
+}
+```
+
+:::
