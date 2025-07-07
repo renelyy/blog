@@ -585,64 +585,85 @@ function output(arr) {
 ```
 
 ```js [并查集]
-// 并查集
-class UnionFind {
-  constructor(n) {
-    this.parent = new Array(n).fill(0).map((_, i) => i);
-    this.rank = new Array(n).fill(1);
-  }
-  find(x) {
-    if (this.parent[x] !== x) {
-      this.parent[x] = this.find(this.parent[x]);
-    }
-    return this.parent[x];
-  }
-  union(x, y) {
-    const rootX = this.find(x),
-      rootY = this.find(y);
-    if (rootX === rootY) return;
-    if (this.rank[rootX] < this.rank[rootY]) {
-      this.parent[rootX] = rootY;
-    } else if (this.rank[rootX] > this.rank[rootY]) {
-      this.parent[rootY] = rootX;
-    } else {
-      this.parent[rootY] = rootX;
-      this.rank[rootX]++;
-    }
-  }
-  connected(x, y) {
-    return this.find(x) === this.find(y);
-  }
-}
-
-function solve(board) {
+/**
+ * @param {character[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+var solve = function (board) {
+  // m × n
+  // i * n + j
   const m = board.length,
     n = board[0].length;
-  if (m < 3 || n < 3) return;
-  const uf = new UnionFind(m * n + 1);
   const dummy = m * n;
+
+  const u = new UnionFind(m * n);
+
+  // 连通边界点
   for (let i = 0; i < m; i++) {
     for (let j = 0; j < n; j++) {
-      if (board[i][j] === "O") {
-        if (i === 0 || i === m - 1 || j === 0 || j === n - 1) {
-          uf.union(dummy, i * n + j);
-        } else {
-          if (board[i - 1][j] === "O") uf.union(i * n + j, (i - 1) * n + j);
-          if (board[i + 1][j] === "O") uf.union(i * n + j, (i + 1) * n + j);
-          if (board[i][j - 1] === "O") uf.union(i * n + j, i * n + j - 1);
-          if (board[i][j + 1] === "O") uf.union(i * n + j, i * n + j + 1);
-        }
+      if (board[i][j] === "X") continue;
+      if (i === 0 || i === m - 1 || j === 0 || j === n - 1) {
+        // 边界的 O 和虚拟节点连通
+        u.union(dummy, i * n + j);
+      } else {
+        // 如果当前 O 周围有 O 将其连通
+        const directions = [
+          [0, -1],
+          [0, 1],
+          [-1, 0]
+          [1, 0],
+        ];
+        directions.forEach(([di, dj]) => {
+          let ni = di + i,
+            nj = dj + j;
+          if (ni >= 0 && ni < m && nj >= 0 && nj < n && board[ni][nj] === "O") {
+            // 合法的索引
+            u.union(i * n + j, ni * n + nj);
+          }
+        });
       }
     }
   }
+
+  // 不和 dummy 连通的 O 置为 X
   for (let i = 0; i < m; i++) {
     for (let j = 0; j < n; j++) {
-      if (uf.connected(dummy, i * n + j)) {
-        board[i][j] = "O";
-      } else {
+      if (board[i][j] === "X") continue;
+      if (!u.connected(dummy, i * n + j)) {
         board[i][j] = "X";
       }
     }
+  }
+};
+
+class UnionFind {
+  constructor(n) {
+    this.parents = new Array(n).fill(0).map((_, i) => i);
+    this.ranks = new Array(n).fill(1);
+  }
+
+  find(x) {
+    if (this.parents[x] === x) return x;
+    const parent = this.find(this.parents[x]);
+    this.parents[x] = parent;
+    return parent;
+  }
+
+  union(x, y) {
+    const px = this.find(x),
+      py = this.find(y);
+    if (px === py) return;
+    if (this.ranks[px] < this.ranks[py]) {
+      this.parents[px] = py;
+      this.ranks[py] += this.ranks[px];
+    } else {
+      this.parents[py] = px;
+      this.ranks[px] += this.ranks[py];
+    }
+  }
+
+  connected(x, y) {
+    return this.find(x) === this.find(y);
   }
 }
 ```
