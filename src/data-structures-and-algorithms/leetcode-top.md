@@ -607,12 +607,7 @@ var solve = function (board) {
         u.union(dummy, i * n + j);
       } else {
         // 如果当前 O 周围有 O 将其连通
-        const directions = [
-          [0, -1],
-          [0, 1],
-          [-1, 0]
-          [1, 0],
-        ];
+        const directions = [[0, -1], [0, 1], [-1, 0][(1, 0)]];
         directions.forEach(([di, dj]) => {
           let ni = di + i,
             nj = dj + j;
@@ -664,6 +659,88 @@ class UnionFind {
 
   connected(x, y) {
     return this.find(x) === this.find(y);
+  }
+}
+```
+
+:::
+
+## [131. 分割回文串](https://leetcode-cn.com/problems/palindrome-partitioning/) :star::star::star:
+
+::: code-group
+
+```js [回溯]
+/**
+ * @param {string} s
+ * @return {string[][]}
+ */
+var partition = function (s) {
+  const res = [];
+  const path = [];
+  dfs(s, 0, path, res);
+  return res;
+};
+
+/**
+ * @description 从 start 开始，将 s[start, i] 作为一个回文串，如果 [start, i] 是回文串，则将其加入 path，然后递归调用 dfs(s, i + 1, path, res)，如果 [start, i] 不是回文串，则直接跳过
+ */
+function dfs(s, start, path, res) {
+  if (start === s.length) {
+    res.push([...path]);
+    return;
+  }
+  for (let i = start; i < s.length; i++) {
+    if (isPalindrome(s, start, i)) {
+      path.push(s.substring(start, i + 1));
+      dfs(s, i + 1, path, res);
+      path.pop();
+    }
+  }
+}
+
+function isPalindrome(s, start, end) {
+  for (let i = start, j = end; i < j; i++, j--) {
+    if (s[i] !== s[j]) return false;
+  }
+  return true;
+}
+```
+
+```js [动态规划]
+/**
+ * @param {string} s
+ * @return {string[][]}
+ */
+var partition = function (s) {
+  // abacabb
+  const n = s.length;
+  const dp = new Array(n).fill(0).map(() => new Array(n).fill(false));
+  const res = [];
+  const path = [];
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = i; j < n; j++) {
+      if (i === j) {
+        dp[i][j] = true;
+      } else if (s[i] === s[j]) {
+        dp[i][j] = j === i + 1 ? true : dp[i + 1][j - 1];
+      }
+    }
+  }
+  dfs(s, 0, path, res, dp);
+  return res;
+};
+
+function dfs(s, start, path, res, dp) {
+  if (start === s.length) {
+    res.push([...path]);
+    return;
+  }
+  for (let i = start; i < s.length; i++) {
+    if (dp[start][i]) {
+      path.push(s.substring(start, i + 1));
+      dfs(s, i + 1, path, res, dp);
+      path.pop();
+    }
   }
 }
 ```
