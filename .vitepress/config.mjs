@@ -115,6 +115,10 @@ export default defineConfig({
           {
             text: '常用数据结构封装',
             link: '/data-structures-and-algorithms/data-structures',
+          },
+          {
+            text: '排序算法',
+            link: '/data-structures-and-algorithms/sort',
           }
         ]
       },
