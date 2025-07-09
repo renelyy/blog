@@ -140,3 +140,56 @@ function __partition(arr, l, r) {
 ```
 
 :::
+
+## 堆排序
+
+::: code-group
+
+```js [堆排序]
+function heapSort(arr) {
+  // leftChildIndex = 2 * i + 1
+  // rightChildIndex = 2 * i + 2
+  // parentIndex = Math.floor((i - 1) / 2)
+  const n = arr.length;
+  // 构建大顶堆向上调整
+  // 从最后一个非叶子节点开始调整
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    __heapify(arr, i, n);
+  }
+  // 交换堆顶和最后一个元素，然后重新调整堆
+  // 最大的元素已经在 arr[0] 了，将其交换到最后一个位置
+  // 排除已排序的最大值
+  // 然后重新调整堆
+  // 向下调整
+  for (let i = n - 1; i > 0; i--) {
+    [arr[0], arr[i]] = [arr[i], arr[0]];
+    __heapify(arr, 0, i);
+  }
+}
+
+/**
+ * 调整堆
+ * @param {number[]} arr 数组
+ * @param {number} i 当前节点索引
+ * @param {number} heapSize 堆的大小
+ */
+function __heapify(arr, rootIndex, heapSize) {
+  const left = 2 * rootIndex + 1;
+  const right = 2 * rootIndex + 2;
+  // 三者找最大
+  let largest = rootIndex;
+  if (left < heapSize && arr[left] > arr[largest]) {
+    largest = left;
+  }
+  if (right < heapSize && arr[right] > arr[largest]) {
+    largest = right;
+  }
+  // 如果最大值不是当前节点，则交换，并递归调整
+  if (largest !== rootIndex) {
+    [arr[rootIndex], arr[largest]] = [arr[largest], arr[rootIndex]];
+    __heapify(arr, largest, heapSize);
+  }
+}
+```
+
+:::
