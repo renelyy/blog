@@ -842,3 +842,48 @@ var wordBreak = function (s, wordDict) {
 ```
 
 :::
+
+## [150. 逆波兰表达式求值](https://leetcode-cn.com/problems/evaluate-reverse-polish-notation/) :white_check_mark:
+
+::: code-group
+
+```js [栈]
+/**
+ * @param {string[]} tokens
+ * @return {number}
+ */
+var evalRPN = function (tokens) {
+  const stack = [];
+  for (const token of tokens) {
+    if (isNumber(token)) {
+      stack.push(Number(token));
+    } else {
+      const num2 = stack.pop();
+      const num1 = stack.pop();
+      switch (token) {
+        case "+":
+          stack.push(num1 + num2);
+          break;
+        case "-":
+          stack.push(num1 - num2);
+          break;
+        case "*":
+          stack.push(num1 * num2);
+          break;
+        case "/":
+          stack.push(
+            num1 / num2 > 0 ? Math.floor(num1 / num2) : Math.ceil(num1 / num2)
+          );
+          break;
+      }
+    }
+  }
+  return stack.pop();
+};
+
+function isNumber(token) {
+  return !isNaN(token);
+}
+```
+
+:::
