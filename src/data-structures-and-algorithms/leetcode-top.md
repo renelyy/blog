@@ -746,3 +746,99 @@ function dfs(s, start, path, res, dp) {
 ```
 
 :::
+
+## [139. 单词拆分](https://leetcode-cn.com/problems/word-break/) :white_check_mark:
+
+::: code-group
+
+```js [动态规划]
+/**
+ * @param {string} s
+ * @param {string[]} wordDict
+ * @return {boolean}
+ */
+var wordBreak = function (s, wordDict) {
+  const n = s.length;
+  const dp = new Array(n + 1).fill(false);
+  dp[0] = true;
+  for (let i = 1; i <= n; i++) {
+    for (let j = 0; j < i; j++) {
+      if (dp[j] && wordDict.includes(s.substring(j, i))) {
+        dp[i] = true;
+        break;
+      }
+    }
+  }
+  return dp[n];
+};
+```
+
+```js [回溯]
+// 回溯的思路：
+// 1. 从字符串的开头开始，尝试将字符串分割成两个部分，如果第一个部分在字典中，则继续递归处理第二个部分
+// 2. 如果第一个部分不在字典中，则继续尝试将字符串分割成两个部分，直到找到一个在字典中的部分或者字符串被分割完
+// 3. 如果字符串被分割完，则说明字符串可以被拆分成字典中的单词，返回 true
+// 4. 如果字符串没有被分割完，则说明字符串不能被拆分成字典中的单词，返回 false
+
+/**
+ * @param {string} s
+ * @param {string[]} wordDict
+ * @return {boolean}
+ */
+var wordBreak = function (s, wordDict) {
+  const res = [];
+  const path = [];
+  dfs(s, 0, path, res, wordDict);
+  return res.length > 0;
+};
+
+function dfs(s, start, path, res, wordDict) {
+  if (start === s.length) {
+    res.push([...path]);
+    return;
+  }
+  for (let i = start; i < s.length; i++) {
+    if (wordDict.includes(s.substring(start, i + 1))) {
+      path.push(s.substring(start, i + 1));
+      dfs(s, i + 1, path, res, wordDict);
+      path.pop();
+    }
+  }
+}
+```
+
+```js [回溯-记忆化搜素优化]
+/**
+ * @param {string} s
+ * @param {string[]} wordDict
+ * @return {boolean}
+ */
+var wordBreak = function (s, wordDict) {
+  let canFound = false;
+  const wordSet = new Set(wordDict);
+  const wordMemo = new Map();
+  // 回溯 => 超时
+  // 优化 => 记忆化搜索
+  const dfsHelper = (start, path) => {
+    if (start === s.length) {
+      canFound = true;
+      return;
+    }
+    if (wordMemo.has(start)) return wordMemo.get(start);
+    for (let i = start; i < s.length; i++) {
+      if (wordSet.has(s.slice(start, i + 1))) {
+        if (dfsHelper(i + 1, path)) {
+          wordMemo.set(start, true);
+          // 找到一种结果，提前结束递归
+          return;
+        }
+      }
+      wordMemo.set(start, false);
+    }
+  };
+  dfsHelper(0, []);
+  return canFound;
+};
+```
+
+:::
