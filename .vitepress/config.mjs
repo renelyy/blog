@@ -117,6 +117,10 @@ export default defineConfig({
             link: '/data-structures-and-algorithms/data-structures',
           },
           {
+            text: '查找算法',
+            link: '/data-structures-and-algorithms/search',
+          },
+          {
             text: '排序算法',
             link: '/data-structures-and-algorithms/sort',
           }
