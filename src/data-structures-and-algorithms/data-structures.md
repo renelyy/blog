@@ -253,3 +253,155 @@ class UnionFind {
 ```
 
 :::
+
+## 二叉搜索树
+
+::: code-group
+
+```js [面向过程封装]
+class TreeNode {
+  constructor(val, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+/**
+ * 在二叉搜索树中插入一个节点
+ *
+ * @param {TreeNode} root
+ * @param {number} val
+ * @return {TreeNode}
+ */
+function insert(root, val) {
+  if (root === null) return new TreeNode(val);
+  if (val === root.val) return root;
+  if (val < root.val) root.left = insert(root.left, val);
+  else if (val > root.val) root.right = insert(root.right, val);
+  return root;
+}
+
+/**
+ * 在二叉搜索树中查找一个节点
+ */
+function find(root, val) {
+  if (root === null) return null;
+  if (val === root.val) return root;
+  if (val < root.val) return find(root.left, val);
+  return find(root.right, val);
+}
+
+/**
+ * 查找前驱节点
+ */
+function __findPredecessor(root) {
+  let predecessor = root.left;
+  while (predecessor.right !== null) {
+    predecessor = predecessor.right;
+  }
+  return predecessor;
+}
+
+/**
+ * 在二叉搜索树中删除一个节点
+ *
+ * @param {TreeNode} root
+ * @param {number} val
+ * @return {TreeNode}
+ */
+function remove(root, val) {
+  if (root === null) return null;
+  if (val < root.val) root.left = remove(root.left, val);
+  else if (val > root.val) root.right = remove(root.right, val);
+  else {
+    // 处理度为 0 或 1 的节点
+    if (root.left === null || root.right === null) {
+      return root.left || root.right;
+    }
+
+    // 处理度为 2 的节点
+    // 找到前驱节点或后继节点
+    // 这里选择前驱节点
+    const preNode = __findPredecessor(root);
+    root.val = preNode.val;
+    // 删除前驱节点
+    root.left = remove(root.left, preNode.val);
+  }
+  return root;
+}
+```
+
+```js [面向对象封装]
+class TreeNode {
+  constructor(val, left = null, right = null) {
+    this.val = val;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+class BST {
+  constructor() {
+    this.root = null;
+  }
+
+  insert(val) {
+    this.root = this._insert(this.root, val);
+  }
+
+  find(val) {
+    return this._find(this.root, val);
+  }
+
+  remove(val) {
+    this.root = this._remove(this.root, val);
+  }
+
+  _insert(root, val) {
+    if (root === null) return new TreeNode(val);
+    if (val === root.val) return root;
+    if (val < root.val) root.left = this._insert(root.left, val);
+    else if (val > root.val) root.right = this._insert(root.right, val);
+    return root;
+  }
+
+  _find(root, val) {
+    if (root === null) return null;
+    if (val === root.val) return root;
+    if (val < root.val) return this._find(root.left, val);
+    return this._find(root.right, val);
+  }
+
+  _remove(root, val) {
+    if (root === null) return null;
+    if (val < root.val) root.left = this._remove(root.left, val);
+    else if (val > root.val) root.right = this._remove(root.right, val);
+    else {
+      // 处理度为 0 或 1 的节点
+      if (root.left === null || root.right === null) {
+        return root.left || root.right;
+      }
+
+      // 处理度为 2 的节点
+      // 找到前驱节点或后继节点
+      // 这里选择前驱节点
+      const preNode = __findPredecessor(root);
+      root.val = preNode.val;
+      // 删除前驱节点
+      root.left = this._remove(root.left, preNode.val);
+    }
+    return root;
+  }
+
+  __findPredecessor(root) {
+    let predecessor = root.left;
+    while (predecessor.right !== null) {
+      predecessor = predecessor.right;
+    }
+    return predecessor;
+  }
+}
+```
+
+:::
