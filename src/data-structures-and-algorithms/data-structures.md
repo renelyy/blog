@@ -877,3 +877,44 @@ class AVLTree {
 ```
 
 :::
+
+## Trie 树（字典树）
+
+::: code-group
+
+```js
+class TrieNode {
+  constructor() {
+    this.children = {};
+    this.isEnd = false;
+  }
+}
+
+class Trie {
+  constructor() {
+    this.root = new TrieNode();
+  }
+
+  insert(word) {
+    let p = this.root;
+    for (let i = 0; i < word.length; i++) {
+      let c = word[i];
+      if (!p.children[c]) p.children[c] = new TrieNode();
+      p = p.children[c];
+    }
+    p.isEnd = true; // 标记单词结束
+  }
+
+  search(word) {
+    let p = this.root;
+    for (let i = 0; i < word.length; i++) {
+      let c = word[i];
+      if (!p.children[c]) return false;
+      p = p.children[c];
+    }
+    return p.isEnd; // 判断单词是否结束
+  }
+}
+```
+
+:::
