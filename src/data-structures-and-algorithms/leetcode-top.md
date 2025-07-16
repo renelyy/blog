@@ -887,3 +887,149 @@ function isNumber(token) {
 ```
 
 :::
+
+## [227. 基本计算器 II](https://leetcode-cn.com/problems/basic-calculator-ii/) :white_check_mark:
+
+::: code-group
+
+```js [栈]
+/**
+ * 这种实现方式超时，shift unshift 操作耗时，时间复杂度是 O(n)，
+ * 每次在头部插入元素时，后面的元素都要向后移动一位，
+ * 删除元素时，后面的元素都要向前移动一位，所以时间复杂度是 O(n)
+ *
+ * @param {string} s
+ * @return {number}
+ */
+var calculate = function (s) {
+  const queue = [];
+  const ops = [];
+  const regex = /(\d+)|(\+)|(\-)|(\*)|(\/)/g;
+  let match;
+  while ((match = regex.exec(s))) {
+    switch (match[0]) {
+      case "+":
+      case "-":
+      case "*":
+      case "/":
+        ops.push(match[0]);
+        break;
+      default:
+        const op = ops.at(-1);
+        if (op === "*") {
+          const num = queue.pop() * match[0];
+          queue.push(num);
+          ops.pop();
+        } else if (op === "/") {
+          const num = Math.floor(queue.pop() / match[0]);
+          queue.push(num);
+          ops.pop();
+        } else {
+          queue.push(match[0]);
+        }
+        break;
+    }
+  }
+
+  while (ops.length) {
+    const num1 = queue.shift();
+    const num2 = queue.shift();
+    const op = ops.shift();
+    const num = op === "+" ? num1 / 1 + num2 / 1 : num1 / 1 - num2 / 1;
+    queue.unshift(num);
+  }
+
+  return Number(queue[0]);
+};
+```
+
+```js [栈-超时优化]
+/**
+ * 这种实现方式超时，shift unshift 操作耗时，时间复杂度是 O(n)，
+ * 每次在头部插入元素时，后面的元素都要向后移动一位，
+ * 删除元素时，后面的元素都要向前移动一位，所以时间复杂度是 O(n)
+ *
+ * 整体算法时间复杂度 O(N^2)
+ *
+ * 而 push pop 操作时间复杂度是 O(1)
+ * 所以优化成 push pop 操作
+ *
+ * 整体算法时间复杂度 O(N)
+ *
+ * @param {string} s
+ * @return {number}
+ */
+var calculate = function (s) {
+  const queue = [];
+  const ops = [];
+  const regex = /(\d+)|(\+)|(\-)|(\*)|(\/)/g;
+  let match;
+  while ((match = regex.exec(s))) {
+    switch (match[0]) {
+      case "+":
+      case "-":
+      case "*":
+      case "/":
+        ops.push(match[0]);
+        break;
+      default:
+        const op = ops.at(-1);
+        if (op === "*") {
+          const num = queue.pop() * match[0];
+          queue.push(num);
+          ops.pop();
+        } else if (op === "/") {
+          const num = Math.floor(queue.pop() / match[0]);
+          queue.push(num);
+          ops.pop();
+        } else {
+          queue.push(match[0]);
+        }
+        break;
+    }
+  }
+
+  // 优化：shift unshift 操作耗时，时间复杂度是 O(n)，
+  // 先反转，然后使用 push pop 操作
+  ops.reverse();
+  queue.reverse();
+  while (ops.length) {
+    const num1 = queue.pop();
+    const num2 = queue.pop();
+    const op = ops.pop();
+    const num = op === "+" ? num1 / 1 + num2 / 1 : num1 / 1 - num2 / 1;
+    queue.push(num);
+  }
+
+  return Number(queue[0]);
+};
+```
+
+```js [一次遍历]
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var calculate = function (s) {
+  const stack = [];
+  let preNum = 0;
+  let preOp = "+";
+  for (let i = 0; i < s.length; i++) {
+    let c = s[i];
+    // 这里不能直接 continue，因为最后一次数字需要处理
+    // if (c === ' ') continue;
+    if (/\d/.test(c)) preNum = preNum * 10 + parseInt(c);
+    if ((!/\d/.test(c) && c !== " ") || i === s.length - 1) {
+      if (preOp === "+") stack.push(preNum);
+      else if (preOp === "-") stack.push(-preNum);
+      else if (preOp === "*") stack.push(stack.pop() * preNum);
+      else if (preOp === "/") stack.push(Math.trunc(stack.pop() / preNum));
+      preNum = 0;
+      preOp = c;
+    }
+  }
+  return stack.reduce((acc, cur) => acc + cur, 0);
+};
+```
+
+:::
