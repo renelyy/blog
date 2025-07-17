@@ -1033,3 +1033,28 @@ var calculate = function (s) {
 ```
 
 :::
+
+## [240. 搜索二维矩阵 II](https://leetcode.cn/problems/search-a-2d-matrix-ii/description/?envType=problem-list-v2&envId=2ckc81c) :white_check_mark:
+
+```js
+/**
+ * 利用递增性质，从右上角开始查找
+ * 如果 target 大于当前值，则说明 target 只可能在当前列的下方，所以排除当前行
+ * 如果 target 小于当前值，则说明 target 只可能在当前列的左边，所以排除当前列
+ * 
+ * @param {number[][]} matrix
+ * @param {number} target
+ * @return {boolean}
+ */
+var searchMatrix = function (matrix, target) {
+  let row = 0;
+  let col = matrix[0].length - 1;
+  while (row < matrix.length && col >= 0) {
+    if (matrix[row][col] === target) return true;
+    if (matrix[row][col] > target) col--;
+    else row++;
+  }
+  return false;
+}
+```
+
