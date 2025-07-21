@@ -419,7 +419,7 @@ class BST {
 - 将当前根节点置为红色
 - 将左右子孩子置为黑色
 
-![alt text](image-2.png)
+<!-- ![alt text](image-2.png) -->
 
 2. **插入调整情况 2**
 
@@ -430,7 +430,7 @@ class BST {
 - 拉着当前节点大右旋
 - 红色上浮调整
 
-![alt text](image-3.png)
+<!-- ![alt text](image-3.png) -->
 
 3. **插入调整情况 3**
 
@@ -443,7 +443,7 @@ class BST {
 - 拉着当前节点大右旋
 - 红色上浮调整
 
-![alt text](image-4.png)
+<!-- ![alt text](image-4.png) -->
 
 4. **插入调整情况 4**
 
