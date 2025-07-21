@@ -1076,3 +1076,108 @@ var numSquares = function (n) {
   return dp[n];
 };
 ```
+
+## [289. 生命游戏](https://leetcode.cn/problems/game-of-life/description/?envType=problem-list-v2&envId=2ckc81c) :white_check_mark:
+
+::: code-group
+
+```js [复制原数组]
+/**
+ * @param {number[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ */
+var gameOfLife = function (board) {
+  const m = board.length,
+    n = board[0].length;
+  const cache = new Array(m).fill(0).map(() => new Array(n));
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      cache[i][j] = board[i][j];
+    }
+  }
+  const directions = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+    [1, 1],
+    [1, -1],
+    [-1, 1],
+    [-1, -1]
+  ];
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      let liveCount = 0,
+        deadCount = 0;
+      directions.forEach(([di, dj]) => {
+        let ni = di + i,
+          nj = dj + j;
+        if (ni < m && ni >= 0 && nj < n && nj >= 0) {
+          if (cache[ni][nj] === 1) liveCount += 1;
+          else deadCount += 1;
+        }
+      });
+      if (cache[i][j] === 0 && liveCount === 3) {
+        board[i][j] = 1;
+      }
+      if (cache[i][j] === 1) {
+        if (liveCount < 2 || liveCount > 3) board[i][j] = 0;
+      }
+    }
+  }
+};
+```
+
+```js [原地修改-使用额外的状态]
+/**
+ * @param {number[][]} board
+ * @return {void} Do not return anything, modify board in-place instead.
+ *
+ * 每个细胞只有两种状态 live(1) 或 dead(0)，拓展复合状态 -1 表示 dead(0) 变成 live(1)，2 表示 live(1) 变成 dead(0)
+ *
+ * 1 -> -1
+ * 0 -> 2
+ */
+var gameOfLife = function (board) {
+  const m = board.length,
+    n = board[0].length;
+  const directions = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+    [1, 1],
+    [1, -1],
+    [-1, 1],
+    [-1, -1]
+  ];
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      let liveCount = 0,
+        deadCount = 0;
+      directions.forEach(([di, dj]) => {
+        let ni = di + i,
+          nj = dj + j;
+        if (ni < m && ni >= 0 && nj < n && nj >= 0) {
+          if (board[ni][nj] === 1 || board[ni][nj] === -1) liveCount += 1;
+          else deadCount += 1;
+        }
+      });
+      if (board[i][j] === 0 && liveCount === 3) {
+        board[i][j] = 2;
+      }
+      if (board[i][j] === 1) {
+        if (liveCount < 2 || liveCount > 3) board[i][j] = -1;
+      }
+    }
+  }
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      if (board[i][j] === 2) board[i][j] = 1;
+      else if (board[i][j] === -1) board[i][j] = 0;
+    }
+  }
+};
+```
+
+:::
