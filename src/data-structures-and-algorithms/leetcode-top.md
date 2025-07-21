@@ -1041,7 +1041,7 @@ var calculate = function (s) {
  * 利用递增性质，从右上角开始查找
  * 如果 target 大于当前值，则说明 target 只可能在当前列的下方，所以排除当前行
  * 如果 target 小于当前值，则说明 target 只可能在当前列的左边，所以排除当前列
- * 
+ *
  * @param {number[][]} matrix
  * @param {number} target
  * @return {boolean}
@@ -1055,6 +1055,24 @@ var searchMatrix = function (matrix, target) {
     else row++;
   }
   return false;
-}
+};
 ```
 
+## [279. 完全平方数](https://leetcode.cn/problems/perfect-squares/description/?envType=problem-list-v2&envId=2ckc81c) :white_check_mark:
+
+```js
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var numSquares = function (n) {
+  const dp = new Array(n + 1).fill(Infinity);
+  dp[0] = 0;
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j * j <= i; j++) {
+      dp[i] = Math.min(dp[i], dp[i - j * j] + 1);
+    }
+  }
+  return dp[n];
+};
+```
