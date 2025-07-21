@@ -405,3 +405,179 @@ class BST {
 ```
 
 :::
+
+## 红黑树
+
+::: code-group
+
+```js [红黑树]
+/**
+ * 红黑树：一种自平衡二叉搜索树，每个节点包含一个颜色属性，可以是红色或黑色。
+ * 红黑树满足以下性质：
+ * 1. 每个节点要么是红色，要么是黑色。
+ * 2. 根节点是黑色。
+ * 3. 每个叶子节点（NIL节点，空节点）是黑色。
+ * 4. 如果一个节点是红色的，则它的两个子节点都是黑色的。
+ * 5. 从任一节点到其每个叶子的所有路径都包含相同数目的黑色节点。
+ * 这些性质确保了红黑树的高度大约是log(n)，从而保证了操作的时间复杂度。
+ * 红黑树支持插入、删除和查找操作，这些操作的时间复杂度都是O(log(n))。
+ * 红黑树广泛应用于数据库、文件系统、路由器等场景中。
+ */
+class RedBlackTreeNode {
+  static NIL = new RedBlackTreeNode(0, 1); // 哨兵节点，颜色为黑色
+  static RED = 0;
+  static BLACK = 1;
+  static DOUBLE_BLACK = 2;
+
+  static getNewNode(val) {
+    return new RedBlackTreeNode(val, RedBlackTreeNode.RED);
+  }
+
+  constructor(
+    val,
+    color,
+    left = RedBlackTreeNode.NIL,
+    right = RedBlackTreeNode.NIL
+  ) {
+    this.val = val;
+    this.color = color; // 0 red 1 black 2 double black
+    this.left = left;
+    this.right = right;
+  }
+}
+
+class RedBlackTree {
+  constructor() {
+    this.root = RedBlackTreeNode.NIL;
+  }
+
+  insert(val) {
+    this.root = this.__insert(this.root, val);
+    this.root.color = RedBlackTreeNode.BLACK;
+    return this.root;
+  }
+
+  clear() {
+    this.root = RedBlackTreeNode.NIL;
+  }
+
+  output() {
+    console.log("============ print tree ============");
+    this.__print(this.root);
+    console.log("============ print tree done ============");
+  }
+
+  __print(root) {
+    if (root === RedBlackTreeNode.NIL) return;
+    console.log(root.val, root.color, root.left.val, root.right.val);
+    this.__print(root.left);
+    this.__print(root.right);
+  }
+
+  /**
+   * @description 插入
+   * @param {RedBlackTreeNode} root
+   * @param {number} val
+   * @returns
+   */
+  __insert(root, val) {
+    if (root === RedBlackTreeNode.NIL) return RedBlackTreeNode.getNewNode(val);
+    if (val === root.val) return root;
+    if (val < root.val) root.left = this.__insert(root.left, val);
+    else root.right = this.__insert(root.right, val);
+
+    return this.__insert_maintain(root); // 平衡调整
+  }
+
+  /**
+   * @description 平衡调整
+   * @param {RedBlackTreeNode} root
+   * @returns
+   */
+  __insert_maintain(root) {
+    // 站在祖父节点向下看
+    // 是否冲突的判断条件
+    // 左子树为红色，且左子树的孩子节点也是红色
+    let flag = 0; // 0 无冲突 1 左冲突 2 右冲突
+    if (
+      root.left.color === RedBlackTreeNode.RED &&
+      this.__has_red_child(root.left)
+    ) {
+      flag = 1;
+    }
+
+    if (
+      root.right.color === RedBlackTreeNode.RED &&
+      this.__has_red_child(root.right)
+    ) {
+      flag = 2;
+    }
+
+    if (flag === 0) return root; // 无冲突，直接返回
+
+    // 一定是冲突了
+    // TODO:
+
+    // 插入调整的情况 I
+    if (
+      root.left.color === RedBlackTreeNode.RED &&
+      root.right.color === RedBlackTreeNode.RED
+    ) {
+      // 根变红色，左右子节点变黑色
+      root.color = RedBlackTreeNode.RED;
+      root.left.color = RedBlackTreeNode.BLACK;
+      root.right.color = RedBlackTreeNode.BLACK;
+      return root;
+    }
+
+    // 插入调整的情况 II
+    if (flag === 1) {
+      // 冲突在左子树 L-类型
+      // 是否需要小左旋，L-R 类型需要先左旋，再右旋
+      if (root.left.right.color === RedBlackTreeNode.RED) {
+        root.left = this.__left_rotate(root.left);
+      }
+      root = this.__right_rotate(root);
+    } else {
+      // 冲突在右子树 R-类型
+      // 是否需要小右旋，R-L 类型需要先右旋，再左旋
+      if (root.right.left.color === RedBlackTreeNode.RED) {
+        root.right = this.__right_rotate(root.right);
+      }
+      root = this.__left_rotate(root);
+    }
+
+    // 情况 II 中无论是哪种类型，都需要红色上浮调整或者红色下浮调整
+    // 这里我们选择红色上浮
+    root.color = RedBlackTreeNode.RED;
+    root.left.color = RedBlackTreeNode.BLACK;
+    root.right.color = RedBlackTreeNode.BLACK;
+    return root;
+  }
+
+  __has_red_child(root) {
+    return (
+      root.left.color === RedBlackTreeNode.RED ||
+      root.right.color === RedBlackTreeNode.RED
+    );
+  }
+
+  __left_rotate(root) {
+    // TODO: 左旋
+    let temp = root.right;
+    root.right = temp.left;
+    temp.left = root;
+    return temp;
+  }
+
+  __right_rotate(root) {
+    // TODO: 右旋
+    let temp = root.left;
+    root.left = temp.right;
+    temp.right = root;
+    return temp;
+  }
+}
+```
+
+:::

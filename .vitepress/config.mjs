@@ -6,6 +6,7 @@ export default defineConfig({
   description: '技术文档',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: '/logo.png',
     nav: [
       { text: '首页', link: '/' },
       { text: '前端技术', link: '/html' },
