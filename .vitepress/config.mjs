@@ -94,6 +94,10 @@ export default defineConfig({
             ]
           },
           {
+            text: '船长算法刷题',
+            link: '/data-structures-and-algorithms/captain',
+          },
+          {
             text: '剑指 Offer 刷题',
             link: '/data-structures-and-algorithms/offer',
           },
@@ -387,6 +391,11 @@ export default defineConfig({
     },
     toc: {
       level: [1, 2, 3],
+    },
+    code: {
+      FontFace: {
+        fontFamily: "'Menlo', 'Courier New', Courier, monospace"
+      }
     }
   },
 
