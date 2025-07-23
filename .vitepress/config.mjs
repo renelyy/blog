@@ -20,7 +20,8 @@ export default defineConfig({
         items: [
           { text: 'HTML', link: 'https://developer.mozilla.org/zh-CN/docs/Web/HTML' },
           { text: 'CSS', link: 'https://developer.mozilla.org/zh-CN/docs/Web/CSS' },
-          { text: 'JS', link: 'https://developer.mozilla.org/zh-CN/docs/Web/JavaScript' }
+          { text: 'JS', link: 'https://developer.mozilla.org/zh-CN/docs/Web/JavaScript' },
+          { text: 'React', link: '/react' },
         ]
       },
       {
