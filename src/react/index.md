@@ -155,6 +155,118 @@ const listItems = people.map(person => (
 5. 在 React 中，副作用通常属于 事件处理程序。事件处理程序是 React 在你执行某些操作（如单击按钮）时运行的函数。即使事件处理程序是在你的组件 内部 定义的，它们也不会在渲染期间运行！ 因此事件处理程序无需是纯函数。
 6. 如果你用尽一切办法，仍无法为副作用找到合适的事件处理程序，你还可以调用组件中的 useEffect 方法将其附加到返回的 JSX 中。这会告诉 React 在渲染结束后执行它。然而，这种方法应该是你最后的手段。
 
+## 添加交互
+
+1. 在 React 中，随时间变化的数据被称为状态（state），可以用 useState Hook 为组件添加状态。
+2. 与普通 JavaScript 变量不同，React 状态的行为更像一个快照。设置它并不改变你已有的状态变量，而是触发一次重新渲染。
+3. 状态可以持有任何类型的 JavaScript 值，包括对象。但你不应该直接改变你在 React 状态中持有的对象和数组。相反，当你想更新一个对象和数组时，你需要创建一个新的对象（或复制现有的对象），然后用这个副本来更新状态。
+4. 如果在代码中复制对象感觉乏味，可以使用 `Immer` 之类的库来减少重复代码
+
+```jsx
+import { useImmer } from "use-immer";
+
+const [person, updatePerson] = useImmer({
+  name: "Niki de Saint Phalle",
+  artwork: {
+    title: "Blue Nana",
+    city: "Hamburg",
+    image: "https://i.imgur.com/Sd1AgUOm.jpg"
+  }
+});
+
+function handleNameChange(e) {
+  updatePerson(draft => {
+    draft.name = e.target.value;
+  });
+}
+```
+
+5. 数组是另一种可以存在状态中的可变 JavaScript 对象，应将其视为只读。就像对象一样，当你想更新存在状态中的数组时，你需要创建一个新数组（或者复制现有数组），然后用新数组来更新状态。
+6. 如果在代码中复制数组感觉乏味，可以使用 Immer 之类的库来减少重复代码
+
+```jsx
+import { useImmer } from "use-immer";
+
+const [people, updatePeople] = useImmer([
+  { name: "Niki de Saint Phalle", art: "Blue Nana" },
+  {
+    name: "Henri Matisse",
+    art: "The Red Fish, The Blue Fish, The Yellow Fish"
+  },
+  { name: "Pablo Picasso", art: "The Old Guitarist" }
+]);
+
+const [list, updateList] = useImmer(initialList);
+
+function handleAddPerson(person) {
+  updatePeople(draft => {
+    draft.push(person);
+  });
+}
+
+function handleToggle(artworkId, nextSeen) {
+  updateList(draft => {
+    const artwork = draft.find(a => a.id === artworkId);
+    artwork.seen = nextSeen;
+  });
+}
+```
+
+### 响应事件
+
+1. 在 React 中所有事件都会传播，除了 `onScroll`，它仅适用于你附加到的 JSX 标签。
+2. 阻止一个事件到达父组件，需要调用 `e.stopPropagation()`
+3. 极少数情况下，你可能需要捕获子元素上的所有事件，即便它们阻止了传播。例如，你可能想对每次点击进行埋点记录，传播逻辑暂且不论。那么你可以通过在事件名称末尾添加 Capture 来实现这一点
+
+每个事件分三个阶段传播：
+
+- 它向下传播，调用所有的 onClickCapture 处理函数。
+- 它执行被点击元素的 onClick 处理函数。
+- 它向上传播，调用所有的 onClick 处理函数。
+
+```jsx
+function App() {
+  return (
+    <div
+      onClickCapture={() => {
+        /* 这会首先执行 */
+      }}
+    >
+      <button onClick={e => e.stopPropagation()} />
+      <button onClick={e => e.stopPropagation()} />
+    </div>
+  );
+}
+```
+
+4. `e.preventDefault()` 阻止默认行为。例如，阻止链接跳转或阻止表单提交。
+5. Hooks ——以 use 开头的函数——只能在组件或自定义 Hook 的最顶层调用。 你不能在条件语句、循环语句或其他嵌套函数内调用 Hook。Hook 是函数，但将它们视为关于组件需求的无条件声明会很有帮助。在组件顶部 “use” React 特性，类似于在文件顶部“导入”模块。
+
+### state 如同一张快照
+
+1. 一个 state 变量的值永远不会在一次渲染的内部发生变化，即使其事件处理函数的代码是异步的。
+
+### 把一系列 state 更新加入到队列
+
+1. React 会对 state 更新进行批处理
+
+### 更新 state 中的对象
+
+1. 由 Immer 提供的 draft 是一种特殊类型的对象，被称为 Proxy，它会记录你用它所进行的操作。这就是你能够随心所欲地直接修改对象的原因所在！从原理上说，Immer 会弄清楚 draft 对象的哪些部分被改变了，并会依照你的修改创建出一个全新的对象。
+2. 为什么在 React 中不推荐直接修改 state？
+
+- **表象**：因为 React 需要使用 state 来决定何时重新渲染组件。如果直接修改 state，React 就无法得知 state 已经发生了变化，也就无法重新渲染组件了。
+- **调试**：如果你使用 console.log 并且不直接修改 state，你之前日志中的 state 的值就不会被新的 state 变化所影响。这样你就可以清楚地看到两次渲染之间 state 的值发生了什么变化
+- **优化**：React 常见的 优化策略 依赖于如果之前的 props 或者 state 的值和下一次相同就跳过渲染。如果你从未直接修改 state ，那么你就可以很快看到 state 是否发生了变化。如果 prevObj === obj，那么你就可以肯定这个对象内部并没有发生改变。
+- **新功能**：我们正在构建的 React 的新功能依赖于 state 被 像快照一样看待 的理念。如果你直接修改 state 的历史版本，可能会影响你使用这些新功能。
+- **需求变更**：有些应用功能在不出现任何修改的情况下会更容易实现，比如实现撤销/恢复、展示修改历史，或是允许用户把表单重置成某个之前的值。这是因为你可以把 state 之前的拷贝保存到内存中，并适时对其进行再次使用。如果一开始就用了直接修改 state 的方式，那么后面要实现这样的功能就会变得非常困难。
+- **更简单的实现**：React 并不依赖于 mutation ，所以你不需要对对象进行任何特殊操作。它不需要像很多“响应式”的解决方案一样去劫持对象的属性、总是用代理把对象包裹起来，或者在初始化时做其他工作。这也是为什么 React 允许你把任何对象存放在 state 中——不管对象有多大——而不会造成有任何额外的性能或正确性问题的原因。
+
+### 更新 state 中的数组
+
+1. 在 React 中，数组是可变的，但你不应该直接修改数组。相反，你需要创建一个新数组（或者复制现有数组），然后用新数组来更新状态。
+2. 如果在代码中复制数组感觉乏味，可以使用 Immer 之类的库来减少重复代码。
+
 ## Hooks
 
 ### useState
