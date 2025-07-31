@@ -271,7 +271,7 @@ function App() {
 
 1. Reducer 帮助你合并组件的状态更新逻辑。Context 帮助你将信息深入传递给其他组件。可以将 reducers 和 context 组合在一起使用，以管理复杂应用的状态。
 
-## 选择 state 结构
+### 选择 state 结构
 
 ### 构建 state 的原则
 
@@ -281,7 +281,7 @@ function App() {
 4. **避免重复的 state**。当同一数据在多个 state 变量之间或在多个嵌套对象中重复时，这会很难保持它们同步。应尽可能减少重复。
 5. **避免深度嵌套的 state**。深度分层的 state 更新起来不是很方便。如果可能的话，最好以扁平化方式构建 state。
 
-## 在组件间共享状态
+### 在组件间共享状态
 
 ### 受控组件和非受控组件
 
@@ -292,7 +292,7 @@ function App() {
 
 1. 对于每个独特的状态，都应该存在且只存在于一个指定的组件中作为 state。这一原则也被称为拥有 “可信单一数据源”。它并不意味着所有状态都存在一个地方——对每个状态来说，都需要一个特定的组件来保存这些状态信息。你应该 将状态提升 到公共父级，或 将状态传递 到需要它的子级中，而不是在组件之间复制共享的状态。
 
-## 对 state 进行保留和重置
+### 对 state 进行保留和重置
 
 ### 状态与渲染树中的位置相关
 
@@ -431,6 +431,39 @@ function Counter({ isFancy }) {
 }
 ```
 
+### 迁移状态逻辑至 Reducer 中
+
+### 使用 reducer 整合状态逻辑
+
+### 编写一个好的 reducers
+
+1. **reducers 必须是纯粹的**：这一点和 状态更新函数 是相似的，reducers 在是在渲染时运行的！（actions 会排队直到下一次渲染)。 这就意味着 reducers 必须纯净，即当输入相同时，输出也是相同的。它们不应该包含异步请求、定时器或者任何副作用（对组件外部有影响的操作）。它们应该以不可变值的方式去更新 对象 和 数组。
+2. **每个 action 都描述了一个单一的用户交互，即使它会引发数据的多个变化**：举个例子，如果用户在一个由 reducer 管理的表单（包含五个表单项）中点击了 重置按钮，那么 dispatch 一个 reset_form 的 action 比 dispatch 五个单独的 set_field 的 action 更加合理。
+
+### 使用 useImmerReducer 简化 reducers
+
+### 使用 Context 深层传递参数
+
+1. Context 允许父组件向其下层无论多深的任何组件提供信息，而无需通过 props 显式传递。
+2. Context：传递 props 的另一种方法
+3. 在 React 中，覆盖来自上层的某些 context 的唯一方法是将子组件包裹到一个提供不同值的 context provider 中。
+
+## 脱围机制
+
+1. 当你希望组件“记住”某些信息，但又不想让这些信息 触发新的渲染 时，你可以使用 ref。
+2. 与 state 一样，ref 在重新渲染之间由 React 保留。但是，设置 state 会重新渲染组件，而更改 ref 不会！你可以通过 ref.current 属性访问该 ref 的当前值。
+3. 不必为了渲染而使用 Effect 来转换数据。
+4. 不必使用 Effect 来处理用户事件。
+5. Effect 的生命周期不同于组件。组件可以挂载、更新或卸载。Effect 只能做两件事：开始同步某些东西，然后停止同步它。如果 Effect 依赖于随时间变化的 props 和 state，这个循环可能会发生多次。
+6. Effect 中的所有代码都是 响应式的。如果它读取的某些响应式的值由于重新渲染而发生变化，它将再次运行。
+7. Effect Events 中的代码不是响应式的。
+
+### 使用 ref 引用值
+
+### 使用 ref 操作 DOM
+
+### 使用 Effect 实现同步
+
 ## Hooks
 
 ### useState
@@ -519,6 +552,43 @@ export default function Timer() {
       <button onClick={reset}>Reset</button>
       <button onClick={addFive}>Add 5</button>
     </div>
+  );
+}
+```
+
+### useImmerReducer
+
+1. **作用**
+
+`useImmerReducer` 是 `useReducer` 的替代方案，它允许你在 reducer 中使用 `produce` 函数来修改状态。
+
+2. **使用**
+
+```js
+import { useImmerReducer } from "use-immer";
+
+const initialState = { count: 0 };
+
+function reducer(draft, action) {
+  switch (action.type) {
+    case "increment":
+      draft.count += 1;
+      break;
+    case "decrement":
+      draft.count -= 1;
+      break;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useImmerReducer(reducer, initialState);
+
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({ type: "increment" })}>+</button>
+      <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+    </>
   );
 }
 ```
