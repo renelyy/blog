@@ -462,6 +462,78 @@ function Counter({ isFancy }) {
 
 ### 使用 ref 操作 DOM
 
+1. 如何使用 ref 回调管理 ref 列表
+
+- 一种可能的解决方案是用一个 ref 引用其父元素，然后用 DOM 操作方法如 querySelectorAll 来寻找它的子节点。然而，这种方法很脆弱，如果 DOM 结构发生变化，可能会失效或报错。
+- 另一种解决方案是将函数传递给 ref 属性。这称为 ref 回调。
+
+```jsx
+import { useRef, useState } from "react";
+
+export default function CatFriends() {
+  const itemsRef = useRef(null);
+  const [catList, setCatList] = useState(setupCatList);
+
+  function scrollToCat(cat) {
+    const map = getMap();
+    const node = map.get(cat);
+    node.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center"
+    });
+  }
+
+  function getMap() {
+    if (!itemsRef.current) {
+      // 首次运行时初始化 Map。
+      itemsRef.current = new Map();
+    }
+    return itemsRef.current;
+  }
+
+  return (
+    <>
+      <nav>
+        <button onClick={() => scrollToCat(catList[0])}>Neo</button>
+        <button onClick={() => scrollToCat(catList[5])}>Millie</button>
+        <button onClick={() => scrollToCat(catList[9])}>Bella</button>
+      </nav>
+      <div>
+        <ul>
+          {catList.map(cat => (
+            <li
+              key={cat}
+              ref={node => {
+                const map = getMap();
+                // 添加到 Map 中
+                map.set(cat, node);
+
+                return () => {
+                  // 从 Map 中移除
+                  map.delete(cat);
+                };
+              }}
+            >
+              <img src={cat} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
+}
+
+function setupCatList() {
+  const catList = [];
+  for (let i = 0; i < 10; i++) {
+    catList.push("https://loremflickr.com/320/240/cat?lock=" + i);
+  }
+
+  return catList;
+}
+```
+
 ### 使用 Effect 实现同步
 
 ## Hooks
@@ -640,12 +712,36 @@ const inputEl = useRef(null);
 
 2. **使用**
 
-```js
-useImperativeHandle(ref, () => ({
-  focus: () => {
-    inputEl.current.focus();
+```jsx
+import { useRef, useImperativeHandle } from "react";
+
+function MyInput({ ref }) {
+  const realInputRef = useRef(null);
+  useImperativeHandle(ref, () => ({
+    // 只暴露 focus，没有别的
+    focus() {
+      realInputRef.current.focus();
+    },
+  }));
+  return <input ref={realInputRef} />;
+};
+
+export default function Form() {
+  const inputRef = useRef(null);
+
+  function handleClick() {
+    inputRef.current.focus();
   }
-}));
+
+  return (
+    <>
+      <MyInput ref={inputRef} />
+      <button onClick={handleClick}>聚焦输入框</button>
+    </>
+  );
+}
+
+// 这里，MyInput 中的 realInputRef 保存了实际的 input DOM 节点。 但是，useImperativeHandle 指示 React 将你自己指定的对象作为父组件的 ref 值。 所以 Form 组件内的 inputRef.current 将只有 focus 方法。在这种情况下，ref “句柄”不是 DOM 节点，而是你在 useImperativeHandle 调用中创建的自定义对象。
 ```
 
 ### useLayoutEffect
