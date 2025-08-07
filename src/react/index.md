@@ -534,7 +534,11 @@ function setupCatList() {
 }
 ```
 
-### 使用 Effect 实现同步
+### 使用 Effect 进行同步
+
+### 你可能不需要 Effect
+
+1. 当你决定将某些逻辑放入事件处理函数还是 Effect 中时，你需要回答的主要问题是：从用户的角度来看它是 怎样的逻辑。如果这个逻辑是由某个特定的交互引起的，请将它保留在相应的事件处理函数中。如果是由用户在屏幕上 看到 组件时引起的，请将它保留在 Effect 中。
 
 ## Hooks
 
@@ -721,10 +725,10 @@ function MyInput({ ref }) {
     // 只暴露 focus，没有别的
     focus() {
       realInputRef.current.focus();
-    },
+    }
   }));
   return <input ref={realInputRef} />;
-};
+}
 
 export default function Form() {
   const inputRef = useRef(null);
@@ -771,4 +775,16 @@ useLayoutEffect(() => {
 
 ```js
 useDebugValue(value);
+```
+
+### useSyncExternalStore
+
+1. **作用**
+
+`useSyncExternalStore` 是一个 Hook，它允许你在函数组件中订阅外部存储，并确保在存储更新时重新渲染组件。
+
+2. **使用**
+
+```jsx
+const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 ```
