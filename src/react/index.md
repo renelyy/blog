@@ -540,6 +540,98 @@ function setupCatList() {
 
 1. 当你决定将某些逻辑放入事件处理函数还是 Effect 中时，你需要回答的主要问题是：从用户的角度来看它是 怎样的逻辑。如果这个逻辑是由某个特定的交互引起的，请将它保留在相应的事件处理函数中。如果是由用户在屏幕上 看到 组件时引起的，请将它保留在 Effect 中。
 
+### 响应式 Effect 的生命周期
+
+1. 组件内部的所有值（包括 props、state 和组件体内的变量）都是响应式的。任何响应式值都可以在重新渲染时发生变化，所以需要将响应式值包括在 Effect 的依赖项中。
+2. 全局变量或可变值可以作为依赖项吗？
+
+- 可变值（包括全局变量）不是响应式的。
+- 例如，像 location.pathname 这样的可变值不能作为依赖项。
+- 另外，像 ref.current 或从中读取的值也不能作为依赖项。它允许 跟踪某些值而不触发重新渲染。但由于更改它不会触发重新渲染，它不是响应式值，React 不会知道在其更改时重新运行 Effect。
+
+3. Effect 是一段响应式的代码块。它们在读取的值发生变化时重新进行同步。与事件处理程序不同，事件处理程序只在每次交互时运行一次，而 Effect 则在需要进行同步时运行。
+4. 不能在条件语句中声明 Effect，但是可以在 Effect 内部使用条件语句来控制其行为！
+5. 理想情况下，应用程序中的大多数 Effect 最终都应该由自定义 Hook 替代，无论是由你自己编写还是由社区提供。自定义 Hook 隐藏了同步逻辑，因此调用组件不知道 Effect 的存在。随着你继续开发应用程序，你将开发出一套可供选择的 Hooks，并且最终将不再经常在组件中编写 Effect。
+
+```jsx
+import { useState, useEffect } from "react";
+import { fetchData } from "./api.js";
+
+export function useSelectOptions(url) {
+  const [list, setList] = useState(null);
+  const [selectedId, setSelectedId] = useState("");
+  useEffect(() => {
+    if (url === null) {
+      return;
+    }
+
+    let ignore = false;
+    fetchData(url).then(result => {
+      if (!ignore) {
+        setList(result);
+        setSelectedId(result[0].id);
+      }
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [url]);
+  return [list, selectedId, setSelectedId];
+}
+```
+
+```jsx
+import { useState } from "react";
+import { useSelectOptions } from "./useSelectOptions.js";
+
+export default function Page() {
+  const [planetList, planetId, setPlanetId] = useSelectOptions("/planets");
+
+  const [placeList, placeId, setPlaceId] = useSelectOptions(
+    planetId ? `/planets/${planetId}/places` : null
+  );
+
+  return (
+    <>
+      <label>
+        选择一个行星：{" "}
+        <select
+          value={planetId}
+          onChange={e => {
+            setPlanetId(e.target.value);
+          }}
+        >
+          {planetList?.map(planet => (
+            <option key={planet.id} value={planet.id}>
+              {planet.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        选择一个地点：{" "}
+        <select
+          value={placeId}
+          onChange={e => {
+            setPlaceId(e.target.value);
+          }}
+        >
+          {placeList?.map(place => (
+            <option key={place.id} value={place.id}>
+              {place.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <hr />
+      <p>
+        你将要前往：{planetId || "..."} 的 {placeId || "..."}{" "}
+      </p>
+    </>
+  );
+}
+```
+
 ## Hooks
 
 ### useState
