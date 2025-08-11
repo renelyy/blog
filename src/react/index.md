@@ -632,6 +632,8 @@ export default function Page() {
 }
 ```
 
+### 将事件从 Effect 中分开
+
 ## Hooks
 
 ### useState
@@ -880,3 +882,38 @@ useDebugValue(value);
 ```jsx
 const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 ```
+
+### useEffectEvent
+
+1. **作用**
+
+`useEffectEvent` 是一个 Hook，它允许你在函数组件中创建一个事件处理函数，该函数在组件重新渲染时不会重新创建。
+
+2. **使用**
+
+```jsx
+// 使用 useEffectEvent 这个特殊的 Hook 从 Effect 中提取非响应式逻辑
+// 这里的 onConnected 被称为 Effect Event。它是 Effect 逻辑的一部分，但是其行为更像事件处理函数。
+// 它内部的逻辑不是响应式的，而且能一直“看见”最新的 props 和 state。
+function ChatRoom({ roomId, theme }) {
+  const onConnected = useEffectEvent(() => {
+    showNotification("Connected!", theme);
+  });
+
+  useEffect(() => {
+    const connection = createConnection(serverUrl, roomId);
+    connection.on("connected", () => {
+      onConnected();
+    });
+    connection.connect();
+    return () => connection.disconnect();
+  }, [roomId]); // ✅ 声明所有依赖项
+  // ...
+}
+```
+
+3. **局限性**
+
+- 只在 Effect 内部调用他们。
+- 永远不要把他们传给其他的组件或者 Hook。
+- 永远直接在使用他们的 Effect 旁边声明 Effect Event
