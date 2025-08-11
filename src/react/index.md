@@ -634,6 +634,44 @@ export default function Page() {
 
 ### 将事件从 Effect 中分开
 
+### 移除 Effect 依赖
+
+1. 响应式值 包括 props 以及所有你直接在组件中声明的变量和函数。
+2. 🔴 避免: 单个 Effect 同步两个独立逻辑处理
+3. 每个 Effect 应该代表一个独立的同步过程。如果担心重复代码的问题，可以通过提取相同逻辑到自定义 Hook 来提升代码质量
+4. 是否在读取一些状态来计算下一个状态？
+
+```jsx
+function ChatRoom({ roomId }) {
+  const [messages, setMessages] = useState([]);
+  useEffect(() => {
+    const connection = createConnection();
+    connection.connect();
+    connection.on("message", receivedMessage => {
+      setMessages([...messages, receivedMessage]);
+    });
+    // ...
+  }, [roomId, messages]); // 因为读取了 messages 所以要将其添加为依赖，但是这样每次都会出发重新连接，不是想要的🔴
+  // ...
+}
+```
+
+```jsx
+function ChatRoom({ roomId }) {
+  const [messages, setMessages] = useState([]);
+  useEffect(() => {
+    const connection = createConnection();
+    connection.connect();
+    connection.on("message", receivedMessage => {
+      // 使用更新函数
+      setMessages(msgs => [...msgs, receivedMessage]);
+    });
+    return () => connection.disconnect();
+  }, [roomId]); // ✅ 所有依赖已声明
+  // ...
+}
+```
+
 ## Hooks
 
 ### useState
