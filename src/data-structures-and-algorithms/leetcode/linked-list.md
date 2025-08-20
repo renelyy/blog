@@ -352,6 +352,68 @@ var reverseList = function (head) {
 
 :::
 
+## 4. [LCR 023. 相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/description/)
+
+::: code-group
+
+```js [使用 Set]
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} headA
+ * @param {ListNode} headB
+ * @return {ListNode}
+ * */
+var getIntersectionNode = function (headA, headB) {
+  if (headA === null || headB === null) return null;
+  const set = new Set();
+  let p = headA;
+  while (p) {
+    set.add(p);
+    p = p.next;
+  }
+  p = headB;
+  while (p) {
+    if (set.has(p)) return p;
+    p = p.next;
+  }
+  return null;
+};
+```
+
+```js [双指针]
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+
+/**
+ * @param {ListNode} headA
+ * @param {ListNode} headB
+ * @return {ListNode}
+ */
+var getIntersectionNode = function (headA, headB) {
+  let p = headA,
+    q = headB;
+  while (p !== q) {
+    p = p === null ? headB : p.next;
+    q = q === null ? headA : q.next;
+  }
+  return p;
+};
+```
+
+:::
+
 # 中等题
 
 # 困难题
