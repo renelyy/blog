@@ -111,4 +111,77 @@ var rob = function (nums) {
 };
 ```
 
+## 2. [120. 三角形最小路径和](https://leetcode.cn/problems/triangle/description/)
+
+::: code-group
+
+```js [动态规划实现]
+/**
+ * @param {number[][]} triangle
+ * @return {number}
+ * 时间复杂度 O(n^2)
+ * 空间复杂度 O(n^2)
+ */
+var minimumTotal = function (triangle) {
+  /**
+   * @param {number[][]} triangle
+   * @return {number}
+   */
+  var minimumTotal = function (triangle) {
+    const n = triangle.length;
+    const dp = new Array(n).fill(0).map(() => new Array(n).fill(Infinity));
+    dp[n - 1] = [...triangle[n - 1]];
+    for (let i = n - 2; i >= 0; i--) {
+      for (let j = 0; j <= i; j++) {
+        dp[i][j] = Math.min(dp[i + 1][j], dp[i + 1][j + 1]) + triangle[i][j];
+      }
+    }
+    return dp[0][0];
+  };
+};
+```
+
+```js [动态规划+滚动数组+二维]
+/**
+ * @param {number[][]} triangle
+ * @return {number}
+ */
+var minimumTotal = function (triangle) {
+  const n = triangle.length;
+  const dp = new Array(2).fill(0).map(() => new Array(n).fill(0));
+  // 如果有 n 个元素，n 为偶数时，n - 1 为奇数，则当前行放在 dp[1] 中，而循环是从 n - 2 开始的，少一次循环
+  // 则会循环奇数次，所以最后结果是在 dp[0] 中
+  // 同理，如果 n 为奇数时，n - 1 为偶数，则当前行放在 dp[0] 中，而循环是从 n - 2 开始的，少一次循环
+  // 则会循环偶数次，所以最后结果还是在 dp[0] 中
+  dp[(n - 1) % 2] = [...triangle[n - 1]];
+  for (let i = n - 2; i >= 0; i--) {
+    let ind = i % 2;
+    let nextInd = !ind >> 0;
+    for (let j = 0; j <= i; j++) {
+      dp[ind][j] =
+        Math.min(dp[nextInd][j], dp[nextInd][j + 1]) + triangle[i][j];
+    }
+  }
+  return dp[0][0];
+};
+```
+
+```js [动态规划+滚动数组+一维数组]
+/**
+ * @param {number[][]} triangle
+ * @return {number}
+ */
+var minimumTotal = function (triangle) {
+  const n = triangle.length;
+  const dp = new Array(n).fill(0);
+  dp[n - 1] = [...triangle[n - 1]];
+  for (let i = n - 2; i >= 0; i--) {
+    for (let j = 0; j <= i; j++) {
+      dp[j] = Math.min(dp[j], dp[j + 1]) + triangle[i][j];
+    }
+  }
+  return dp[0];
+};
+```
+
 # 困难题
