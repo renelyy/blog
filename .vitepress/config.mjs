@@ -38,6 +38,10 @@ export default defineConfig({
         link: "/bkts"
       },
       {
+        text: "学习随笔记录",
+        link: "/learn-notes"
+      },
+      {
         text: "数据结构与算法",
         items: [
           {
