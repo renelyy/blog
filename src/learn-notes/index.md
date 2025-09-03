@@ -153,3 +153,26 @@ private User user;
 
 1. ![alt text](image-11.png)
 2. `mysql -h192.168.150.101 -P3306 -uroot -p123` 远程连接数据库
+3. DDL（Data Definition Language）数据定义语言，用于创建、修改和删除数据库对象，例如：表、视图、索引等。
+
+   3.1 数据库操作
+
+- show databases; 查看所有数据库
+- select database(); 查看当前数据库
+- create database [if not exists] 数据库名; 创建数据库
+- drop database [if exists] 数据库名; 删除数据库
+- use 数据库名; 使用数据库
+
+  3.2 表操作
+
+- show tables; 查看当前数据库中的所有表
+- desc 表名; 查看表结构
+- create table 表名(
+  字段 1 数据类型 [约束] [comment 注释],
+  列名 2 数据类型 [约束] [comment 注释],
+  ...
+  ) [comment 注释]; 创建表
+
+4. DML（Data Manipulation Language）数据操作语言，用于查询、插入、更新和删除数据，例如：SELECT、INSERT、UPDATE、DELETE 等。
+5. DQL（Data Query Language）数据查询语言，用于查询数据，例如：SELECT。
+6. DCL（Data Control Language）数据控制语言，用于控制用户对数据库的访问权限，例如：GRANT、REVOKE 等。
