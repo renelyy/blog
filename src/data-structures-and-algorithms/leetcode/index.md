@@ -6,7 +6,7 @@
 
 :::
 
-1. [链表](./linked-list) `3`
+1. [链表](./1.linked-list) `3`
 2. [二叉树](./binary-tree) `5`
 3. [二分查找](./binary-search) `1`
 4. [动态规划](./dynamic-programming) `1`
