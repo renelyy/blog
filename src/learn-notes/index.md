@@ -148,3 +148,8 @@ private User user;
 ```
 
 ![alt text](image-10.png)
+
+### 数据库
+
+1. ![alt text](image-11.png)
+2. `mysql -h192.168.150.101 -P3306 -uroot -p123` 远程连接数据库
