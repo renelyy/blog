@@ -425,6 +425,25 @@ LinkedList 实现了 java.io.Serializable 接口，即可支持序列化，能�
 
 ### Java HashSet
 
+1. HashSet 基于 HashMap 来实现的，是一个不允许有重复元素的集合。
+2. HashSet 允许有 null 值。
+3. HashSet 是无序的，即不会记录插入的顺序。
+4. HashSet 不是线程安全的， 如果多个线程尝试同时修改 HashSet，则最终结果是不确定的。 您必须在多线程访问时显式同步对 HashSet 的并发访问。
+5. HashSet 实现了 Set 接口。
+
+![alt text](image-4.png)
+
+HashSet 中的元素实际上是对象，一些常见的基本类型可以使用它的包装类。
+
+#### HashSet 常用方法
+
+- add `public boolean add(E e)`: 如果此 set 中尚未包含指定元素，则添加指定元素。
+- remove `public boolean remove(Object o)`: 如果指定元素存在于此 set 中，则将其移除。
+- contains `public boolean contains(Object o)`: 如果此 set 包含指定元素，则返回 true。
+- size `public int size()`: 返回此 set 中的元素个数。
+- isEmpty `public boolean isEmpty()`: 如果此 set 不包含任何元素，则返回 true。
+- clear `public void clear()`: 移除此 set 中的所有元素。
+
 ### Java HashMap
 
 ### Java Iterator
