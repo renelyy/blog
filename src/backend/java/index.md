@@ -517,6 +517,85 @@ Java Object 类是所有类的父类，也就是说 Java 的所有类都继承�
 
 ### Java NIO Files
 
+#### 主要特点
+
+- **静态方法**：所有方法都是静态的，无需创建实例
+- **功能丰富**：提供文件读写、属性操作、目录遍历等多种功能
+- **异常处理**：统一使用 IOException 处理文件操作异常
+- **与 Path 配合**：主要与 java.nio.file.Path 接口一起使用
+
+#### 常用方法分类
+
+1. 文件操作
+
+- copy `public static Path copy(Path source, Path target, CopyOption... options) throws IOException`: 复制文件或目录
+- move `public static Path move(Path source, Path target, CopyOption... options) throws IOException`: 移动文件或目录
+- delete `public static void delete(Path path) throws IOException`: 删除文件或目录
+- deleteIfExists `public static boolean deleteIfExists(Path path) throws IOException`: 删除文件或目录（如果存在）
+
+2. 文件属性
+
+- exits `public static boolean exists(Path path, LinkOption... options) throws IOException`: 判断文件是否存在
+- isDirectory `public static boolean isDirectory(Path path, LinkOption... options) throws IOException`: 判断是否为目录
+- isRegularFile `public static boolean isRegularFile(Path path, LinkOption... options) throws IOException`: 判断是否为普通文件
+- isReadable `public static boolean isReadable(Path path) throws IOException`: 判断文件是否可读
+- isWritable `public static boolean isWritable(Path path) throws IOException`: 判断文件是否可写
+- isExecutable `public static boolean isExecutable(Path path) throws IOException`: 判断文件是否可执行
+- size `public static long size(Path path) throws IOException`: 获取文件大小
+- getLastModifiedTime `public static FileTime getLastModifiedTime(Path path, LinkOption... options) throws IOException`: 获取文件最后修改时间
+
+3. 文件内容操作
+
+- readAllBytes `public static byte[] readAllBytes(Path path) throws IOException`: 读取文件所有字节
+- readAllLines `public static List<String> readAllLines(Path path, Charset charset) throws IOException`: 读取文件所有行
+- lines `public static Stream<String> lines(Path path, Charset charset) throws IOException`: 按行读取文件内容
+- write `public static Path write(Path path, byte[] bytes, OpenOption... options) throws IOException`: 写入文件内容
+
+4. 目录操作
+
+- list `public static Stream<Path> list(Path dir) throws IOException`: 列出目录下的所有文件和子目录
+- newDirectoryStream `public static DirectoryStream<Path> newDirectoryStream(Path dir, DirectoryStream.Filter<? super Path> filter) throws IOException`: 创建一个目录流，用于遍历目录下的文件和子目录
+- createDirectory `public static Path createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException`: 创建目录
+- createDirectories `public static Path createDirectories(Path dir, FileAttribute<?>... attrs) throws IOException`: 创建多级目录
+
+5. 临时文件/目录
+
+- createTempFile `public static Path createTempFile(String prefix, String suffix, FileAttribute<?>... attrs) throws IOException`: 创建临时文件
+- createTempDirectory `public static Path createTempDirectory(String prefix, FileAttribute<?>... attrs) throws IOException`: 创建临时目录
+
+6. 其他
+
+- createFile `public static Path createFile(Path path, FileAttribute<?>... attrs) throws IOException`: 创建文件
+- newByteChannel `public static SeekableByteChannel newByteChannel(Path path, OpenOption... options) throws IOException`: 创建字节通道
+- newInputStream `public static InputStream newInputStream(Path path, OpenOption... options) throws IOException`: 创建输入流
+- 等等
+
+#### 最佳实践
+
+1. 异常处理
+
+```java
+try {
+    Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+} catch (IOException e) {
+    System.err.println("文件操作失败: " + e.getMessage());
+}
+```
+
+2. 资源清理
+
+```java
+try (Stream<String> lines = Files.lines(path)) {
+    lines.forEach(System.out::println);
+} // 自动关闭流
+```
+
+3. 性能考虑
+
+- 对于大文件，使用缓冲流 (Files.newBufferedReader/Files.newBufferedWriter)
+- 批量操作时考虑使用 Files.walk 而非递归调用
+- 频繁访问的属性可以缓存
+
 ### Java 泛型
 
 ### Java 序列化
