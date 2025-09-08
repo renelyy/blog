@@ -472,6 +472,28 @@ HashMap 继承于 AbstractMap，实现了 Map、Cloneable、java.io.Serializable
 
 ### Java Iterator
 
+1. Java 迭代器（Iterator）是 Java 集合框架中的一种机制，是一种用于遍历集合（如列表、集合和映射等）的接口。
+2. 它提供了一种统一的方式来访问集合中的元素，而不需要了解底层集合的具体实现细节。
+3. Java Iterator（迭代器）不是一个集合，它是一种用于访问集合的方法，可用于迭代 ArrayList 和 HashSet 等集合。
+4. Iterator 是 Java 迭代器最简单的实现，ListIterator 是 Collection API 中的接口， 它扩展了 Iterator 接口。
+
+![alt text](image-6.png)
+
+迭代器接口定义了几个方法，最常用的是以下三个
+
+- next `public E next()`: 返回迭代中的下一个元素。
+- hasNext `public boolean hasNext()`: 如果迭代具有更多元素，则返回 true。
+- remove `public void remove()`: 从迭代器指向的集合中移除迭代器返回的最后一个元素（可选操作）。
+
+获取迭代器可使用 `iterator()` 方法，例如：
+
+```java
+List<String> list = new ArrayList<String>();
+Iterator<String> it = list.iterator();
+```
+
+注意：Java 迭代器是一种单向遍历机制，即只能从前往后遍历集合中的元素，不能往回遍历。同时，在使用迭代器遍历集合时，不能直接修改集合中的元素，而是需要使用迭代器的 remove() 方法来删除当前元素。
+
 ### Java Object
 
 ### Java NIO Files
