@@ -375,6 +375,28 @@ public class CustomException extends Exception {
 
 ### Java ArrayList
 
+ArrayList 类是一个可以动态修改的数组，与普通数组的区别就是它是没有固定大小的限制，我们可以添加或删除元素。
+
+ArrayList 继承了 AbstractList ，并实现了 List 接口。
+![alt text](image-2.png)
+
+#### ArrayList 常用方法
+
+1. add `public boolean add(E e)`: 将指定的元素添加到此列表的尾部。
+2. add `public void add(int index, E element)`: 在此列表中的指定位置插入指定的元素。
+3. addAll `public boolean addAll(Collection<? extends E> c)`: 按照指定 collection 的迭代器所返回的元素顺序，将该 collection 中的所有元素添加到此列表的尾部。
+4. addAll `public boolean addAll(int index, Collection<? extends E> c)`: 从指定的位置开始，将指定 collection 中的所有元素插入到此列表中。
+5. get `public E get(int index)`: 返回此列表中指定位置的元素。
+6. set `public E set(int index, E element)`: 将此列表中指定位置的元素替换为指定的元素。
+7. isEmpty `public boolean isEmpty()`: 如果此列表中没有元素，则返回 true。
+8. indexOf `public int indexOf(Object o)`: 返回此列表中第一次出现的指定元素的索引，如果此列表不包含该元素，则返回 -1。
+9. forEach `public void forEach(Consumer<? super E> action)`: 对列表中的每个元素执行给定的操作。
+10. clear `public void clear()`: 移除此列表中的所有元素。
+11. clone `public Object clone()`: 返回此 ArrayList 实例的浅表副本。
+12. contains `public boolean contains(Object o)`: 如果此列表包含指定的元素，则返回 true。
+13. toArray `public Object[] toArray()`: 返回一个包含此列表中所有元素的数组。
+14. size `public int size()`: 返回此列表中的元素数。
+
 ### Java LinkedList
 
 ### Java HashSet
