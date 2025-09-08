@@ -496,6 +496,25 @@ Iterator<String> it = list.iterator();
 
 ### Java Object
 
+Java Object 类是所有类的父类，也就是说 Java 的所有类都继承了 Object，子类可以使用 Object 的所有方法。
+
+![alt text](image-7.png)
+
+1. Object 类位于 java.lang 包中，编译时会自动导入，我们创建一个类时，如果没有明确继承一个父类，那么它就会自动继承 Object，成为 Object 的子类。
+2. Object 类可以显式继承，也可以隐式继承，以下两种方式是一样的：
+
+#### Object 常用方法
+
+- clone `protected Object clone() throws CloneNotSupportedException`: 创建并返回此对象的一个副本。
+- equals `public boolean equals(Object obj)`: 指示其他某个对象是否与此对象“相等”。
+- finalize `protected void finalize() throws Throwable`: 当垃圾回收器确定不存在对该对象的更多引用时，由对象的垃圾回收器调用此方法。
+- getClass `public final Class<?> getClass()`: 返回此 Object 的运行时类。
+- hashCode `public native int hashCode()`: 返回该对象的哈希码值。
+- notify `public final native void notify()`: 唤醒在此对象监视器上等待的单个线程。
+- notifyAll `public final native void notifyAll()`: 唤醒在此对象监视器上等待的所有线程。
+- toString `public String toString()`: 返回该对象的字符串表示。
+- wait `public final native void wait(long timeout) throws InterruptedException`: 在其他线程调用此对象的 notify() 方法或 notifyAll() 方法，或超过指定的时间量前，导致当前线程等待。
+
 ### Java NIO Files
 
 ### Java 泛型
