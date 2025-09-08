@@ -2,6 +2,101 @@
 
 ## Java 教程
 
+### Java 基本数据类型
+
+1. **内置类型**：Java 提供了八种基本数据类型，6 种数字类型，1 种字符类型，1 种布尔类型，分别是 `byte`、`short`、`int`、`long`、`float`、`double`、`char` 和 `boolean`。
+
+- `byte`：表示 8 位有符号整数，范围从 -128(-2^7) 到 127(2^7-1)，默认值 0。
+- `short`：表示 16 位有符号整数，范围从 -32,768(-2^15) 到 32,767(2^15-1)，默认值 0。
+- `int`：表示 32 位有符号整数，范围从 -2^31 到 2^31-1，默认值 0。
+- `long`：表示 64 位有符号整数，范围从 -2^63 到 2^63-1，默认值 0L。
+- `float`：表示 32 位单精度浮点数，默认值 0.0f。
+- `double`：表示 64 位双精度浮点数，默认值 0.0d。
+- `char`：表示 16 位 Unicode 字符，范围从 \u0000 到 \uffff，默认值 '\u0000'。
+- `boolean`：表示布尔值，只有两个取值：true 和 false，默认值 false。
+
+| 数据类型 | 大小（字节） | 默认值   | 取值范围         |
+| :------- | :----------- | :------- | :--------------- |
+| byte     | 1            | 0        | -128~127         |
+| short    | 2            | 0        | -32,768~32,767   |
+| int      | 4            | 0        | -2^31~2^31-1     |
+| long     | 8            | 0L       | -2^63~2^63-1     |
+| float    | 4            | 0.0f     | 1.4E-45~3.4E38   |
+| double   | 8            | 0.0d     | 4.9E-324~1.8E308 |
+| char     | 2            | '\u0000' | 0~65535          |
+
+```java
+public class PrimitiveTypeTest {
+    public static void main(String[] args) {
+        // byte
+        System.out.println("基本类型：byte 二进制位数：" + Byte.SIZE);
+        System.out.println("包装类：java.lang.Byte");
+        System.out.println("最小值：Byte.MIN_VALUE=" + Byte.MIN_VALUE);
+        System.out.println("最大值：Byte.MAX_VALUE=" + Byte.MAX_VALUE);
+        System.out.println();
+
+        // short
+        System.out.println("基本类型：short 二进制位数：" + Short.SIZE);
+        System.out.println("包装类：java.lang.Short");
+        System.out.println("最小值：Short.MIN_VALUE=" + Short.MIN_VALUE);
+        System.out.println("最大值：Short.MAX_VALUE=" + Short.MAX_VALUE);
+        System.out.println();
+
+        // int
+        System.out.println("基本类型：int 二进制位数：" + Integer.SIZE);
+        System.out.println("包装类：java.lang.Integer");
+        System.out.println("最小值：Integer.MIN_VALUE=" + Integer.MIN_VALUE);
+        System.out.println("最大值：Integer.MAX_VALUE=" + Integer.MAX_VALUE);
+        System.out.println();
+
+        // long
+        System.out.println("基本类型：long 二进制位数：" + Long.SIZE);
+        System.out.println("包装类：java.lang.Long");
+        System.out.println("最小值：Long.MIN_VALUE=" + Long.MIN_VALUE);
+        System.out.println("最大值：Long.MAX_VALUE=" + Long.MAX_VALUE);
+        System.out.println();
+
+        // float
+        System.out.println("基本类型：float 二进制位数：" + Float.SIZE);
+        System.out.println("包装类：java.lang.Float");
+        System.out.println("最小值：Float.MIN_VALUE=" + Float.MIN_VALUE);
+        System.out.println("最大值：Float.MAX_VALUE=" + Float.MAX_VALUE);
+        System.out.println();
+
+        // double
+        System.out.println("基本类型：double 二进制位数：" + Double.SIZE);
+        System.out.println("包装类：java.lang.Double");
+        System.out.println("最小值：Double.MIN_VALUE=" + Double.MIN_VALUE);
+        System.out.println("最大值：Double.MAX_VALUE=" + Double.MAX_VALUE);
+        System.out.println();
+
+        // char
+        System.out.println("基本类型：char 二进制位数：" + Character.SIZE);
+        System.out.println("包装类：java.lang.Character");
+        // 以数值形式而不是字符形式将Character.MIN_VALUE输出到控制台
+        System.out.println("最小值：Character.MIN_VALUE="
+                + (int) Character.MIN_VALUE);
+        // 以数值形式而不是字符形式将Character.MAX_VALUE输出到控制台
+        System.out.println("最大值：Character.MAX_VALUE="
+                + (int) Character.MAX_VALUE);
+    }
+}
+```
+
+2. **引用类型**：除了基本数据类型，Java 还提供了引用类型，包括类、接口、数组等。
+
+3. **自动类型转换**：必须满足转换前的数据类型的位数要低于转换后的数据类型，例如: short 数据类型的位数为 16 位，就可以自动转换位数为 32 的 int 类型，同样 float 数据类型的位数为 32，可以自动转换为 64 位的 double 类型
+
+数据类型转化需要满足一下规则
+
+- 不能对 boolean 类型进行类型转换
+- 不能把对象类型转换成不相关类的对象
+- 在把容量大的类型转换为容量小的类型时必须使用强制类型转换
+- 转换过程中可能导致溢出或损失精度
+- 浮点数到整数的转换是通过舍弃小数得到，而不是四舍五入
+
+4. **强制类型转换**：条件是转换的数据类型必须是兼容的
+
 ### Java StringBuffer 和 StringBuilder
 
 核心区别就在于**线程安全性**。
