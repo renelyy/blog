@@ -446,6 +446,30 @@ HashSet 中的元素实际上是对象，一些常见的基本类型可以使用
 
 ### Java HashMap
 
+HashMap 是一个散列表，它存储的内容是键值对(key-value)映射。
+HashMap 实现了 Map 接口，根据键的 HashCode 值存储数据，具有很快的访问速度，最多允许一条记录的键为 null，不支持线程同步。
+HashMap 是无序的，即不会记录插入的顺序。
+HashMap 继承于 AbstractMap，实现了 Map、Cloneable、java.io.Serializable 接口。
+
+![alt text](image-5.png)
+
+#### HashMap 常用方法
+
+- put `public V put(K key, V value)`: 将指定的值与此映射中的指定键关联（可选操作）。
+- get `public V get(Object key)`: 返回到指定键所映射的值，或 null。
+- clear `public void clear()`: 从此映射中移除所有映射关系（可选操作）。
+- isEmpty `public boolean isEmpty()`: 如果此映射未包含键-值映射关系，则返回 true。
+- size `public int size()`: 返回此映射中的键-值映射关系数。
+- containsKey `public boolean containsKey(Object key)`: 如果此映射包含指定键的映射关系，则返回 true。
+- containsValue `public boolean containsValue(Object value)`: 如果此映射将一个或多个键映射到指定值，则返回 true。
+- remove `public V remove(Object key)`: 如果存在一个键的映射关系，则将其从此映射中移除（可选操作）。
+- replace `public V replace(K key, V value)`: 仅当它当前将某个键映射到某个值时才替换指定键的条目。
+- replaceAll `public void replaceAll(BiFunction<? super K,? super V,? extends V> function)`: 将每个键值对替换为对该键应用给定函数的结果。
+- forEach `public void forEach(BiConsumer<? super K,? super V> action)`: 对此映射中的每个条目执行给定的操作。
+- keySet `public Set<K> keySet()`: 返回此映射中包含的键的 Set 视图。
+- entrySet `public Set<Map.Entry<K,V>> entrySet()`: 返回此映射中包含的映射关系的 Set 视图。
+- values `public Collection<V> values()`: 返回此映射中包含的值的 Collection 视图。
+
 ### Java Iterator
 
 ### Java Object
