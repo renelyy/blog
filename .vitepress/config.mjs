@@ -35,7 +35,14 @@ export default defineConfig({
       },
       {
         text: "后端技术",
-        link: "/bkts"
+        link: "/backend",
+        collapsed: true,
+        items: [
+          {
+            text: "Java",
+            link: "/backend/java"
+          }
+        ]
       },
       {
         text: "学习随笔记录",
