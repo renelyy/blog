@@ -41,6 +41,10 @@ export default defineConfig({
           {
             text: "Java",
             link: "/backend/java"
+          },
+          {
+            text: "MyBatis",
+            link: "/backend/mybatis"
           }
         ]
       },
