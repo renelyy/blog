@@ -399,6 +399,30 @@ ArrayList 继承了 AbstractList ，并实现了 List 接口。
 
 ### Java LinkedList
 
+LinkedList 继承了 AbstractSequentialList 类。
+LinkedList 实现了 Queue 接口，可作为队列使用。
+LinkedList 实现了 List 接口，可进行列表的相关操作。
+LinkedList 实现了 Deque 接口，可作为队列使用。
+LinkedList 实现了 Cloneable 接口，可实现克隆。
+LinkedList 实现了 java.io.Serializable 接口，即可支持序列化，能通过序列化去传输。
+
+![alt text](image-3.png)
+
+#### LinkedList 常用方法
+
+1. add `public boolean add(E e)`: 将指定的元素添加到此列表的尾部。
+2. add `public void add(int index, E element)`: 在此列表中的指定位置插入指定的元素。
+3. addAll `public boolean addAll(Collection<? extends E> c)`: 按照指定 collection 的迭代器所返回的元素顺序，将该 collection 中的所有元素添加到此列表的尾部。
+4. addAll `public boolean addAll(int index, Collection<? extends E> c)`: 从指定的位置开始，将指定 collection 中的所有元素插入到此列表中。
+5. addFirst `public void addFirst(E e)`: 将指定的元素插入此列表的开头。
+6. addLast `public void addLast(E e)`: 将指定的元素添加到此列表的末尾。
+7. removeFirst `public E removeFirst()`: 移除并返回此列表的第一个元素。
+8. removeLast `public E removeLast()`: 移除并返回此列表的最后一个元素。
+9. getFirst `public E getFirst()`: 返回此列表的第一个元素。
+10. getLast `public E getLast()`: 返回此列表的最后一个元素。
+11. get `public E get(int index)`: 返回此列表中指定位置的元素。
+12. poll `public E poll()`: 获取并移除此列表的头（第一个元素），如果此列表为空，则返回 null。
+
 ### Java HashSet
 
 ### Java HashMap
