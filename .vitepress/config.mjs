@@ -157,6 +157,10 @@ export default defineConfig({
         ]
       },
       {
+        text: "代码片段",
+        link: "/code-snippets"
+      },
+      {
         text: "设计模式",
         link: "/design-patterns",
         collapsed: true,
