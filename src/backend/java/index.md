@@ -645,7 +645,7 @@ public class MaximumTest {
 
 #### 类型通配符
 
-1. 类型通配符一般是使用 ? 代替具体的类型参数。例如 List<?> 在逻辑上是 List<String>,List<Integer> 等所有 List<具体类型实参> 的父类。
+1. 类型通配符一般是使用 ? 代替具体的类型参数。例如 `List<?>` 在逻辑上是 `List<String>`,`List<Integer>` 等所有 `List<具体类型实参>` 的父类。
 
 ```java
 public static void printList(List<?> list) {
