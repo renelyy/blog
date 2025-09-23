@@ -30,7 +30,8 @@ export default defineConfig({
             text: "JS",
             link: "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
           },
-          { text: "React", link: "/react" }
+          { text: "React", link: "/react" },
+          { text: "ES6", link: "/es6" }
         ]
       },
       {
