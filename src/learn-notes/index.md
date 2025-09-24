@@ -177,6 +177,13 @@ private User user;
 5. DQL（Data Query Language）数据查询语言，用于查询数据，例如：SELECT。
 6. DCL（Data Control Language）数据控制语言，用于控制用户对数据库的访问权限，例如：GRANT、REVOKE 等。
 
-## 2025-09-04
+## 2025-09-09
 
 ### 黑马 JavaWeb 教程
+
+#### 开发规范-Restful
+
+- REST(Representational State Transfer) ，表述性状态转换，它是一种软件架构风格
+
+![alt text](image-12.png)
+![alt text](image-13.png)

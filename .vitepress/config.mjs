@@ -30,12 +30,24 @@ export default defineConfig({
             text: "JS",
             link: "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
           },
-          { text: "React", link: "/react" }
+          { text: "React", link: "/react" },
+          { text: "ES6", link: "/es6" }
         ]
       },
       {
         text: "后端技术",
-        link: "/bkts"
+        link: "/backend",
+        collapsed: true,
+        items: [
+          {
+            text: "Java",
+            link: "/backend/java"
+          },
+          {
+            text: "MyBatis",
+            link: "/backend/mybatis"
+          }
+        ]
       },
       {
         text: "学习随笔记录",
@@ -144,6 +156,10 @@ export default defineConfig({
             link: "/data-structures-and-algorithms/sort"
           }
         ]
+      },
+      {
+        text: "代码片段",
+        link: "/code-snippets"
       },
       {
         text: "设计模式",
