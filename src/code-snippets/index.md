@@ -80,3 +80,23 @@ class DistributedEdit extends mix(Loggable, Serializable) {
   // ...
 }
 ```
+
+## 使用 Promise 加载图片
+
+```js
+function loadImageAsync(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+
+    image.onload = () => {
+      resolve(image);
+    };
+
+    image.onerror = () => {
+      reject(new Error(`Could not load image at ${url}`));
+    };
+
+    image.src = url;
+  });
+}
+```
