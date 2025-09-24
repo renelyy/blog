@@ -100,3 +100,26 @@ function loadImageAsync(url) {
   });
 }
 ```
+
+## 使用 Promise 封装 AJAX 请求
+
+```js
+function ajax(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.responseType = "json";
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        resolve(xhr.response);
+      } else {
+        reject(new Error(`Request failed with status ${xhr.status}`));
+      }
+    };
+    xhr.onerror = () => {
+      reject(new Error("Network Error"));
+    };
+    xhr.send();
+  });
+}
+```
