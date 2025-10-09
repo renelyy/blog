@@ -162,6 +162,14 @@ export default defineConfig({
         link: "/code-snippets"
       },
       {
+        text: "编程风格",
+        link: "/coding-style"
+      },
+      {
+        text: "浏览器",
+        link: "/browser"
+      },
+      {
         text: "设计模式",
         link: "/design-patterns",
         collapsed: true,
