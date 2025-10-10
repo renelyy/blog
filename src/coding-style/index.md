@@ -77,7 +77,8 @@ npm install --save-dev eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin
 
 ````
 
-```.eslintrc
+.eslintrc
+```json
 {
   "extends": "eslint-config-airbnb"
 }
