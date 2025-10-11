@@ -326,3 +326,49 @@ function myInstanceOf(obj, constructor) {
   return false;
 }
 ```
+
+### 实现并发请求
+
+```js
+function limitConcurrentRequests(tasks, maxConcurrency = 6) {
+  return new Promise((resolve, reject) => {
+    const results = [];
+    let running = 0;
+    let index = 0;
+
+    const runNext = () => {
+      // 如果所有任务都已经完成 resolve 结果
+      if (index >= tasks.length && running === 0) {
+        resolve(results);
+        return;
+      }
+
+      // 如果可以启动更多任务，启动它
+      while (running < maxConcurrency && index < tasks.length) {
+        const currentIndex = index++;
+        const task = tasks[currentIndex];
+
+        running++;
+        console.log(`>>> 当前并发数: ${running}`);
+        console.log("-----------------------------");
+        console.log(`>>> 执行第${currentIndex + 1}个任务`);
+        task()
+          .then(result => {
+            console.log(`>>> 第${currentIndex}个任务完成`);
+            results[currentIndex] = result;
+          })
+          .catch(error => {
+            results[currentIndex] = error;
+            reject(error);
+          })
+          .finally(() => {
+            running--;
+            runNext();
+          });
+      }
+    };
+
+    runNext();
+  });
+}
+```
