@@ -301,3 +301,28 @@ setTimeout(() => {
 }, 0);
 // 第二次触发 render
 ```
+
+### 实现 instanceof
+
+```js
+function myInstanceOf(obj, constructor) {
+  // 检查构造函数是否为函数
+  if (typeof constructor !== "function") {
+    throw new TypeError("Right-hand side of 'instanceof' is not callable");
+  }
+
+  // 检查 obj 是否为对象或者函数
+  if (obj === null || (typeof obj !== "object" && typeof obj !== "function")) {
+    return false;
+  }
+
+  let proto = Object.getPrototypeOf(obj);
+  while (proto) {
+    if (proto === constructor.prototype) {
+      return true;
+    }
+    proto = Object.getPrototypeOf(proto);
+  }
+  return false;
+}
+```
