@@ -254,3 +254,50 @@ const res = addSecureWatermark("机密文档 禁止外传", {
   backgroundRepeat: "repeat" // 确保平铺
 });
 ```
+
+### 实现响应式数据 + 依赖收集
+
+```js
+class Component {
+  _data = { name: "" };
+  pending = false;
+  constructor() {
+    this.__init();
+  }
+  render() {
+    console.warn(`render - name:${this._data.name}`);
+  }
+  __init() {
+    this.data = new Proxy(this._data, {
+      get: (target, key) => {
+        console.log(`get - ${key}`);
+        return target[key];
+      },
+      set: (target, key, value) => {
+        console.log(`set - ${key} = ${value}`);
+        target[key] = value;
+        if (!this.pending) {
+          this.pending = true;
+          Promise.resolve().then(() => {
+            this.render();
+
+            this.pending = false;
+          });
+        }
+      }
+    });
+  }
+}
+
+// 要求以下代码需要触发 render，且同步变更需要合并
+const component = new Component();
+component.data.name = "hello";
+component.data.name = "world";
+component.data.name = "renel";
+// 第一次触发 render
+
+setTimeout(() => {
+  component.data.name = "renel2";
+}, 0);
+// 第二次触发 render
+```
