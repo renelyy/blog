@@ -170,6 +170,10 @@ export default defineConfig({
         link: "/browser"
       },
       {
+        text: "场景题",
+        link: "/scenes"
+      },
+      {
         text: "设计模式",
         link: "/design-patterns",
         collapsed: true,
