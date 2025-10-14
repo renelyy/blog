@@ -174,6 +174,10 @@ export default defineConfig({
         link: "/scenes"
       },
       {
+        text: "前端工程化",
+        link: "/frontend-engineering"
+      },
+      {
         text: "设计模式",
         link: "/design-patterns",
         collapsed: true,
