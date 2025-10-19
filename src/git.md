@@ -166,6 +166,12 @@ git log --oneline --stat --author="username" --since="2021-01-01" --until="2021-
 git log --oneline --stat --author="username" --since="2021-01-01" --until="2021-12-31" --date=iso --sort=-committerdate
 ```
 
+24. 导出提交记录到文件
+
+```
+git log --all --since="2025-04-01" --until="2025-06-06" --oneline > commit_history.txt
+```
+
 ### git reset 相关
 
 1. 撤销提交但保留暂存状态（将提交到本地的代码回退到暂存区）

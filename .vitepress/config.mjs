@@ -162,6 +162,22 @@ export default defineConfig({
         link: "/code-snippets"
       },
       {
+        text: "编程风格",
+        link: "/coding-style"
+      },
+      {
+        text: "浏览器",
+        link: "/browser"
+      },
+      {
+        text: "场景题",
+        link: "/scenes"
+      },
+      {
+        text: "前端工程化",
+        link: "/frontend-engineering"
+      },
+      {
         text: "设计模式",
         link: "/design-patterns",
         collapsed: true,
