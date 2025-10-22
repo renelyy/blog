@@ -178,6 +178,10 @@ export default defineConfig({
         link: "/frontend-engineering"
       },
       {
+        text: "vim",
+        link: "/vim"
+      },
+      {
         text: "设计模式",
         link: "/design-patterns",
         collapsed: true,
