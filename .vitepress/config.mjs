@@ -286,8 +286,8 @@ export default defineConfig({
                 text: "Vue",
                 collapsed: true,
                 items: [
-                  { text: "Vue2", link: "/interview/vue/2" },
-                  { text: "Vue3", link: "/interview/vue/3" }
+                  { text: "Vue2", link: "/interview/vue/vue2" },
+                  { text: "Vue3", link: "/interview/vue/vue3" }
                 ]
               },
               {
