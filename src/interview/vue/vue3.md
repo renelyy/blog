@@ -948,3 +948,90 @@ export {
 ```
 
 :::
+
+### 渲染器
+
+1. 渲染器的作用是把虚拟 DOM 渲染为特定平台上的真实元素
+2. 替换使用。为了避免造成困惑，在本书中将统一使用 vnode
+3. 自定义渲染器并不是“黑魔法”​，它只是通过抽象的手段，让核心代码不再依赖平台特有的 API，再通过支持个性化配置的能力来实现跨平台
+
+```js
+const renderer = createRenderer({
+  // 创建元素
+  createElement(tag) {
+    return document.createElement(tag);
+  },
+  // 设置元素的文本内容
+  setElementText(el, text) {
+    el.textContent = text;
+  },
+  // 在给定的 parent 元素下添加一个子元素
+  insert(el, parent, anchor = null) {
+    parent.insertBefore(el, anchor);
+  },
+})
+
+function createRenderer(options) {
+  const {
+    createElement,
+    setElementText,
+    insert,
+  } = options;
+
+  function render(vnode, container) {
+    if (vnode) {
+      // 新的 vnode 存在，将其与旧的 vnode 一起传递给 patch 函数，进行打补丁
+      patch(container._vnode, vnode, container);
+    } else {
+      if (container._vnode) {
+        // 旧的 vnode 存在，且新的 vnode 不存在，说明是卸载操作，调用 unmount 函数卸载旧的 vnode
+        unmount(container._vnode);
+      }
+    }
+
+    // 把 vnode 存储到 container._vnode 中，即后续渲染的旧的 vnode
+    container._vnode = vnode;
+  }
+
+  function patch(n1, n2, container) {
+    // 如果 n1 不存在，说明是挂载操作，则调用 mountElement 函数完成挂载
+    if (!n1) {
+      mountElement(n2, container);
+    } else {
+      // 
+    }
+  }
+
+  /**
+   * 挂载元素
+   * 
+   * @param {Object} vnode 虚拟节点
+   * @param {HTMLElement} container 容器
+   */
+  function mountElement(vnode, container) {
+    // 创建 DOM 元素节点
+    const el = createElement(vnode.type);
+    // 处理子节点，如果 vnode 的子节点是字符串，代表元素具有文本节点
+    if (typeof vnode.children === "string") {
+      // 因此只需要设置元素的 textContent 属性即可
+      setElementText(el, vnode.children);
+    }
+
+    // 将元素添加到容器中
+    insert(el, container);
+  }
+
+  function unmount(vnode) {
+    
+  }
+
+  function hydrate(vnode, container) {
+    //
+  }
+
+  return {
+    render,
+    hydrate
+  }
+}
+```
