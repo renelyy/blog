@@ -954,8 +954,26 @@ export {
 1. 渲染器的作用是把虚拟 DOM 渲染为特定平台上的真实元素
 2. 替换使用。为了避免造成困惑，在本书中将统一使用 vnode
 3. 自定义渲染器并不是“黑魔法”​，它只是通过抽象的手段，让核心代码不再依赖平台特有的 API，再通过支持个性化配置的能力来实现跨平台
+4. 并不是所有 HTML Attributes 都有与之对应的 DOM Properties，例如：aria-* 类的 HTML Attributes 就没有与之对应的 DOM Properties
+5. 类似地，也不是所有 DOM Properties 都有与之对应的 HTML Attributes，例如可以用 el.textContent 来设置元素的文本内容，但并没有与之对应的 HTML Attributes 来完成同样的工作
+6. HTML Attributes 的作用是设置与之对应的 DOM Properties 的初始值。一旦值改变，那么 DOM Properties 始终存储着当前值，而通过 getAttribute 函数得到的仍然是初始值
+7. `<input/>` 标签的 form 属性必须使用setAttribute 函数来设置，实际上，不仅仅是 `<input/>` 标签，所有表单元素都具有 form 属性，它们都应该作为 HTML Attributes 被设置
 
 ```js
+const vnode = {
+  type: "div",
+  // 使用 props 描述一个元素的属性
+  props: {
+    id: "foo"
+  },
+  children: [
+    {
+      type: "p",
+      children: "hello"
+    }
+  ]
+};
+
 const renderer = createRenderer({
   // 创建元素
   createElement(tag) {
@@ -969,14 +987,28 @@ const renderer = createRenderer({
   insert(el, parent, anchor = null) {
     parent.insertBefore(el, anchor);
   },
-})
+  patchProps(el, key, prevValue, nextValue) {
+    if (shouldSetAsProps(el, key, nextValue)) {
+      // 获取该 DOM Properties 的类型
+      const type = typeof el[key];
+      const value = nextValue;
+
+      // 如果 DOM Properties 是布尔类型，并且 value 是空字符串，则将值矫正 为 true
+      if (type === "boolean" && value === "") {
+        el[key] = true;
+      } else {
+        // 否则，直接设置 DOM Properties 的值为 nextValue
+        el[key] = value;
+      }
+    } else {
+      // 如果不存在对应的 DOM Properties，则调用 el.setAttribute 函数设置属性
+      el.setAttribute(key, nextValue);
+    }
+  }
+});
 
 function createRenderer(options) {
-  const {
-    createElement,
-    setElementText,
-    insert,
-  } = options;
+  const { createElement, setElementText, insert } = options;
 
   function render(vnode, container) {
     if (vnode) {
@@ -998,13 +1030,26 @@ function createRenderer(options) {
     if (!n1) {
       mountElement(n2, container);
     } else {
-      // 
+      //
     }
+  }
+
+  function shouldSetAsProps(el, key, value) {
+    // 特殊处理
+    if (key === 'form' && el.tagName === 'INPUT') {
+      // input 的 form 属性是只读的，不能通过 el.form = value 的方式来设置其值
+      // 只能通过 el.setAttribute('form', value) 的方式来设置其值
+      return false;
+    }
+
+    // 以及其他特殊的情况...
+
+    return key in el;
   }
 
   /**
    * 挂载元素
-   * 
+   *
    * @param {Object} vnode 虚拟节点
    * @param {HTMLElement} container 容器
    */
@@ -1015,15 +1060,27 @@ function createRenderer(options) {
     if (typeof vnode.children === "string") {
       // 因此只需要设置元素的 textContent 属性即可
       setElementText(el, vnode.children);
+    } else if (Array.isArray(vnode.children)) {
+      // 如果 vnode 的子节点是数组，则遍历数组，调用 patch 函数挂载它们
+      vnode.children.forEach(child => {
+        // 因为是挂载阶段，没有旧 vnode，所以第一个参数传 null
+        patch(null, child, el);
+      });
+    }
+
+    // 处理属性
+    if (vnode.props) {
+      for (const key in vnode.props) {
+        // 判断 key 是否存在对应的 DOM Properties
+        patchProps()
+      }
     }
 
     // 将元素添加到容器中
     insert(el, container);
   }
 
-  function unmount(vnode) {
-    
-  }
+  function unmount(vnode) {}
 
   function hydrate(vnode, container) {
     //
@@ -1032,6 +1089,6 @@ function createRenderer(options) {
   return {
     render,
     hydrate
-  }
+  };
 }
 ```
