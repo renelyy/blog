@@ -958,26 +958,52 @@ export {
 5. 类似地，也不是所有 DOM Properties 都有与之对应的 HTML Attributes，例如可以用 el.textContent 来设置元素的文本内容，但并没有与之对应的 HTML Attributes 来完成同样的工作
 6. HTML Attributes 的作用是设置与之对应的 DOM Properties 的初始值。一旦值改变，那么 DOM Properties 始终存储着当前值，而通过 getAttribute 函数得到的仍然是初始值
 7. `<input/>` 标签的 form 属性必须使用setAttribute 函数来设置，实际上，不仅仅是 `<input/>` 标签，所有表单元素都具有 form 属性，它们都应该作为 HTML Attributes 被设置
+8. 在浏览器中为一个元素设置 class 有三种方式，即使用 `setAttribute`、`el.className` 或 `el.classList`
+9. 使用 innerHTML 清空容器元素内容的另一个缺陷是，它不会移除绑定在 DOM 元素上的事件处理函数
 
 ```js
+const Text = Symbol();
+const Comment = Symbol();
+const Fragment = Symbol();
+
 const vnode = {
   type: "div",
   // 使用 props 描述一个元素的属性
   props: {
-    id: "foo"
+    id: "foo",
+    // 使用 normalizeClass 函数对 class 进行归一化处理
+    class: normalizeClass(["bar", { baz: true }])
   },
   children: [
     {
       type: "p",
       children: "hello"
+    },
+    {
+      type: Text,
+      children: "world"
+    },
+    {
+      type: Comment,
+      children: "我是注释内容"
     }
   ]
 };
+
+function normalizeClass(value) {
+  //
+}
 
 const renderer = createRenderer({
   // 创建元素
   createElement(tag) {
     return document.createElement(tag);
+  },
+  createText(text) {
+    return document.createTextNode(text);
+  },
+  setText(el, text) {
+    el.nodeValue = text;
   },
   // 设置元素的文本内容
   setElementText(el, text) {
@@ -988,17 +1014,54 @@ const renderer = createRenderer({
     parent.insertBefore(el, anchor);
   },
   patchProps(el, key, prevValue, nextValue) {
-    if (shouldSetAsProps(el, key, nextValue)) {
+    // 匹配以 on 开头的属性，表示事件处理函数
+    if (/^on/.test(key)) {
+      // 使用伪造的 invoker 在更新事件时可以避免一次 removeEventListener 函数的调用，从而提升了性能。
+      // 实际上，伪造的事件处理函数的作用不止于此，它还能解决事件冒泡与事件更新之间相互影响的问题
+      // 获取为该元素伪造的事件处理函数 invoker
+      const invokers = el._vei || (el._vei = {});
+      let invoker = invokers[key];
+      const name = key.slice(2).toLowerCase();
+      if (nextValue) {
+        if (!invoker) {
+          // 如果 nextValue 存在，且 invoker 不存在，则表示这是第一次设置事件处理函数，则创建伪造的事件处理函数 invoker
+          invoker = el._vei[key] = (e) => {
+            // e.timeStamp 是事件发生时的时间戳
+            // 如果事件发生的时间戳早于 invoker 被绑定的时间，则表示该事件与 invoker 无关，直接返回
+            if (e.timeStamp < invoker.attached) return;
+            // 如果 invoker.value 是数组，则遍历它并逐个调用事件处理函数  
+           if (Array.isArray(invoker.value)) {
+              invoker.value.forEach((fn) => fn(e));
+            } else {
+              invoker.value(e);
+            }
+          }
+          // 将真正的事件处理函数赋值给 invoker.value
+          invoker.value = nextValue;
+          // 记录事件处理函数被绑定的时间
+          invoker.attached = performance.now();
+          // 绑定 invoker 作为事件处理函数
+          el.addEventListener(name, invoker);
+        } else {
+          // 如果 invoker 存在，说明该元素的事件处理函数已经被设置过，只需要更新 invoker.value 的值即可
+          invoker.value = nextValue;
+        }
+      } else if (invoker) {
+        // 如果新绑定的事件处理函数不存在，且伪造的事件处理函数存在，则移除绑定的事件处理函数
+        el.removeEventListener(name, invoker);
+      }
+    } if (key === "class") {
+      el.className = nextValue;
+    } else if (shouldSetAsProps(el, key, nextValue)) {
       // 获取该 DOM Properties 的类型
       const type = typeof el[key];
-      const value = nextValue;
 
-      // 如果 DOM Properties 是布尔类型，并且 value 是空字符串，则将值矫正 为 true
-      if (type === "boolean" && value === "") {
+      // 如果 DOM Properties 是布尔类型，并且 nextValue 是空字符串，则将值矫正 为 true
+      if (type === "boolean" && nextValue === "") {
         el[key] = true;
       } else {
         // 否则，直接设置 DOM Properties 的值为 nextValue
-        el[key] = value;
+        el[key] = nextValue;
       }
     } else {
       // 如果不存在对应的 DOM Properties，则调用 el.setAttribute 函数设置属性
@@ -1025,12 +1088,137 @@ function createRenderer(options) {
     container._vnode = vnode;
   }
 
+  /**
+   * 打补丁
+   * 
+   * @param {Object} n1 旧的 vnode
+   * @param {Object} n2 新的 vnode
+   * @param {HTMLElement} container 容器
+   */
   function patch(n1, n2, container) {
-    // 如果 n1 不存在，说明是挂载操作，则调用 mountElement 函数完成挂载
-    if (!n1) {
-      mountElement(n2, container);
+    // 如果 n1 存在，则对比新旧 vnode 类型是否相同，如果不同，则调用 unmount 函数卸载旧的 vnode
+    if (n1 && n1.type !== n2.type) {
+      unmount(n1);
+      // 卸载完成后，我们应该将参数 n1 的值重置为 null，这样才能保证后续挂载操作正确执行
+      n1 = null;
+    }
+
+    // 代码运行到这里，证明 n1 和 n2 所描述的内容是相同的，只是更新了内容
+    const { type } = n2;
+    if (typeof type === "string") {
+      // 类型为字符串，代表描述的是普通元素
+      if (!n1) {
+        // 如果 n1 不存在，说明是挂载操作，则调用 mountElement 函数完成挂载
+        mountElement(n2, container);
+      } else {
+        // 如果 n1 存在，说明是更新操作，则调用 patchElement 函数完成打补丁
+        patchElement(n1, n2);
+      }
+    } else if (type === Text) {
+      // 类型为 Text，代表描述的是文本节点
+      if (!n1) {
+        // 如果 n1 不存在，说明是挂载操作，则调用 mountText 函数完成挂载
+        mountText(n2, container);
+      } else {
+        // 如果 n1 存在，说明是更新操作，则调用 patchText 函数完成打补丁
+        patchText(n1, n2);
+      }
+    } else if (type === Fragment) {
+      if (!n1) {
+        // 如果旧节点不存在，则只需要将 Fragment 的子节点挂载到容器中即可
+        n2.children.forEach(c => patch(null, c, container));
+      } else {
+        // 如果旧节点存在，则只需要更新 Fragment 的子节点即可
+        patchChildren(n1, n2, container);
+      }
+    } else if (typeof type === "object") {
+      // 类型为对象，代表描述的是组件
+    } else if (typeof type === "otherType") {
+      // 其他类型
+    }
+  }
+
+  /**
+   * 更新元素
+   * 
+   * @param {Object} n1 旧的 vnode
+   * @param {Object} n2 新的 vnode
+   */
+  function patchElement(n1, n2) {
+    // 获取真实 DOM 元素，因为 n2 还没有挂载，所以没有真实的 DOM，现将 n1 的真实 DOM 赋值给 n2.el
+    const el = (n2.el = n1.el);
+    const oldProps = n1.props || {};
+    const newProps = n2.props || {};
+
+    // 第一步：更新 props
+    for (const key in newProps) {
+      if (newProps[key] !== oldProps[key]) {
+        patchProps(el, key, oldProps[key], newProps[key]);
+      }
+    }
+    for (const key in oldProps) {
+      if (!(key in newProps)) {
+        patchProps(el, key, oldProps[key], null);
+      }
+    }
+
+    // 第二步：更新 children
+    patchChildren(n1, n2, el);
+  }
+
+  function patchText(n1, n2) {
+    const el = (n2.el = n1.el);
+    if (n2.children !== n1.children) {
+      setText(el, n2.children);
+    }
+  }
+
+  /**
+   * 更新子节点（对一个元素打补丁的最后一步操作）
+   * 
+   * @param {Object} n1 旧的 vnode
+   * @param {Object} n2 新的 vnode
+   * @param {HTMLElement} container 容器（真实 DOM）
+   */
+  function patchChildren(n1, n2, container) {
+    // 新的子节点是文本节点
+    if (typeof n2.children === "string") {
+      // 旧子节点的类型有三种可能：没有子节点、文本子节点、数组子节点
+      // 只有当旧子节点类型是数组时，才需要逐个卸载旧子节点，其他情况直接覆盖即可
+      if (Array.isArray(n1.children)) {
+        n1.children.forEach(c => unmount(c));
+      }
+
+      setElementText(container, n2.children);
+    } else if (Array.isArray(n2.children)) {
+      // 新子节点是一组子节点
+
+      // 旧子节点的类型有三种可能：没有子节点、文本子节点、数组子节点
+      // 判断旧子节点是否也是一组子节点
+      if (Array.isArray(n1.children)) {
+        // 旧子节点也是一组子节点，那么需要做“diff”操作，这里涉及到核心的 diff 算法
+
+        // 先用最笨的方法，直接将旧的一组子节点全部卸载掉，然后挂载新的子节点
+        n1.children.forEach(c => unmount(c));
+        n2.children.forEach(c => patch(null, c, container));
+      } else {
+        // 旧子节点不是一组子节点，则说明旧子节点要么是文本子节点，要么不存在
+        // 但无论哪种情况，我们都只需要将容器清空，然后将新的子节点逐个挂载即可
+        setElementText(container, "");
+        // 然后把新的子节点逐个挂载
+        n2.children.forEach(c => patch(null, c, container));
+      }
     } else {
-      //
+      // 代码运行到这里，说明新的子节点不存在
+      // 旧子节点的类型有三种可能：没有子节点、文本子节点、数组子节点
+      // 旧子节点是一组子节点，那么需要逐个卸载旧子节点
+      if (Array.isArray(n1.children)) {
+        n1.children.forEach(c => unmount(c));
+      } else if (typeof n1.children === "string") {
+        // 旧子节点是文本子节点，则清空容器
+        setElementText(container, "");
+      }
+      // 如果旧子节点不存在，则什么都不需要做
     }
   }
 
@@ -1055,7 +1243,8 @@ function createRenderer(options) {
    */
   function mountElement(vnode, container) {
     // 创建 DOM 元素节点
-    const el = createElement(vnode.type);
+    // 并且让 vnode.el 引用真实 DOM 元素，以便后续更新和卸载时能直接获取到对应的真实 DOM 元素
+    const el = (vnode.el = createElement(vnode.type));
     // 处理子节点，如果 vnode 的子节点是字符串，代表元素具有文本节点
     if (typeof vnode.children === "string") {
       // 因此只需要设置元素的 textContent 属性即可
@@ -1072,7 +1261,7 @@ function createRenderer(options) {
     if (vnode.props) {
       for (const key in vnode.props) {
         // 判断 key 是否存在对应的 DOM Properties
-        patchProps()
+        patchProps(el, key, null, vnode.props[key]);
       }
     }
 
@@ -1080,7 +1269,28 @@ function createRenderer(options) {
     insert(el, container);
   }
 
-  function unmount(vnode) {}
+  function mountText(vnode, container) {
+    const el = (vnode.el = createText(vnode.children));
+    insert(el, container);
+  }
+
+  /**
+   * 卸载元素
+   * 
+   * @param {Object} vnode 虚拟节点
+   */
+  function unmount(vnode) {
+    // 如果卸载的 vnode 类型为 Fragment，则需要卸载其 children
+    if (vnode.type === Fragment) {
+      vnode.children.forEach(c => unmount(c));
+      return;
+    }
+
+    const parent = vnode.el.parentNode;
+    if (parent) {
+      parent.removeChild(vnode.el);
+    }
+  }
 
   function hydrate(vnode, container) {
     //
