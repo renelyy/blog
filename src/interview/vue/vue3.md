@@ -961,7 +961,127 @@ export {
 8. 在浏览器中为一个元素设置 class 有三种方式，即使用 `setAttribute`、`el.className` 或 `el.classList`
 9. 使用 innerHTML 清空容器元素内容的另一个缺陷是，它不会移除绑定在 DOM 元素上的事件处理函数
 
-```js
+::: code-group
+
+```js [简单 Diff 算法]
+
+/**
+ * Diff 发生在更新子节点时（对一个元素打补丁的最后一步操作）
+ * 
+ * 简单 Diff 算法的核心逻辑是，拿新的一组子节点中的节点去旧的一组子节点中寻找可复用的节点。
+ * 如果找到了，则记录该节点的位置索引。我们把这个位置索引称为最大索引。在整个更新过程中，如
+ * 果一个节点的索引值小于最大索引，则说明该节点对应的真实 DOM 元素需要移动
+ * 
+ * @param {Object} n1 旧的 vnode
+ * @param {Object} n2 新的 vnode
+ * @param {HTMLElement} container 容器（真实 DOM）
+ */
+function patchChildren(n1, n2, container) {
+  // 新的子节点是文本节点
+  if (typeof n2.children === "string") {
+    // 旧子节点的类型有三种可能：没有子节点、文本子节点、数组子节点
+    // 只有当旧子节点类型是数组时，才需要逐个卸载旧子节点，其他情况直接覆盖即可
+    if (Array.isArray(n1.children)) {
+      n1.children.forEach(c => unmount(c));
+    }
+
+    setElementText(container, n2.children);
+  } else if (Array.isArray(n2.children)) {
+    // 新子节点是一组子节点
+
+    // 旧子节点的类型有三种可能：没有子节点、文本子节点、数组子节点
+    // 判断旧子节点是否也是一组子节点
+    if (Array.isArray(n1.children)) {
+      // 旧子节点也是一组子节点，那么需要做“diff”操作，这里涉及到核心的 diff 算法
+
+      const oldChildren = n1.children;
+      const newChildren = n2.children;
+      const oldLen = oldChildren.length;
+      const newLen = newChildren.length;
+
+      let lastIndex = 0; // 记录遍历到的最大索引
+      for (let i = 0; i < newLen; i++) {
+        const newVNode = newChildren[i];
+        let j = 0;
+        // 在第一层循环中定义变量 find，代表是否在旧的一组节点中找到可复用的节点
+        let find = false; // 初始值为 false，表示没有找到
+        for (; j < oldLen; j++) {
+          const oldVNode = oldChildren[j];
+          if (newVNode.key === oldVNode.key) {
+            find = true;
+            patch(oldVNode, newVNode, container);
+            if (j < lastIndex) {
+              // 说明 newVNode 在老的子节点中的位置比 lastIndex 小，则需要进行移动操作
+              // 移动操作
+              // 获取 newVNode 的前一个节点
+              const prevVnode = newChildren[i - 1];
+              // 如果 prevVnode 不存在，则说明 newVNode 是第一个节点，不需要移动
+              if (prevVnode) {
+                // 由于我们要将 newVNode 对应的真实 DOM 移动到 prevVnode 对应的真实 DOM 后面，所以我们需要获取 prevVnode 对应的真实 DOM 的下一个兄弟节点，作为锚点
+                const anchor = prevVnode.el.nextSibling;
+                insert(newVNode.el, container, anchor);
+              }
+            } else {
+              // 说明 newVNode 在老的子节点中的位置比 lastIndex 大，则不需要移动
+              lastIndex = j;
+            }
+            break;
+          }
+        }
+        // 如果代码运行到这里，find 仍然为 false，
+        // 说明在旧的一组子节点中没有找到可复用的节点，那么就说明 newVNode 是全新的节点，需要挂载
+        if (!find) {
+          // 为了将节点挂载到正确位置，我们需要先获取锚点元素
+          // 首先获取当前 newVNode 的前一个 vnode 节点
+          const prevVnode = newChildren[i - 1];
+          let anchor = null;
+          if (prevVnode) {
+            // 如果有前一个 vnode 节点，则使用它的下一个兄弟节点作为锚点元素
+            anchor = prevVnode.el.nextSibling;
+          } else {
+            // 如果没有前一个 vnode 节点，则说明即将挂载的新节点是第一个子节点
+            // 这时我们使用容器元素的 firstChild 作为锚点元素
+            anchor = container.firstChild;
+          }
+          // 挂载新节点
+          // 为什么要调用 patch 而不是 insert 函数呢？因为 newVNode 可能还是一个虚拟节点，需要递归地将其子节点也挂载
+          // 而且要处理 props 等
+          patch(null, newVNode, container, anchor);
+        }
+      }
+
+      // 遍历旧的一组子节点，找出不在新的一组子节点中的节点，并执行卸载操作
+      for (let i = 0; i < oldLen; i++) {
+        const oldVNode = oldChildren[i];
+        const has = newChildren.find(vnode => vnode.key === oldVNode.key);
+        if (!has) {
+          // 如果 oldVNode 不在新的一组子节点中，则执行卸载操作
+          unmount(oldVNode);
+        }
+      }
+    } else {
+      // 旧子节点不是一组子节点，则说明旧子节点要么是文本子节点，要么不存在
+      // 但无论哪种情况，我们都只需要将容器清空，然后将新的子节点逐个挂载即可
+      setElementText(container, "");
+      // 然后把新的子节点逐个挂载
+      n2.children.forEach(c => patch(null, c, container));
+    }
+  } else {
+    // 代码运行到这里，说明新的子节点不存在
+    // 旧子节点的类型有三种可能：没有子节点、文本子节点、数组子节点
+    // 旧子节点是一组子节点，那么需要逐个卸载旧子节点
+    if (Array.isArray(n1.children)) {
+      n1.children.forEach(c => unmount(c));
+    } else if (typeof n1.children === "string") {
+      // 旧子节点是文本子节点，则清空容器
+      setElementText(container, "");
+    }
+    // 如果旧子节点不存在，则什么都不需要做
+  }
+}
+```
+
+```js [渲染器]
 const Text = Symbol();
 const Comment = Symbol();
 const Fragment = Symbol();
@@ -1365,3 +1485,5 @@ function createRenderer(options) {
   };
 }
 ```
+
+:::
