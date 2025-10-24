@@ -1146,6 +1146,7 @@ function createRenderer(options) {
    */
   function patchElement(n1, n2) {
     // 获取真实 DOM 元素，因为 n2 还没有挂载，所以没有真实的 DOM，现将 n1 的真实 DOM 赋值给 n2.el
+    // 这个赋值语句的真正含义其实就是 DOM 元素的复用（通过 diff 复用已经存在的节点）
     const el = (n2.el = n1.el);
     const oldProps = n1.props || {};
     const newProps = n2.props || {};
@@ -1198,9 +1199,37 @@ function createRenderer(options) {
       if (Array.isArray(n1.children)) {
         // 旧子节点也是一组子节点，那么需要做“diff”操作，这里涉及到核心的 diff 算法
 
-        // 先用最笨的方法，直接将旧的一组子节点全部卸载掉，然后挂载新的子节点
-        n1.children.forEach(c => unmount(c));
-        n2.children.forEach(c => patch(null, c, container));
+        const oldChildren = n1.children;
+        const newChildren = n2.children;
+        const oldLen = oldChildren.length;
+        const newLen = newChildren.length;
+
+        let lastIndex = 0; // 记录遍历到的最大索引
+        for (let i = 0; i < newLen; i++) {
+          const newVnode = newChildren[i];
+          for (let j = 0; j < oldLen; j++) {
+            const oldVnode = oldChildren[j];
+            if (newVnode.key === oldVnode.key) {
+              patch(oldVnode, newVnode, container);
+              if (j < lastIndex) {
+                // 说明 newVnode 在老的子节点中的位置比 lastIndex 小，则需要进行移动操作
+                // 移动操作
+                // 获取 newVnode 的前一个节点
+                const prevVnode = newChildren[i - 1];
+                // 如果 prevVnode 不存在，则说明 newVnode 是第一个节点，不需要移动
+                if (prevVnode) {
+                  // 由于我们要将 newVnode 对应的真实 DOM 移动到 prevVnode 对应的真实 DOM 后面，所以我们需要获取 prevVnode 对应的真实 DOM 的下一个兄弟节点，作为锚点
+                  const anchor = prevVnode.el.nextSibling;
+                  insert(newVnode.el, container, anchor);
+                }
+              } else {
+                // 说明 newVnode 在老的子节点中的位置比 lastIndex 大，则不需要移动
+                lastIndex = j;
+              }
+              break;
+            }
+          }
+        }
       } else {
         // 旧子节点不是一组子节点，则说明旧子节点要么是文本子节点，要么不存在
         // 但无论哪种情况，我们都只需要将容器清空，然后将新的子节点逐个挂载即可
