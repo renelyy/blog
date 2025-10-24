@@ -1095,7 +1095,7 @@ function createRenderer(options) {
    * @param {Object} n2 新的 vnode
    * @param {HTMLElement} container 容器
    */
-  function patch(n1, n2, container) {
+  function patch(n1, n2, container, anchor) {
     // 如果 n1 存在，则对比新旧 vnode 类型是否相同，如果不同，则调用 unmount 函数卸载旧的 vnode
     if (n1 && n1.type !== n2.type) {
       unmount(n1);
@@ -1109,7 +1109,7 @@ function createRenderer(options) {
       // 类型为字符串，代表描述的是普通元素
       if (!n1) {
         // 如果 n1 不存在，说明是挂载操作，则调用 mountElement 函数完成挂载
-        mountElement(n2, container);
+        mountElement(n2, container, anchor);
       } else {
         // 如果 n1 存在，说明是更新操作，则调用 patchElement 函数完成打补丁
         patchElement(n1, n2);
@@ -1206,28 +1206,62 @@ function createRenderer(options) {
 
         let lastIndex = 0; // 记录遍历到的最大索引
         for (let i = 0; i < newLen; i++) {
-          const newVnode = newChildren[i];
-          for (let j = 0; j < oldLen; j++) {
-            const oldVnode = oldChildren[j];
-            if (newVnode.key === oldVnode.key) {
-              patch(oldVnode, newVnode, container);
+          const newVNode = newChildren[i];
+          let j = 0;
+          // 在第一层循环中定义变量 find，代表是否在旧的一组节点中找到可复用的节点
+          let find = false; // 初始值为 false，表示没有找到
+          for (; j < oldLen; j++) {
+            const oldVNode = oldChildren[j];
+            if (newVNode.key === oldVNode.key) {
+              find = true;
+              patch(oldVNode, newVNode, container);
               if (j < lastIndex) {
-                // 说明 newVnode 在老的子节点中的位置比 lastIndex 小，则需要进行移动操作
+                // 说明 newVNode 在老的子节点中的位置比 lastIndex 小，则需要进行移动操作
                 // 移动操作
-                // 获取 newVnode 的前一个节点
+                // 获取 newVNode 的前一个节点
                 const prevVnode = newChildren[i - 1];
-                // 如果 prevVnode 不存在，则说明 newVnode 是第一个节点，不需要移动
+                // 如果 prevVnode 不存在，则说明 newVNode 是第一个节点，不需要移动
                 if (prevVnode) {
-                  // 由于我们要将 newVnode 对应的真实 DOM 移动到 prevVnode 对应的真实 DOM 后面，所以我们需要获取 prevVnode 对应的真实 DOM 的下一个兄弟节点，作为锚点
+                  // 由于我们要将 newVNode 对应的真实 DOM 移动到 prevVnode 对应的真实 DOM 后面，所以我们需要获取 prevVnode 对应的真实 DOM 的下一个兄弟节点，作为锚点
                   const anchor = prevVnode.el.nextSibling;
-                  insert(newVnode.el, container, anchor);
+                  insert(newVNode.el, container, anchor);
                 }
               } else {
-                // 说明 newVnode 在老的子节点中的位置比 lastIndex 大，则不需要移动
+                // 说明 newVNode 在老的子节点中的位置比 lastIndex 大，则不需要移动
                 lastIndex = j;
               }
               break;
             }
+          }
+          // 如果代码运行到这里，find 仍然为 false，
+          // 说明在旧的一组子节点中没有找到可复用的节点，那么就说明 newVNode 是全新的节点，需要挂载
+          if (!find) {
+            // 为了将节点挂载到正确位置，我们需要先获取锚点元素
+            // 首先获取当前 newVNode 的前一个 vnode 节点
+            const prevVnode = newChildren[i - 1];
+            let anchor = null;
+            if (prevVnode) {
+              // 如果有前一个 vnode 节点，则使用它的下一个兄弟节点作为锚点元素
+              anchor = prevVnode.el.nextSibling;
+            } else {
+              // 如果没有前一个 vnode 节点，则说明即将挂载的新节点是第一个子节点
+              // 这时我们使用容器元素的 firstChild 作为锚点元素
+              anchor = container.firstChild;
+            }
+            // 挂载新节点
+            // 为什么要调用 patch 而不是 insert 函数呢？因为 newVNode 可能还是一个虚拟节点，需要递归地将其子节点也挂载
+            // 而且要处理 props 等
+            patch(null, newVNode, container, anchor);
+          }
+        }
+
+        // 遍历旧的一组子节点，找出不在新的一组子节点中的节点，并执行卸载操作
+        for (let i = 0; i < oldLen; i++) {
+          const oldVNode = oldChildren[i];
+          const has = newChildren.find(vnode => vnode.key === oldVNode.key);
+          if (!has) {
+            // 如果 oldVNode 不在新的一组子节点中，则执行卸载操作
+            unmount(oldVNode);
           }
         }
       } else {
@@ -1270,7 +1304,7 @@ function createRenderer(options) {
    * @param {Object} vnode 虚拟节点
    * @param {HTMLElement} container 容器
    */
-  function mountElement(vnode, container) {
+  function mountElement(vnode, container, anchor) {
     // 创建 DOM 元素节点
     // 并且让 vnode.el 引用真实 DOM 元素，以便后续更新和卸载时能直接获取到对应的真实 DOM 元素
     const el = (vnode.el = createElement(vnode.type));
@@ -1295,7 +1329,7 @@ function createRenderer(options) {
     }
 
     // 将元素添加到容器中
-    insert(el, container);
+    insert(el, container, anchor);
   }
 
   function mountText(vnode, container) {
