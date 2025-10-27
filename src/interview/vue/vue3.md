@@ -2122,6 +2122,12 @@ function createRenderer(options) {
       return;
     }
 
+    // 组件的卸载，本质上要卸载组件所渲染的内容，即 subTree
+    if (typeof vnode.type === 'object') {
+      unmount(vnode.component.subTree);
+      return;
+    }
+
     const parent = vnode.el.parentNode;
     if (parent) {
       parent.removeChild(vnode.el);
@@ -2159,65 +2165,77 @@ function createRenderer(options) {
 ```js
 /**
  * 异步组件
+ * 
+ * defineAsyncComponent({
+ *    loader: () => new Promise(),
+ *    delay: 200, // 延迟显示 loading 组件的时间
+ *    timeout: 3000, // 最长显示 loading 组件的时间
+ *    errorComponent: ErrorComponent, // 加载失败时显示的组件
+ *    loadingComponent: LoadingComponent // loading 组件
+ * })
  * @param {Function | Object} options 异步加载函数或配置对象
  */
 function defineAsyncComponent(options) {
-  // options 可以是加载器，也可以是配置对象
-  // 参数归一化
-  if (typeof options === 'function') {
-    options = {
-      loader: options
-    }
-  }
+ if (typeof options === 'function') {
+   options = {
+     loader: options
+   }
+ }
+ const { loader } = options
+ let InnerComp = null
+ return {
+   name: 'AsyncComponentWrapper',
+   setup() {
+     const loaded = ref(false)
+     const error = shallowRef(null)
+     // 一个标志，代表是否正在加载，默认为 false
+     const loading = ref(false)
+     let loadingTimer = null
+     // 如果配置项中存在 delay，则开启一个定时器计时，当延迟到时后将 loading.value 设置为 true
+     if (options.delay) {
+       loadingTimer = setTimeout(() => {
+         loading.value = true
+       }, options.delay);
+     } else {
+       // 如果配置项中没有 delay，则直接标记为加载中
+       loading.value = true
+     }
 
-  const { loader } = options;
+     loader()
+       .then(c => {
+         InnerComp = c
+         loaded.value = true
+       })
+       .catch((err) => error.value = err)
+       .finally(() => {
+         loading.value = false
+         // 加载完毕后，无论成功与否都要清除延迟定时器
+         clearTimeout(loadingTimer)
+       })
 
-  // 一个变量，用来存储异步加载的组件
-  let InnerComp = null;
+     let timer = null
+     if (options.timeout) {
+       timer = setTimeout(() => {
+         const err = new Error(`Async component timed out after ${options.timeout}ms.`)
+         error.value = err
+       }, options.timeout)
+     }
 
-  // 返回一个包装组件
-  return {
-    name: 'AsyncComponentWrapper',
-    setup() {
-      // 异步组件是否加载成功
-      const loaded = ref(false);
-      const error = shallowRef(null);
+     const placeholder = { type: Text, children: '' }
 
-      // 执行加载器函数，返回一个 Promise 实例
-      // 加载成功后，将加载成功的组件赋值给 InnerComp，并将 loaded 标记为 true，代表加载成功
-      loader()
-        .then(c => {
-          InnerComp = c
-          loaded.value = true
-        }).catch(err => {
-          error.value = err
-        })
-
-      let timer = null;
-      if (options.timeout) {
-        timer = setTimeout(() => {
-          const err = new Error(`[defineAsyncComponent] timeout when loading component: ${options.loader}`);
-          error.value = err;
-        }, options.timeout);
-      }
-
-      onUnmounted(() => {
-        clearTimeout(timer);
-      })
-
-      const placeholder = { type: Text, children: '' }
-
-      return () => {
-        // 如果异步组件加载成功，则渲染该组件，否则渲染一个占位内容
-        if (loaded.value) {
-          return { type: InnerComp }
-        } else if (error.value && options.errorComponent) {
-          return { type: options.errorComponent, props: { error: error.value } }
-        } else {
-          return placeholder;
-        }
-      }
-    }
-  }
+     return () => {
+       if (loaded.value) {
+         return { type: InnerComp }
+       } else if (error.value && options.errorComponent) {
+         return { type: options.errorComponent, props: { error: error.value } }
+       } else if (loading.value && options.loadingComponent) {
+         // 如果异步组件正在加载，并且用户指定了 Loading 组件，则渲染 Loading 组件
+         return { type: options.loadingComponent }
+       } else {
+         return placeholder
+       }
+     }
+   }
+ }
 }
 ```
