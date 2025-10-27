@@ -1904,6 +1904,8 @@ function createRenderer(options) {
       props: shallowReactive(props),
       isMounted: false,
       subTree: null,
+      // 在组件实例中添加 mounted 数组，用来存储通过 onMounted 注册的生命周期钩子函数
+      mounted: [],
     }
 
     function emit(event, ...payload) {
@@ -1917,7 +1919,15 @@ function createRenderer(options) {
     }
 
     const setupContext = { attrs, emit, slots };
+
+    // 在调用 setup 之前，设置当前组件实例
+    setCurrentInstance(instance);
+
     const setupResult = setup && setup(shallowReactive(props), setupContext);
+
+    // setup 执行完毕后，重置当前组件实例
+    setCurrentInstance(null);
+
     let setupState = null;
     if (typeof setupResult === 'function') {
       if (render) {
@@ -1981,6 +1991,10 @@ function createRenderer(options) {
 
         // 在这里调用 mounted 钩子函数
         mounted && mounted.call(renderContext);
+
+        // 在合适的时机，调用 onMounted 中注册的钩子函数
+        // 其他生命周期钩子函数同理
+        instance.mounted && instance.mounted.forEach(hook => hook.call(renderContext));
       } else {
         // 在这里调用 beforeUpdate 钩子函数
         beforeUpdate && beforeUpdate.call(renderContext);
@@ -2077,6 +2091,22 @@ function createRenderer(options) {
     }
 
     return false;
+  }
+
+  let currentInstance = null;
+  function setCurrentInstance(instance) {
+    currentInstance = instance;
+  }
+
+  /**
+   * 应该是全局的，暂时先放在这里
+   */
+  function onMounted(fn) {
+    if (currentInstance) {
+      currentInstance.mounted.push(fn);
+    } else {
+      console.warn("onMounted must be called at the setup function");
+    }
   }
 
   /**
