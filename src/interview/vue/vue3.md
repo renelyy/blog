@@ -961,6 +961,7 @@ export {
 8. 在浏览器中为一个元素设置 class 有三种方式，即使用 `setAttribute`、`el.className` 或 `el.classList`
 9. 使用 innerHTML 清空容器元素内容的另一个缺陷是，它不会移除绑定在 DOM 元素上的事件处理函数
 10. 我们把由父组件自更新所引起的子组件更新叫作子组件的被动更新
+11. 组件模板中的插槽内容会被编译为插槽函数，而插槽函数的返回值就是具体的插槽内容
 
 ::: code-group
 
@@ -1894,6 +1895,9 @@ function createRenderer(options) {
     const state = data ? reactive(data()) : null;
     const [props, attrs] = resolveProps(propsOption, vnode.props);
 
+    // 使用编译好的 vnode.children 作为 slots
+    const slots = vnode.children;
+
     // 定义组件实例
     const instance = {
       state,
@@ -1912,7 +1916,7 @@ function createRenderer(options) {
       }
     }
 
-    const setupContext = { attrs, emit };
+    const setupContext = { attrs, emit, slots };
     const setupResult = setup && setup(shallowReactive(props), setupContext);
     let setupState = null;
     if (typeof setupResult === 'function') {
@@ -1930,6 +1934,9 @@ function createRenderer(options) {
     const renderContext = new Proxy(instance, {
       get(target, key, receiver) {
         const { state, props } = target;
+        
+        if (key === '$slots') return slots;
+
         if (state && key in state) {
           return state[key];
         } else if (props && key in props) {
