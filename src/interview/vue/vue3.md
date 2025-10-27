@@ -1885,13 +1885,13 @@ function createRenderer(options) {
     const componentOptions = vnode.type;
     // 获取组件渲染函数
     const {
-      render, data, props: propsOption, beforeCreate, created, beforeMount, mounted, beforeUpdate, updated
+      render, data, props: propsOption, setup, beforeCreate, created, beforeMount, mounted, beforeUpdate, updated
     } = componentOptions;
 
     // 在这里调用 beforeCreate 钩子函数
     beforeCreate && beforeCreate();
 
-    const state = reactive(data());
+    const state = data ? reactive(data()) : null;
     const [props, attrs] = resolveProps(propsOption, vnode.props);
 
     // 定义组件实例
@@ -1900,6 +1900,18 @@ function createRenderer(options) {
       props: shallowReactive(props),
       isMounted: false,
       subTree: null,
+    }
+
+    const setupContext = { attrs };
+    const setupResult = setup && setup(shallowReactive(props), setupContext);
+    let setupState = null;
+    if (typeof setupResult === 'function') {
+      if (render) {
+        console.error('setup 函数返回渲染函数，render 选项将被忽略');
+      }
+      render = setupResult;
+    } else {
+      setupState = setupResult;
     }
 
     // 将组件实例存储到 vnode 的 component 属性上，方便后续更新组件时使用
@@ -1912,6 +1924,8 @@ function createRenderer(options) {
           return state[key];
         } else if (props && key in props) {
           return props[key];
+        } else if (setupState && key in setupState) {
+          return setupState[key];
         } else {
           console.warn(`property ${key} not found`);
         }
@@ -1923,6 +1937,8 @@ function createRenderer(options) {
           state[key] = value;
         } else if (props && key in props) {
           console.warn(`attempting to set readonly property ${key}. Props are readonly.`);
+        } else if (setupState && key in setupState) {
+          setupState[key] = value;
         } else {
           console.warn(`property ${key} not found`);
         }
