@@ -960,6 +960,7 @@ export {
 7. `<input/>` 标签的 form 属性必须使用setAttribute 函数来设置，实际上，不仅仅是 `<input/>` 标签，所有表单元素都具有 form 属性，它们都应该作为 HTML Attributes 被设置
 8. 在浏览器中为一个元素设置 class 有三种方式，即使用 `setAttribute`、`el.className` 或 `el.classList`
 9. 使用 innerHTML 清空容器元素内容的另一个缺陷是，它不会移除绑定在 DOM 元素上的事件处理函数
+10. 我们把由父组件自更新所引起的子组件更新叫作子组件的被动更新
 
 ::: code-group
 
@@ -1884,17 +1885,19 @@ function createRenderer(options) {
     const componentOptions = vnode.type;
     // 获取组件渲染函数
     const {
-      render, data, beforeCreate, created, beforeMount, mounted, beforeUpdate, updated
+      render, data, props: propsOption, beforeCreate, created, beforeMount, mounted, beforeUpdate, updated
     } = componentOptions;
 
     // 在这里调用 beforeCreate 钩子函数
     beforeCreate && beforeCreate();
 
     const state = reactive(data());
+    const [props, attrs] = resolveProps(propsOption, vnode.props);
 
     // 定义组件实例
     const instance = {
       state,
+      props: shallowReactive(props),
       isMounted: false,
       subTree: null,
     }
@@ -1902,17 +1905,41 @@ function createRenderer(options) {
     // 将组件实例存储到 vnode 的 component 属性上，方便后续更新组件时使用
     vnode.component = instance;
 
+    const renderContext = new Proxy(instance, {
+      get(target, key, receiver) {
+        const { state, props } = target;
+        if (state && key in state) {
+          return state[key];
+        } else if (props && key in props) {
+          return props[key];
+        } else {
+          console.warn(`property ${key} not found`);
+        }
+      },
+
+      set(target, key, value, receiver) {
+        const { state, props } = target;
+        if (state && key in state) {
+          state[key] = value;
+        } else if (props && key in props) {
+          console.warn(`attempting to set readonly property ${key}. Props are readonly.`);
+        } else {
+          console.warn(`property ${key} not found`);
+        }
+      }
+    })
+
     // 在这里调用 created 钩子函数
-    created && created.call(state);
+    created && created.call(renderContext);
 
     // 将组件的渲染任务包装到 effect 函数中，这样当 state 变化时，
     // effect 函数会重新执行，实现组件的自更新
     effect(() => {
       // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回虚拟 DOM
-      const subTree = render.call(state, state);
+      const subTree = render.call(renderContext, renderContext);
       if (!instance.isMounted) {
         // 在这里调用 beforeMount 钩子函数
-        beforeMount && beforeMount.call(state);
+        beforeMount && beforeMount.call(renderContext);
 
         // 如果组件实例没有被挂载，则调用 patch 函数挂载组件要渲染的内容
         // 调用 patch 函数挂载组件要渲染的内容
@@ -1920,16 +1947,16 @@ function createRenderer(options) {
         instance.isMounted = true;
 
         // 在这里调用 mounted 钩子函数
-        mounted && mounted.call(state);
+        mounted && mounted.call(renderContext);
       } else {
         // 在这里调用 beforeUpdate 钩子函数
-        beforeUpdate && beforeUpdate.call(state);
+        beforeUpdate && beforeUpdate.call(renderContext);
 
         // 如果组件实例已经被挂载，则调用 patch 函数更新组件要渲染的内容
         patch(instance.subTree, subTree, container, anchor);
 
         // 在这里调用 updated 钩子函数
-        updated && updated.call(state);
+        updated && updated.call(renderContext);
       }
       // 将 subTree 存储到组件实例中，作为下一次更新的旧 subTree
       instance.subTree = subTree;
@@ -1966,11 +1993,57 @@ function createRenderer(options) {
     }
   }
 
+  function resolveProps(options, propsData) {
+    const props = {};
+    const attrs = {};
+    for (const key in propsData) {
+      if (key in options || key.startsWith("on")) {
+        props[key] = propsData[key];
+      } else {
+        attrs[key] = propsData[key];
+      }
+    }
+    return [props, attrs];
+  }
+
   /**
    * 更新组件
    */
   function patchComponent(n1, n2, container) {
-    // TODO:
+    const instance = (n2.component = n1.component);
+    const { props } = instance;
+    // 如果 props 发生变化，则更新组件实例的 props
+    if (hasPropsChanged(n1.props, n2.props)) {
+      const [nextProps] = resolveProps(n2.type.props, n2.props);
+
+      // 更新 props
+      for (const key in nextProps) {
+        props[key] = nextProps[key];
+      }
+
+      // 删除不存在的 props
+      for (const key in props) {
+        if (!(key in nextProps)) {
+          delete props[key];
+        }
+      }
+    }
+  }
+
+  function hasPropsChanged(prevProps, nextProps) {
+    const nextKeys = Object.keys(nextProps);
+    // 如果新旧 props 的数量不同，则说明发生了变化
+    if (nextKeys.length !== Object.keys(prevProps).length) {
+      return true;
+    }
+
+    for (let i = 0; i < nextKeys.length; i++) {
+      const key = nextKeys[i];
+      // 有不相等的 props，说明有变化
+      if (nextProps[key] !== prevProps[key]) return true;
+    }
+
+    return false;
   }
 
   /**
