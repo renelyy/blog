@@ -962,6 +962,7 @@ export {
 9. 使用 innerHTML 清空容器元素内容的另一个缺陷是，它不会移除绑定在 DOM 元素上的事件处理函数
 10. 我们把由父组件自更新所引起的子组件更新叫作子组件的被动更新
 11. 组件模板中的插槽内容会被编译为插槽函数，而插槽函数的返回值就是具体的插槽内容
+12. 通过 v-on 指令为组件绑定的事件在经过编译后，会以 onXxx 的形式存储到props 对象中
 
 ::: code-group
 
@@ -2139,3 +2140,84 @@ function createRenderer(options) {
 ```
 
 :::
+
+
+### 组件化
+
+1. 在异步组件中，​“异步”二字指的是，以异步的方式加载并渲染一个组件
+2. 函数式组件允许使用一个普通函数定义组件，并使用该函数的返回值作为组件要渲染的内容。函数式组件的特点是：无状态、编写简单且直观。在 Vue.js 2 中，相比有状态组件来说，函数式组件具有明显的性能优势。但在 Vue.js 3 中，函数式组件与有状态组件的性能差距不大，都非常好。正如 Vue.js RFC 的原文所述：​“在 Vue.js 3 中使用函数式组件，主要是因为它的简单性，而不是因为它的性能好。​”
+3. 为了替用户更好地解决上述问题，我们需要在框架层面为异步组件提供更好的封装支持，与之对应的能力如下。
+  - 允许用户指定加载出错时要渲染的组件。
+  - 允许用户指定 Loading 组件，以及展示该组件的延迟时间。
+  - 允许用户设置加载组件的超时时长。
+  - 组件加载失败时，为用户提供重试的能力。
+
+  以上这些内容就是异步组件真正要解决的问题。
+
+#### 封装 defineAsyncComponent 函数
+
+```js
+/**
+ * 异步组件
+ * @param {Function | Object} options 异步加载函数或配置对象
+ */
+function defineAsyncComponent(options) {
+  // options 可以是加载器，也可以是配置对象
+  // 参数归一化
+  if (typeof options === 'function') {
+    options = {
+      loader: options
+    }
+  }
+
+  const { loader } = options;
+
+  // 一个变量，用来存储异步加载的组件
+  let InnerComp = null;
+
+  // 返回一个包装组件
+  return {
+    name: 'AsyncComponentWrapper',
+    setup() {
+      // 异步组件是否加载成功
+      const loaded = ref(false);
+      const error = shallowRef(null);
+
+      // 执行加载器函数，返回一个 Promise 实例
+      // 加载成功后，将加载成功的组件赋值给 InnerComp，并将 loaded 标记为 true，代表加载成功
+      loader()
+        .then(c => {
+          InnerComp = c
+          loaded.value = true
+        }).catch(err => {
+          error.value = err
+        })
+
+      let timer = null;
+      if (options.timeout) {
+        timer = setTimeout(() => {
+          const err = new Error(`[defineAsyncComponent] timeout when loading component: ${options.loader}`);
+          error.value = err;
+        }, options.timeout);
+      }
+
+      onUnmounted(() => {
+        clearTimeout(timer);
+      })
+
+      const placeholder = { type: Text, children: '' }
+
+      return () => {
+        // 如果异步组件加载成功，则渲染该组件，否则渲染一个占位内容
+        if (loaded.value) {
+          return { type: InnerComp }
+        } else if (error.value && options.errorComponent) {
+          return { type: options.errorComponent, props: { error: error.value } }
+        } else {
+          return placeholder;
+        }
+      }
+    }
+  }
+}
+```
