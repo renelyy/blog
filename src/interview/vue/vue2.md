@@ -12,11 +12,14 @@
 8. Array 的问题：由于 JavaScript 的限制，Vue 不能检测以下变动的数组：
    - 当你利用索引直接设置一个项时，例如：`vm.items[indexOfItem] = newValue`
    - 当你修改数组的长度时，例如：`vm.items.length = newLength`
-   为了解决这个问题，Vue 提供了以下操作方法：`vm.$set`和`vm.$delete`。
-   
+     为了解决这个问题，Vue 提供了以下操作方法：`vm.$set`和`vm.$delete`。
+
 ```js
+let uid = 0;
+
 class Dep {
   constructor() {
+    this.id = uid++;
     this.subs = [];
   }
 
@@ -30,7 +33,8 @@ class Dep {
 
   depend() {
     if (window.target) {
-      this.addSub(window.target);
+      // this.addSub(window.target);
+      window.target.addDep(this);
     }
   }
 
@@ -45,15 +49,40 @@ class Dep {
 class Watcher {
   constructor(vm, expOrFn, cb) {
     this.vm = vm;
-    // 执行 this.getter()，就可以读取 data.a.b.c 的值，并且触发 getter
-    this.getter = parsePath(expOrFn);
+    this.deps = []; // 依赖集合
+    this.depIds = new Set(); // 依赖 id 集合
+
+    if (typeof expOrFn === "function") {
+      this.getter = expOrFn;
+    } else {
+      // 执行 this.getter()，就可以读取 data.a.b.c 的值，并且触发 getter
+      this.getter = parsePath(expOrFn);
+    }
+
+    if (options) {
+      this.deep = !!options.deep;
+    } else {
+      this.deep = false;
+    }
+
     this.cb = cb;
     this.value = this.get();
+  }
+
+  addDep(dep) {
+    if (!this.depIds.has(dep.id)) {
+      this.depIds.add(dep.id);
+      this.deps.push(dep);
+      dep.addSub(this);
+    }
   }
 
   get() {
     window.target = this;
     let value = this.getter.call(this.vm, this.vm);
+    if (this.deep) {
+      traverse(value);
+    }
     window.target = undefined;
     return value;
   }
@@ -62,6 +91,47 @@ class Watcher {
     const oldValue = this.value;
     this.value = this.get();
     this.cb.call(this.vm, this.value, oldValue);
+  }
+
+  /**
+   * 从所有依赖项的 Dep 列表中将自己移除
+   */
+  teardown() {
+    let i = this.deps.length;
+    while (i--) {
+      this.deps[i].removeSub(this);
+    }
+  }
+}
+
+const seenObjects = new Set();
+function traverse(val) {
+  _traverse(val, seenObjects);
+  seenObjects.clear();
+}
+
+function _traverse(val, seen) {
+  let i, keys;
+  const isA = Array.isArray(val);
+  if ((!isA && !isObject(val)) || Object.isFrozen(val)) {
+    // 如果 val 不是对象或者数组，或者 val 是冻结对象，则直接返回
+    return;
+  }
+  if (val.__ob__) {
+    const depId = val.__ob__.dep.id;
+    if (seen.has(depId)) {
+      // 保证不会重复收集依赖
+      return;
+    }
+    seen.add(depId);
+  }
+  if (isA) {
+    i = val.length;
+    while (i--) _traverse(val[i], seen);
+  } else {
+    keys = Object.keys(val);
+    i = keys.length;
+    while (i--) _traverse(val[keys[i]], seen);
   }
 }
 
@@ -254,4 +324,99 @@ const arrayMethods = Object.create(arrayProto);
     });
   }
 );
+
+/**
+ * $watch 内部实现原理
+ */
+Vue.prototype.$watch = function (expOrFn, cb, options) {
+  const vm = this;
+  options = options || {};
+  const wacher = new Watcher(vm, expOrFn, cb, options);
+  if (options.immediate) {
+    cb.call(vm, wacher.value);
+  }
+  return function unwatchFn() {
+    wacher.teardown();
+  };
+};
+
+/**
+ * $set 内部实现原理
+ */
+Vue.prootype.$set = function (target, key, val) {
+  // 处理 target 为数组的情况
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.length = Math.max(target.length, key);
+    target.splice(key, 1, val);
+    return val;
+  }
+
+  // 处理 target 为对象的情况
+  if (key in target && !(key in Object.prototype)) {
+    // 由于key已经存在于 target 中，所以其实这个 key 已经被侦测了变化。
+    // 也就是说，这种情况属于修改数据，直接用 key 和 val 改数据就好了。
+    target[key] = val;
+    return val;
+  }
+
+  // 处理新增的属性
+  const ob = target.__ob__;
+  if (target.__isVue || (ob && ob.vmCount)) {
+    // 如果 target 是一个 Vue 实例或者 $data，则不允许新增属性
+    process.env.NODE_ENV !== "production" &&
+      warn(
+        "Avoid adding reactive properties to a Vue instance or its root $data " +
+          "at runtime - declare it upfront in the data option."
+      );
+    return;
+  }
+
+  if (!ob) {
+    // 如果 target 不是一个响应式对象，则直接赋值
+    target[key] = val;
+    return val;
+  }
+
+  // 如果 target 是一个响应式对象，则通过 defineReactive 方法给 target 添加一个新的属性
+  defineReactive(ob.value, key, val);
+  ob.dep.notify(); // 通知依赖更新
+  return val;
+};
+
+/**
+ * $delete 内部实现原理
+ */
+Vue.prototype.$delete = function (target, key) {
+  // 处理 target 为数组的情况
+  if (Array.isArray(target) && isValidArrayIndex(key)) {
+    target.splice(key, 1);
+    return;
+  }
+
+  // 处理 target 为对象的情况
+  const ob = target.__ob__;
+  if (target.__isVue || (ob && ob.vmCount)) {
+    process.env.NODE_ENV !== "production" &&
+      warn(
+        "Avoid deleting properties on a Vue instance or its root $data " +
+          "- just set it to null."
+      );
+    return;
+  }
+
+  // 如果 key 不是 target 的属性，直接返回
+  if (!hasOwn(target, key)) return;
+
+  delete target[key];
+
+  // 不是响应式对象，直接返回
+  if (!ob) return;
+
+  // 通知依赖更新
+  ob.dep.notify(); // 通知依赖更新
+};
+
+function isValidArrayIndex(val) {
+  return typeof val === "number" && val > -1;
+}
 ```
