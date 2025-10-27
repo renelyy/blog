@@ -1551,7 +1551,12 @@ function createRenderer(options) {
         // 如果旧节点存在，则只需要更新 Fragment 的子节点即可
         patchChildren(n1, n2, container);
       }
-    } else if (typeof type === "object") {
+    } else if (
+      // type 是对象 -> 有状态组件
+      typeof type === "object" ||
+      // type 是函数 -> 函数式组件
+      typeof type === "function"
+    ) {
       // 类型为对象，代表描述的是组件
       if (!n1) {
         // 如果 n1 不存在，说明是挂载操作，则调用 mountComponent 函数完成挂载
@@ -1883,8 +1888,19 @@ function createRenderer(options) {
    * 挂载组件
    */
   function mountComponent(vnode, container, anchor) {
+    // 检查是否是函数式组件
+    const isFunctional = typeof vnode.type === "function";
+
     // 通过 vnode.type 获取组件的配置对象
-    const componentOptions = vnode.type;
+    let componentOptions = vnode.type;
+    if (isFunctional) {
+      // 如果是函数式组件，则将 vnode.type 作为配置对象
+      componentOptions = {
+        render: vnode.type,
+        props: vnode.type.props,
+      }
+    }
+
     // 获取组件渲染函数
     const {
       render, data, props: propsOption, setup, beforeCreate, created, beforeMount, mounted, beforeUpdate, updated
@@ -2159,6 +2175,7 @@ function createRenderer(options) {
   - 组件加载失败时，为用户提供重试的能力。
 
   以上这些内容就是异步组件真正要解决的问题。
+4. 异步组件在页面性能、拆包以及服务端下发组件等场景中尤为重要
 
 #### 封装 defineAsyncComponent 函数
 
