@@ -2172,70 +2172,123 @@ function createRenderer(options) {
  *    timeout: 3000, // 最长显示 loading 组件的时间
  *    errorComponent: ErrorComponent, // 加载失败时显示的组件
  *    loadingComponent: LoadingComponent // loading 组件
+ *    onError: (retry, fail, attempts) => {} // 加载失败时执行的回调函数
  * })
  * @param {Function | Object} options 异步加载函数或配置对象
  */
 function defineAsyncComponent(options) {
- if (typeof options === 'function') {
-   options = {
-     loader: options
-   }
- }
- const { loader } = options
- let InnerComp = null
- return {
-   name: 'AsyncComponentWrapper',
-   setup() {
-     const loaded = ref(false)
-     const error = shallowRef(null)
-     // 一个标志，代表是否正在加载，默认为 false
-     const loading = ref(false)
-     let loadingTimer = null
-     // 如果配置项中存在 delay，则开启一个定时器计时，当延迟到时后将 loading.value 设置为 true
-     if (options.delay) {
-       loadingTimer = setTimeout(() => {
-         loading.value = true
-       }, options.delay);
-     } else {
-       // 如果配置项中没有 delay，则直接标记为加载中
-       loading.value = true
-     }
+  if (typeof options === 'function') {
+    options = {
+      loader: options
+    }
+  }
+  const { loader } = options
+  let InnerComp = null
+  let retries = 0; // 重试次数
+  function load() {
+    return loader()
+      .catch(err => {
+        if (options.onError) {
+          return new Promise((resolve, reject) => {
+            const retry = () => {
+              resolve(load())
+              retries++
+            }
+            const fail = () => reject(err)
+            options.onError(retry, fail, retries)
+          })
+        } else {
+          throw err;
+        }
+      })
+  }
 
-     loader()
-       .then(c => {
-         InnerComp = c
-         loaded.value = true
-       })
-       .catch((err) => error.value = err)
-       .finally(() => {
-         loading.value = false
-         // 加载完毕后，无论成功与否都要清除延迟定时器
-         clearTimeout(loadingTimer)
-       })
+  return {
+    name: 'AsyncComponentWrapper',
+    setup() {
+      const loaded = ref(false)
+      const error = shallowRef(null)
+      // 一个标志，代表是否正在加载，默认为 false
+      const loading = ref(false)
+      let loadingTimer = null
+      // 如果配置项中存在 delay，则开启一个定时器计时，当延迟到时后将 loading.value 设置为 true
+      if (options.delay) {
+        loadingTimer = setTimeout(() => {
+          loading.value = true
+        }, options.delay);
+      } else {
+        // 如果配置项中没有 delay，则直接标记为加载中
+        loading.value = true
+      }
 
-     let timer = null
-     if (options.timeout) {
-       timer = setTimeout(() => {
-         const err = new Error(`Async component timed out after ${options.timeout}ms.`)
-         error.value = err
-       }, options.timeout)
-     }
+      load()
+        .then(c => {
+          InnerComp = c
+          loaded.value = true
+        })
+        .catch((err) => error.value = err)
+        .finally(() => {
+          loading.value = false
+          // 加载完毕后，无论成功与否都要清除延迟定时器
+          clearTimeout(loadingTimer)
+        })
 
-     const placeholder = { type: Text, children: '' }
+      let timer = null
+      if (options.timeout) {
+        timer = setTimeout(() => {
+          const err = new Error(`Async component timed out after ${options.timeout}ms.`)
+          error.value = err
+        }, options.timeout)
+      }
 
-     return () => {
-       if (loaded.value) {
-         return { type: InnerComp }
-       } else if (error.value && options.errorComponent) {
-         return { type: options.errorComponent, props: { error: error.value } }
-       } else if (loading.value && options.loadingComponent) {
-         // 如果异步组件正在加载，并且用户指定了 Loading 组件，则渲染 Loading 组件
-         return { type: options.loadingComponent }
-       } else {
-         return placeholder
-       }
-     }
-   }
- }
+      const placeholder = { type: Text, children: '' }
+
+      return () => {
+        if (loaded.value) {
+          return { type: InnerComp }
+        } else if (error.value && options.errorComponent) {
+          return { type: options.errorComponent, props: { error: error.value } }
+        } else if (loading.value && options.loadingComponent) {
+          // 如果异步组件正在加载，并且用户指定了 Loading 组件，则渲染 Loading 组件
+          return { type: options.loadingComponent }
+        } else {
+          return placeholder
+        }
+      }
+    }
+  }
 }
+
+function fetch() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject('error')
+    }, 1000)
+  })
+}
+
+/**
+ * load 函数接收一个 onError 回调函数作为参数，当加载失败时，会调用该回调函数
+ */
+function load(loadData, onError) {
+  const p = loadData();
+
+  // 捕获错误
+  return p.catch(err => {
+    return new Promise((resolve, reject) => {
+      const retry = () => resolve(load(onError));
+      const fail = () => reject(err);
+
+      onError(retry, fail);
+    })
+  })
+}
+
+load(fetch, (retry, fail) => {
+  // 失败后重试
+  retry();
+}).then(res => {
+  // 成功
+  console.log(res)
+})
 ```
