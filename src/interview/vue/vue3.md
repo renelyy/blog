@@ -1902,7 +1902,17 @@ function createRenderer(options) {
       subTree: null,
     }
 
-    const setupContext = { attrs };
+    function emit(event, ...payload) {
+      const eventName = `on${event[0].toUpperCase() + event.slice(1)}`;
+      const handler = instance.props[eventName];
+      if (handler) {
+        handler(...payload);
+      } else {
+        console.warn(`event ${event} not found`);
+      }
+    }
+
+    const setupContext = { attrs, emit };
     const setupResult = setup && setup(shallowReactive(props), setupContext);
     let setupState = null;
     if (typeof setupResult === 'function') {
