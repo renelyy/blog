@@ -1550,6 +1550,13 @@ function createRenderer(options) {
       }
     } else if (typeof type === "object") {
       // 类型为对象，代表描述的是组件
+      if (!n1) {
+        // 如果 n1 不存在，说明是挂载操作，则调用 mountComponent 函数完成挂载
+        mountComponent(n2, container, anchor);
+      } else {
+        // 如果 n1 存在，说明是更新操作，则调用 patchComponent 函数完成打补丁
+        patchComponent(n1, n2, anchor);
+      }
     } else if (typeof type === "otherType") {
       // 其他类型
     }
@@ -1867,6 +1874,103 @@ function createRenderer(options) {
   function mountText(vnode, container) {
     const el = (vnode.el = createText(vnode.children));
     insert(el, container);
+  }
+
+  /**
+   * 挂载组件
+   */
+  function mountComponent(vnode, container, anchor) {
+    // 通过 vnode.type 获取组件的配置对象
+    const componentOptions = vnode.type;
+    // 获取组件渲染函数
+    const {
+      render, data, beforeCreate, created, beforeMount, mounted, beforeUpdate, updated
+    } = componentOptions;
+
+    // 在这里调用 beforeCreate 钩子函数
+    beforeCreate && beforeCreate();
+
+    const state = reactive(data());
+
+    // 定义组件实例
+    const instance = {
+      state,
+      isMounted: false,
+      subTree: null,
+    }
+
+    // 将组件实例存储到 vnode 的 component 属性上，方便后续更新组件时使用
+    vnode.component = instance;
+
+    // 在这里调用 created 钩子函数
+    created && created.call(state);
+
+    // 将组件的渲染任务包装到 effect 函数中，这样当 state 变化时，
+    // effect 函数会重新执行，实现组件的自更新
+    effect(() => {
+      // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回虚拟 DOM
+      const subTree = render.call(state, state);
+      if (!instance.isMounted) {
+        // 在这里调用 beforeMount 钩子函数
+        beforeMount && beforeMount.call(state);
+
+        // 如果组件实例没有被挂载，则调用 patch 函数挂载组件要渲染的内容
+        // 调用 patch 函数挂载组件要渲染的内容
+        patch(null, subTree, container, anchor);
+        instance.isMounted = true;
+
+        // 在这里调用 mounted 钩子函数
+        mounted && mounted.call(state);
+      } else {
+        // 在这里调用 beforeUpdate 钩子函数
+        beforeUpdate && beforeUpdate.call(state);
+
+        // 如果组件实例已经被挂载，则调用 patch 函数更新组件要渲染的内容
+        patch(instance.subTree, subTree, container, anchor);
+
+        // 在这里调用 updated 钩子函数
+        updated && updated.call(state);
+      }
+      // 将 subTree 存储到组件实例中，作为下一次更新的旧 subTree
+      instance.subTree = subTree;
+    }, {
+      scheduler: queueJob
+    })
+  }
+
+  /**
+   * 一旦组件自身的响应式数据发生变化，组件就会自动重新执行渲染函数，从而完成更新。但是，
+   * 由于 effect 的执行是同步的，因此当响应式数据发生变化时，与之关联的副作用函数会同步
+   * 执行。换句话说，如果多次修改响应式数据的值，将会导致渲染函数执行多次，这实际上是没有
+   * 必要的。因此，我们需要设计一个机制，以使得无论对响应式数据进行多少次修改，副作用函数
+   * 都只会重新执行一次。为此，我们需要实现一个调度器，当副作用函数需要重新执行时，我们不
+   * 会立即执行它，而是将它缓冲到一个微任务队列中，等到执行栈清空后，再将它从微任务队列中
+   * 取出并执行。有了缓存机制，我们就有机会对任务进行去重，从而避免多次执行副作用函数带来的性能开销。
+   */
+  const queue = new Set(); // 任务缓存队列，可以对任务自动去重
+  let isFlushing = false; // 是否正在执行任务
+  const p = Promise.resolve(); // 创建一个立即 resolve 的 Promise 实例，用于将任务放到微任务队列中
+  // 调度器的主要函数，用来将一个任务放到缓存队列中，并开始刷新队列
+  function queueJob(job) {
+    queue.add(job);
+    if (!isFlushing) {
+      isFlushing = true;
+      p.then(() => {
+        try {
+          queue.forEach(job => job());
+        } finally {
+          isFlushing = false;
+          queue.clear = 0;
+        }
+      })
+    }
+  }
+
+  /**
+   * 更新组件
+   */
+  function patchComponent(n1, n2, container) {
+    // TODO:
   }
 
   /**
