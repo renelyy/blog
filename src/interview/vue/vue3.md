@@ -328,8 +328,12 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       //          如果是，则视作 SET 操作，否则是 ADD 操作
       // Object => 如果属性不存在，则说明是在添加新的属性，否则是设置已有属性
       const type = Array.isArray(target)
-        ? Number(key) < target.length ? "SET" : "ADD"
-        : Object.prototype.hasOwnProperty.call(target, key) ? "SET" : "ADD";
+        ? Number(key) < target.length
+          ? "SET"
+          : "ADD"
+        : Object.prototype.hasOwnProperty.call(target, key)
+        ? "SET"
+        : "ADD";
 
       const res = Reflect.set(target, key, newVal, receiver);
 
@@ -774,8 +778,12 @@ function createReactive(obj, isShallow = false, isReadonly = false) {
       //          如果是，则视作 SET 操作，否则是 ADD 操作
       // Object => 如果属性不存在，则说明是在添加新的属性，否则是设置已有属性
       const type = Array.isArray(target)
-        ? Number(key) < target.length ? "SET" : "ADD"
-        : Object.prototype.hasOwnProperty.call(target, key) ? "SET" : "ADD";
+        ? Number(key) < target.length
+          ? "SET"
+          : "ADD"
+        : Object.prototype.hasOwnProperty.call(target, key)
+        ? "SET"
+        : "ADD";
 
       const res = Reflect.set(target, key, newVal, receiver);
 
@@ -2497,6 +2505,124 @@ function tokenize(str) {
 
   // 最后，返回 tokens
   return tokens;
+}
+
+// parse 函数接收模板作为参数
+function parse(str) {
+  // 首先对模板进行标记化，得到 tokens
+  const tokens = tokenize(str);
+  // 创建 Root 根节点
+  const root = {
+    type: "Root",
+    children: []
+  };
+  // 创建 elementStack 栈，起初只有 Root 根节点
+  const elementStack = [root];
+
+  // 开启一个 while 循环扫描 tokens，直到所有 Token 都被扫描完毕为止
+  while (tokens.length) {
+    // 获取当前栈顶节点作为父节点 parent
+    const parent = elementStack[elementStack.length - 1];
+    // 当前扫描的 Token
+    const t = tokens[0];
+    switch (t.type) {
+      case "tag":
+        // 如果当前 Token 是开始标签，则创建 Element 类型的 AST 节点
+        const elementNode = {
+          type: "Element",
+          tag: t.name,
+          children: []
+        };
+        // 将其添加到父级节点的 children 中
+        parent.children.push(elementNode);
+        // 将当前节点压入栈
+        elementStack.push(elementNode);
+        break;
+      case "text":
+        // 如果当前 Token 是文本，则创建 Text 类型的 AST 节点
+        const textNode = {
+          type: "Text",
+          content: t.content
+        };
+        // 将其添加到父节点的 children 中
+        parent.children.push(textNode);
+        break;
+      case "tagEnd":
+        // 遇到结束标签，将栈顶节点弹出
+        elementStack.pop();
+        break;
+    }
+    // 消费已经扫描过的 token
+    tokens.shift();
+  }
+
+  // 最后返回 AST
+  return root;
+}
+
+function dump(node, indent = 0) {
+  // 节点的类型
+  const type = node.type;
+  // 节点的描述，如果是根节点，则没有描述
+  // 如果是 Element 类型的节点，则使用 node.tag 作为节点的描述
+  // 如果是 Text 类型的节点，则使用 node.content 作为节点的描述
+  const desc =
+    node.type === "Root"
+      ? ""
+      : node.type === "Element"
+      ? node.tag
+      : node.content;
+
+  // 打印节点的类型和描述信息
+  console.log(`${"-".repeat(indent)}${type}: ${desc}`);
+
+  // 递归地打印子节点
+  if (node.children) {
+    node.children.forEach(n => dump(n, indent + 2));
+  }
+}
+
+function transform(ast) {
+  // 在 transform 函数内创建 context 对象
+  const context = {
+    // 增加 currentNode，用来存储当前正在转换的节点
+    currentNode: null,
+    // 增加 childIndex，用来存储当前节点在父节点的 children 中的位置索引
+    childIndex: 0,
+    // 增加 parent，用来存储当前转换节点的父节点
+    parent: null,
+    // 注册 nodeTransforms 数组
+    nodeTransforms: [
+      transformElement, // transformElement 函数用来转换标签节点
+      transformText // transformText 函数用来转换文本节点
+    ]
+  };
+  // 调用 traverseNode 完成转换
+  traverseNode(ast, context);
+  // 打印 AST 信息
+  console.log(dump(ast));
+}
+
+function traverseNode(ast, context) {
+  // 设置当前转换的节点信息 context.currentNode
+  context.currentNode = ast;
+
+  const transforms = context.nodeTransforms;
+  for (let i = 0; i < transforms.length; i++) {
+    transforms[i](context.currentNode, context);
+  }
+
+  const children = context.currentNode.children;
+  if (children) {
+    for (let i = 0; i < children.length; i++) {
+      // 递归地调用 traverseNode 转换子节点之前，将当前节点设置为父节点
+      context.parent = context.currentNode;
+      // 设置位置索引
+      context.childIndex = i;
+      // 递归地调用时，将 context 透传
+      traverseNode(children[i], context);
+    }
+  }
 }
 ```
 
