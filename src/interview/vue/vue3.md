@@ -954,27 +954,26 @@ export {
 1. 渲染器的作用是把虚拟 DOM 渲染为特定平台上的真实元素
 2. 替换使用。为了避免造成困惑，在本书中将统一使用 vnode
 3. 自定义渲染器并不是“黑魔法”​，它只是通过抽象的手段，让核心代码不再依赖平台特有的 API，再通过支持个性化配置的能力来实现跨平台
-4. 并不是所有 HTML Attributes 都有与之对应的 DOM Properties，例如：aria-* 类的 HTML Attributes 就没有与之对应的 DOM Properties
+4. 并不是所有 HTML Attributes 都有与之对应的 DOM Properties，例如：aria-\* 类的 HTML Attributes 就没有与之对应的 DOM Properties
 5. 类似地，也不是所有 DOM Properties 都有与之对应的 HTML Attributes，例如可以用 el.textContent 来设置元素的文本内容，但并没有与之对应的 HTML Attributes 来完成同样的工作
 6. HTML Attributes 的作用是设置与之对应的 DOM Properties 的初始值。一旦值改变，那么 DOM Properties 始终存储着当前值，而通过 getAttribute 函数得到的仍然是初始值
-7. `<input/>` 标签的 form 属性必须使用setAttribute 函数来设置，实际上，不仅仅是 `<input/>` 标签，所有表单元素都具有 form 属性，它们都应该作为 HTML Attributes 被设置
+7. `<input/>` 标签的 form 属性必须使用 setAttribute 函数来设置，实际上，不仅仅是 `<input/>` 标签，所有表单元素都具有 form 属性，它们都应该作为 HTML Attributes 被设置
 8. 在浏览器中为一个元素设置 class 有三种方式，即使用 `setAttribute`、`el.className` 或 `el.classList`
 9. 使用 innerHTML 清空容器元素内容的另一个缺陷是，它不会移除绑定在 DOM 元素上的事件处理函数
 10. 我们把由父组件自更新所引起的子组件更新叫作子组件的被动更新
 11. 组件模板中的插槽内容会被编译为插槽函数，而插槽函数的返回值就是具体的插槽内容
-12. 通过 v-on 指令为组件绑定的事件在经过编译后，会以 onXxx 的形式存储到props 对象中
+12. 通过 v-on 指令为组件绑定的事件在经过编译后，会以 onXxx 的形式存储到 props 对象中
 
 ::: code-group
 
 ```js [简单 Diff 算法]
-
 /**
  * Diff 发生在更新子节点时（对一个元素打补丁的最后一步操作）
- * 
+ *
  * 简单 Diff 算法的核心逻辑是，拿新的一组子节点中的节点去旧的一组子节点中寻找可复用的节点。
  * 如果找到了，则记录该节点的位置索引。我们把这个位置索引称为最大索引。在整个更新过程中，如
  * 果一个节点的索引值小于最大索引，则说明该节点对应的真实 DOM 元素需要移动
- * 
+ *
  * @param {Object} n1 旧的 vnode
  * @param {Object} n2 新的 vnode
  * @param {HTMLElement} container 容器（真实 DOM）
@@ -1143,7 +1142,9 @@ function patchKeyedChildren(n1, n2, container) {
     } else {
       // 代码运行到这里，说明头头、尾尾、头尾、尾头比较都不通过，那么需要尝试看看非头部、非尾部的节点能否复用
       // 拿新的一组子节点中的头部节点，遍历旧子节点，试图找到与 newStartVNode 拥有相同 key 值的节点
-      const idxInOld = oldChildren.findIndex(oldVNode => oldVNode.key === newStartVNode.key);
+      const idxInOld = oldChildren.findIndex(
+        oldVNode => oldVNode.key === newStartVNode.key
+      );
       // idxInOld > 0 说明找到了可复用的节点，并且需要将其对应的真实 DOM 移动到头部 oldStartVNode.el 前面
       if (idxInOld > 0) {
         // idxInOld 位置对应的 vnode 就是需要移动的节点
@@ -1231,7 +1232,8 @@ function patchKeyedChildren(n1, n2, container) {
   if (j > oldEnd && j <= newEnd) {
     // 锚点的索引
     const anchorIndex = newEnd + 1;
-    const anchor = anchorIndex < newChildren.length ? newChildren[anchorIndex].el : null;
+    const anchor =
+      anchorIndex < newChildren.length ? newChildren[anchorIndex].el : null;
     // 采用 while 循环，从 j -> newEnd 依次插入节点
     while (j <= newEnd) {
       patch(null, newChildren[j++], container, anchor);
@@ -1311,7 +1313,8 @@ function patchKeyedChildren(n1, n2, container) {
           // 该节点的下一个节点的位置索引
           const nextPos = pos + 1;
           // 锚点为新节点的下一个节点，如果新节点的下一个节点不存在，则锚点为 null
-          const anchor = nextPos < newChildren.length ? newChildren[nextPos].el : null;
+          const anchor =
+            nextPos < newChildren.length ? newChildren[nextPos].el : null;
           // 挂载新节点
           patch(null, newVNode, container, anchor);
         } else if (i !== seq[s]) {
@@ -1322,7 +1325,8 @@ function patchKeyedChildren(n1, n2, container) {
           // 该节点的下一个节点的位置索引
           const nextPos = pos + 1;
           // 锚点为新节点的下一个节点，如果新节点的下一个节点不存在，则锚点为 null
-          const anchor = nextPos < newChildren.length ? newChildren[nextPos].el : null;
+          const anchor =
+            nextPos < newChildren.length ? newChildren[nextPos].el : null;
           // 移动新节点
           // 移动节点的实现思路类似于挂载全新的节点，不同点在于移动节点是通过 insert 函数来完成的
           insert(newVNode.el, container, anchor);
@@ -1340,44 +1344,44 @@ function patchKeyedChildren(n1, n2, container) {
  * 求最长递增子序列
  */
 function lis(arr) {
-  const p = arr.slice()
-  const result = [0]
-  let i, j, u, v, c
-  const len = arr.length
+  const p = arr.slice();
+  const result = [0];
+  let i, j, u, v, c;
+  const len = arr.length;
   for (i = 0; i < len; i++) {
-    const arrI = arr[i]
+    const arrI = arr[i];
     if (arrI !== 0) {
-      j = result[result.length - 1]
+      j = result[result.length - 1];
       if (arr[j] < arrI) {
-        p[i] = j
-        result.push(i)
-        continue
+        p[i] = j;
+        result.push(i);
+        continue;
       }
-      u = 0
-      v = result.length - 1
+      u = 0;
+      v = result.length - 1;
       while (u < v) {
-        c = ((u + v) / 2) | 0
+        c = ((u + v) / 2) | 0;
         if (arr[result[c]] < arrI) {
-          u = c + 1
+          u = c + 1;
         } else {
-          v = c
+          v = c;
         }
       }
       if (arrI < arr[result[u]]) {
         if (u > 0) {
-          p[i] = result[u - 1]
+          p[i] = result[u - 1];
         }
-        result[u] = i
+        result[u] = i;
       }
     }
   }
-  u = result.length
-  v = result[u - 1]
+  u = result.length;
+  v = result[u - 1];
   while (u-- > 0) {
-    result[u] = v
-    v = p[v]
+    result[u] = v;
+    v = p[v];
   }
-  return result
+  return result;
 }
 ```
 
@@ -1445,17 +1449,17 @@ const renderer = createRenderer({
       if (nextValue) {
         if (!invoker) {
           // 如果 nextValue 存在，且 invoker 不存在，则表示这是第一次设置事件处理函数，则创建伪造的事件处理函数 invoker
-          invoker = el._vei[key] = (e) => {
+          invoker = el._vei[key] = e => {
             // e.timeStamp 是事件发生时的时间戳
             // 如果事件发生的时间戳早于 invoker 被绑定的时间，则表示该事件与 invoker 无关，直接返回
             if (e.timeStamp < invoker.attached) return;
-            // 如果 invoker.value 是数组，则遍历它并逐个调用事件处理函数  
-           if (Array.isArray(invoker.value)) {
-              invoker.value.forEach((fn) => fn(e));
+            // 如果 invoker.value 是数组，则遍历它并逐个调用事件处理函数
+            if (Array.isArray(invoker.value)) {
+              invoker.value.forEach(fn => fn(e));
             } else {
               invoker.value(e);
             }
-          }
+          };
           // 将真正的事件处理函数赋值给 invoker.value
           invoker.value = nextValue;
           // 记录事件处理函数被绑定的时间
@@ -1470,7 +1474,8 @@ const renderer = createRenderer({
         // 如果新绑定的事件处理函数不存在，且伪造的事件处理函数存在，则移除绑定的事件处理函数
         el.removeEventListener(name, invoker);
       }
-    } if (key === "class") {
+    }
+    if (key === "class") {
       el.className = nextValue;
     } else if (shouldSetAsProps(el, key, nextValue)) {
       // 获取该 DOM Properties 的类型
@@ -1510,7 +1515,7 @@ function createRenderer(options) {
 
   /**
    * 打补丁
-   * 
+   *
    * @param {Object} n1 旧的 vnode
    * @param {Object} n2 新的 vnode
    * @param {HTMLElement} container 容器
@@ -1572,7 +1577,7 @@ function createRenderer(options) {
 
   /**
    * 更新元素
-   * 
+   *
    * @param {Object} n1 旧的 vnode
    * @param {Object} n2 新的 vnode
    */
@@ -1608,7 +1613,7 @@ function createRenderer(options) {
 
   /**
    * 更新子节点（对一个元素打补丁的最后一步操作）
-   * 
+   *
    * @param {Object} n1 旧的 vnode
    * @param {Object} n2 新的 vnode
    * @param {HTMLElement} container 容器（真实 DOM）
@@ -1683,7 +1688,8 @@ function createRenderer(options) {
     if (j > oldEnd && j <= newEnd) {
       // 锚点的索引
       const anchorIndex = newEnd + 1;
-      const anchor = anchorIndex < newChildren.length ? newChildren[anchorIndex].el : null;
+      const anchor =
+        anchorIndex < newChildren.length ? newChildren[anchorIndex].el : null;
       // 采用 while 循环，从 j -> newEnd 依次插入节点
       while (j <= newEnd) {
         patch(null, newChildren[j++], container, anchor);
@@ -1763,7 +1769,8 @@ function createRenderer(options) {
             // 该节点的下一个节点的位置索引
             const nextPos = pos + 1;
             // 锚点为新节点的下一个节点，如果新节点的下一个节点不存在，则锚点为 null
-            const anchor = nextPos < newChildren.length ? newChildren[nextPos].el : null;
+            const anchor =
+              nextPos < newChildren.length ? newChildren[nextPos].el : null;
             // 挂载新节点
             patch(null, newVNode, container, anchor);
           } else if (i !== seq[s]) {
@@ -1774,7 +1781,8 @@ function createRenderer(options) {
             // 该节点的下一个节点的位置索引
             const nextPos = pos + 1;
             // 锚点为新节点的下一个节点，如果新节点的下一个节点不存在，则锚点为 null
-            const anchor = nextPos < newChildren.length ? newChildren[nextPos].el : null;
+            const anchor =
+              nextPos < newChildren.length ? newChildren[nextPos].el : null;
             // 移动新节点
             // 移动节点的实现思路类似于挂载全新的节点，不同点在于移动节点是通过 insert 函数来完成的
             insert(newVNode.el, container, anchor);
@@ -1792,49 +1800,49 @@ function createRenderer(options) {
    * 求最长递增子序列
    */
   function lis(arr) {
-    const p = arr.slice()
-    const result = [0]
-    let i, j, u, v, c
-    const len = arr.length
+    const p = arr.slice();
+    const result = [0];
+    let i, j, u, v, c;
+    const len = arr.length;
     for (i = 0; i < len; i++) {
-      const arrI = arr[i]
+      const arrI = arr[i];
       if (arrI !== 0) {
-        j = result[result.length - 1]
+        j = result[result.length - 1];
         if (arr[j] < arrI) {
-          p[i] = j
-          result.push(i)
-          continue
+          p[i] = j;
+          result.push(i);
+          continue;
         }
-        u = 0
-        v = result.length - 1
+        u = 0;
+        v = result.length - 1;
         while (u < v) {
-          c = ((u + v) / 2) | 0
+          c = ((u + v) / 2) | 0;
           if (arr[result[c]] < arrI) {
-            u = c + 1
+            u = c + 1;
           } else {
-            v = c
+            v = c;
           }
         }
         if (arrI < arr[result[u]]) {
           if (u > 0) {
-            p[i] = result[u - 1]
+            p[i] = result[u - 1];
           }
-          result[u] = i
+          result[u] = i;
         }
       }
     }
-    u = result.length
-    v = result[u - 1]
+    u = result.length;
+    v = result[u - 1];
     while (u-- > 0) {
-      result[u] = v
-      v = p[v]
+      result[u] = v;
+      v = p[v];
     }
-    return result
+    return result;
   }
 
   function shouldSetAsProps(el, key, value) {
     // 特殊处理
-    if (key === 'form' && el.tagName === 'INPUT') {
+    if (key === "form" && el.tagName === "INPUT") {
       // input 的 form 属性是只读的，不能通过 el.form = value 的方式来设置其值
       // 只能通过 el.setAttribute('form', value) 的方式来设置其值
       return false;
@@ -1897,13 +1905,22 @@ function createRenderer(options) {
       // 如果是函数式组件，则将 vnode.type 作为配置对象
       componentOptions = {
         render: vnode.type,
-        props: vnode.type.props,
-      }
+        props: vnode.type.props
+      };
     }
 
     // 获取组件渲染函数
     const {
-      render, data, props: propsOption, setup, beforeCreate, created, beforeMount, mounted, beforeUpdate, updated
+      render,
+      data,
+      props: propsOption,
+      setup,
+      beforeCreate,
+      created,
+      beforeMount,
+      mounted,
+      beforeUpdate,
+      updated
     } = componentOptions;
 
     // 在这里调用 beforeCreate 钩子函数
@@ -1922,8 +1939,8 @@ function createRenderer(options) {
       isMounted: false,
       subTree: null,
       // 在组件实例中添加 mounted 数组，用来存储通过 onMounted 注册的生命周期钩子函数
-      mounted: [],
-    }
+      mounted: []
+    };
 
     function emit(event, ...payload) {
       const eventName = `on${event[0].toUpperCase() + event.slice(1)}`;
@@ -1946,9 +1963,9 @@ function createRenderer(options) {
     setCurrentInstance(null);
 
     let setupState = null;
-    if (typeof setupResult === 'function') {
+    if (typeof setupResult === "function") {
       if (render) {
-        console.error('setup 函数返回渲染函数，render 选项将被忽略');
+        console.error("setup 函数返回渲染函数，render 选项将被忽略");
       }
       render = setupResult;
     } else {
@@ -1961,8 +1978,8 @@ function createRenderer(options) {
     const renderContext = new Proxy(instance, {
       get(target, key, receiver) {
         const { state, props } = target;
-        
-        if (key === '$slots') return slots;
+
+        if (key === "$slots") return slots;
 
         if (state && key in state) {
           return state[key];
@@ -1980,53 +1997,59 @@ function createRenderer(options) {
         if (state && key in state) {
           state[key] = value;
         } else if (props && key in props) {
-          console.warn(`attempting to set readonly property ${key}. Props are readonly.`);
+          console.warn(
+            `attempting to set readonly property ${key}. Props are readonly.`
+          );
         } else if (setupState && key in setupState) {
           setupState[key] = value;
         } else {
           console.warn(`property ${key} not found`);
         }
       }
-    })
+    });
 
     // 在这里调用 created 钩子函数
     created && created.call(renderContext);
 
     // 将组件的渲染任务包装到 effect 函数中，这样当 state 变化时，
     // effect 函数会重新执行，实现组件的自更新
-    effect(() => {
-      // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回虚拟 DOM
-      const subTree = render.call(renderContext, renderContext);
-      if (!instance.isMounted) {
-        // 在这里调用 beforeMount 钩子函数
-        beforeMount && beforeMount.call(renderContext);
+    effect(
+      () => {
+        // 执行渲染函数，获取组件要渲染的内容，即 render 函数返回虚拟 DOM
+        const subTree = render.call(renderContext, renderContext);
+        if (!instance.isMounted) {
+          // 在这里调用 beforeMount 钩子函数
+          beforeMount && beforeMount.call(renderContext);
 
-        // 如果组件实例没有被挂载，则调用 patch 函数挂载组件要渲染的内容
-        // 调用 patch 函数挂载组件要渲染的内容
-        patch(null, subTree, container, anchor);
-        instance.isMounted = true;
+          // 如果组件实例没有被挂载，则调用 patch 函数挂载组件要渲染的内容
+          // 调用 patch 函数挂载组件要渲染的内容
+          patch(null, subTree, container, anchor);
+          instance.isMounted = true;
 
-        // 在这里调用 mounted 钩子函数
-        mounted && mounted.call(renderContext);
+          // 在这里调用 mounted 钩子函数
+          mounted && mounted.call(renderContext);
 
-        // 在合适的时机，调用 onMounted 中注册的钩子函数
-        // 其他生命周期钩子函数同理
-        instance.mounted && instance.mounted.forEach(hook => hook.call(renderContext));
-      } else {
-        // 在这里调用 beforeUpdate 钩子函数
-        beforeUpdate && beforeUpdate.call(renderContext);
+          // 在合适的时机，调用 onMounted 中注册的钩子函数
+          // 其他生命周期钩子函数同理
+          instance.mounted &&
+            instance.mounted.forEach(hook => hook.call(renderContext));
+        } else {
+          // 在这里调用 beforeUpdate 钩子函数
+          beforeUpdate && beforeUpdate.call(renderContext);
 
-        // 如果组件实例已经被挂载，则调用 patch 函数更新组件要渲染的内容
-        patch(instance.subTree, subTree, container, anchor);
+          // 如果组件实例已经被挂载，则调用 patch 函数更新组件要渲染的内容
+          patch(instance.subTree, subTree, container, anchor);
 
-        // 在这里调用 updated 钩子函数
-        updated && updated.call(renderContext);
+          // 在这里调用 updated 钩子函数
+          updated && updated.call(renderContext);
+        }
+        // 将 subTree 存储到组件实例中，作为下一次更新的旧 subTree
+        instance.subTree = subTree;
+      },
+      {
+        scheduler: queueJob
       }
-      // 将 subTree 存储到组件实例中，作为下一次更新的旧 subTree
-      instance.subTree = subTree;
-    }, {
-      scheduler: queueJob
-    })
+    );
   }
 
   /**
@@ -2053,7 +2076,7 @@ function createRenderer(options) {
           isFlushing = false;
           queue.clear = 0;
         }
-      })
+      });
     }
   }
 
@@ -2128,7 +2151,7 @@ function createRenderer(options) {
 
   /**
    * 卸载元素
-   * 
+   *
    * @param {Object} vnode 虚拟节点
    */
   function unmount(vnode) {
@@ -2139,7 +2162,7 @@ function createRenderer(options) {
     }
 
     // 组件的卸载，本质上要卸载组件所渲染的内容，即 subTree
-    if (typeof vnode.type === 'object') {
+    if (typeof vnode.type === "object") {
       unmount(vnode.component.subTree);
       return;
     }
@@ -2163,26 +2186,25 @@ function createRenderer(options) {
 
 :::
 
-
 ### 组件化
 
 1. 在异步组件中，​“异步”二字指的是，以异步的方式加载并渲染一个组件
 2. 函数式组件允许使用一个普通函数定义组件，并使用该函数的返回值作为组件要渲染的内容。函数式组件的特点是：无状态、编写简单且直观。在 Vue.js 2 中，相比有状态组件来说，函数式组件具有明显的性能优势。但在 Vue.js 3 中，函数式组件与有状态组件的性能差距不大，都非常好。正如 Vue.js RFC 的原文所述：​“在 Vue.js 3 中使用函数式组件，主要是因为它的简单性，而不是因为它的性能好。​”
 3. 为了替用户更好地解决上述问题，我们需要在框架层面为异步组件提供更好的封装支持，与之对应的能力如下。
-  - 允许用户指定加载出错时要渲染的组件。
-  - 允许用户指定 Loading 组件，以及展示该组件的延迟时间。
-  - 允许用户设置加载组件的超时时长。
-  - 组件加载失败时，为用户提供重试的能力。
 
-  以上这些内容就是异步组件真正要解决的问题。
-4. 异步组件在页面性能、拆包以及服务端下发组件等场景中尤为重要
+- 允许用户指定加载出错时要渲染的组件。
+- 允许用户指定 Loading 组件，以及展示该组件的延迟时间。
+- 允许用户设置加载组件的超时时长。
+- 组件加载失败时，为用户提供重试的能力。
+
+以上这些内容就是异步组件真正要解决的问题。 4. 异步组件在页面性能、拆包以及服务端下发组件等场景中尤为重要
 
 #### 封装 defineAsyncComponent 函数
 
 ```js
 /**
  * 异步组件
- * 
+ *
  * defineAsyncComponent({
  *    loader: () => new Promise(),
  *    delay: 200, // 延迟显示 loading 组件的时间
@@ -2194,94 +2216,98 @@ function createRenderer(options) {
  * @param {Function | Object} options 异步加载函数或配置对象
  */
 function defineAsyncComponent(options) {
-  if (typeof options === 'function') {
+  if (typeof options === "function") {
     options = {
       loader: options
-    }
+    };
   }
-  const { loader } = options
-  let InnerComp = null
+  const { loader } = options;
+  let InnerComp = null;
   let retries = 0; // 重试次数
   function load() {
-    return loader()
-      .catch(err => {
-        if (options.onError) {
-          return new Promise((resolve, reject) => {
-            const retry = () => {
-              resolve(load())
-              retries++
-            }
-            const fail = () => reject(err)
-            options.onError(retry, fail, retries)
-          })
-        } else {
-          throw err;
-        }
-      })
+    return loader().catch(err => {
+      if (options.onError) {
+        return new Promise((resolve, reject) => {
+          const retry = () => {
+            resolve(load());
+            retries++;
+          };
+          const fail = () => reject(err);
+          options.onError(retry, fail, retries);
+        });
+      } else {
+        throw err;
+      }
+    });
   }
 
   return {
-    name: 'AsyncComponentWrapper',
+    name: "AsyncComponentWrapper",
     setup() {
-      const loaded = ref(false)
-      const error = shallowRef(null)
+      const loaded = ref(false);
+      const error = shallowRef(null);
       // 一个标志，代表是否正在加载，默认为 false
-      const loading = ref(false)
-      let loadingTimer = null
+      const loading = ref(false);
+      let loadingTimer = null;
       // 如果配置项中存在 delay，则开启一个定时器计时，当延迟到时后将 loading.value 设置为 true
       if (options.delay) {
         loadingTimer = setTimeout(() => {
-          loading.value = true
+          loading.value = true;
         }, options.delay);
       } else {
         // 如果配置项中没有 delay，则直接标记为加载中
-        loading.value = true
+        loading.value = true;
       }
 
       load()
         .then(c => {
-          InnerComp = c
-          loaded.value = true
+          InnerComp = c;
+          loaded.value = true;
         })
-        .catch((err) => error.value = err)
+        .catch(err => (error.value = err))
         .finally(() => {
-          loading.value = false
+          loading.value = false;
           // 加载完毕后，无论成功与否都要清除延迟定时器
-          clearTimeout(loadingTimer)
-        })
+          clearTimeout(loadingTimer);
+        });
 
-      let timer = null
+      let timer = null;
       if (options.timeout) {
         timer = setTimeout(() => {
-          const err = new Error(`Async component timed out after ${options.timeout}ms.`)
-          error.value = err
-        }, options.timeout)
+          const err = new Error(
+            `Async component timed out after ${options.timeout}ms.`
+          );
+          error.value = err;
+        }, options.timeout);
       }
 
-      const placeholder = { type: Text, children: '' }
+      const placeholder = { type: Text, children: "" };
 
       return () => {
         if (loaded.value) {
-          return { type: InnerComp }
+          return { type: InnerComp };
         } else if (error.value && options.errorComponent) {
-          return { type: options.errorComponent, props: { error: error.value } }
+          return {
+            type: options.errorComponent,
+            props: { error: error.value }
+          };
         } else if (loading.value && options.loadingComponent) {
           // 如果异步组件正在加载，并且用户指定了 Loading 组件，则渲染 Loading 组件
-          return { type: options.loadingComponent }
+          return { type: options.loadingComponent };
         } else {
-          return placeholder
+          return placeholder;
         }
-      }
+      };
     }
-  }
+  };
 }
 
 function fetch() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      reject('error')
-    }, 1000)
-  })
+      reject("error");
+    }, 1000);
+  });
 }
 
 /**
@@ -2297,8 +2323,8 @@ function load(loadData, onError) {
       const fail = () => reject(err);
 
       onError(retry, fail);
-    })
-  })
+    });
+  });
 }
 
 load(fetch, (retry, fail) => {
@@ -2306,12 +2332,175 @@ load(fetch, (retry, fail) => {
   retry();
 }).then(res => {
   // 成功
-  console.log(res)
-})
+  console.log(res);
+});
 ```
 
+### 编译器
 
-## vue3 和 vue2 的响应式方案实现上，为什么vue2 有 Watcher,Dep 等，但是 vue3 没有
+```js
+const template = `
+<template>
+  <div v-if="visible">content</div>
+</template>`;
+
+// 解析模板，生成 AST
+const templateAST = parse(template);
+
+// 生成 JavaScript AST
+const jsAST = transform(templateAST);
+
+// 生成渲染函数代码
+const code = generate(jsAST);
+
+// 定义状态机的状态
+const State = {
+  initial: 1, // 初始状态
+  tagOpen: 2, // 标签开始状态
+  tagName: 3, // 标签名称状态
+  text: 4, // 文本状态
+  tagEnd: 5, // 结束标签状态
+  tagEndName: 6 // 结束标签名称状态
+};
+// 一个辅助函数，用于判断是否是字母
+function isAlpha(char) {
+  return (char >= "a" && char <= "z") || (char >= "A" && char <= "Z");
+}
+
+// 接收模板字符串作为参数，并将模板切割为 Token 返回
+function tokenize(str) {
+  // 状态机的当前状态：初始状态
+  let currentState = State.initial;
+  // 用于缓存字符
+  const chars = [];
+  // 生成的 Token 会存储到 tokens 数组中，并作为函数的返回值返回
+  const tokens = [];
+  // 使用 while 循环开启自动机，只要模板字符串没有被消费尽，自动机就会一直运行
+  while (str) {
+    // 查看第一个字符，注意，这里只是查看，没有消费该字符
+    const char = str[0];
+    // switch 语句匹配当前状态
+    switch (currentState) {
+      // 状态机当前处于初始状态
+      case State.initial:
+        // 遇到字符 <
+        if (char === "<") {
+          // 1. 状态机切换到标签开始状态
+          currentState = State.tagOpen;
+          // 2. 消费字符 <
+          str = str.slice(1);
+        } else if (isAlpha(char)) {
+          // 1. 遇到字母，切换到文本状态
+          currentState = State.text;
+          // 2. 将当前字母缓存到 chars 数组
+          chars.push(char);
+          // 3. 消费当前字符
+          str = str.slice(1);
+        }
+        break;
+      // 状态机当前处于标签开始状态
+      case State.tagOpen:
+        if (isAlpha(char)) {
+          // 1. 遇到字母，切换到标签名称状态
+          currentState = State.tagName;
+          // 2. 将当前字符缓存到 chars 数组
+          chars.push(char);
+          // 3. 消费当前字符
+          str = str.slice(1);
+        } else if (char === "/") {
+          // 1. 遇到字符 /，切换到结束标签状态
+          currentState = State.tagEnd;
+          // 2. 消费字符 /
+          str = str.slice(1);
+        }
+        break;
+      // 状态机当前处于标签名称状态
+      case State.tagName:
+        if (isAlpha(char)) {
+          // 1. 遇到字母，由于当前处于标签名称状态，所以不需要切换状态，
+          // 但需要将当前字符缓存到 chars 数组
+          chars.push(char);
+          // 2. 消费当前字符
+          str = str.slice(1);
+        } else if (char === ">") {
+          // 1.遇到字符 >，切换到初始状态
+          currentState = State.initial;
+          // 2. 同时创建一个标签 Token，并添加到 tokens 数组中
+          // 注意，此时 chars 数组中缓存的字符就是标签名称
+          tokens.push({
+            type: "tag",
+            name: chars.join("")
+          });
+          // 3. chars 数组的内容已经被消费，清空它
+          chars.length = 0;
+          // 4. 同时消费当前字符 >
+          str = str.slice(1);
+        }
+        break;
+      // 状态机当前处于文本状态
+      case State.text:
+        if (isAlpha(char)) {
+          // 1. 遇到字母，保持状态不变，但应该将当前字符缓存到 chars 数组
+          chars.push(char);
+          // 2. 消费当前字符
+          str = str.slice(1);
+        } else if (char === "<") {
+          // 1. 遇到字符 <，切换到标签开始状态
+          currentState = State.tagOpen;
+          // 2. 从 文本状态 --> 标签开始状态，此时应该创建文本 Token，并添加到 tokens 数组
+          // 注意，此时 chars 数组中的字符就是文本内容
+          tokens.push({
+            type: "text",
+            content: chars.join("")
+          });
+          // 3. chars 数组的内容已经被消费，清空它
+          chars.length = 0;
+          // 4. 消费当前字符
+          str = str.slice(1);
+        }
+        break;
+      // 状态机当前处于标签结束状态
+      case State.tagEnd:
+        if (isAlpha(char)) {
+          // 1. 遇到字母，切换到结束标签名称状态
+          currentState = State.tagEndName;
+          // 2. 将当前字符缓存到 chars 数组
+          chars.push(char);
+          // 3. 消费当前字符
+          str = str.slice(1);
+        }
+        break;
+      // 状态机当前处于结束标签名称状态
+      case State.tagEndName:
+        if (isAlpha(char)) {
+          // 1. 遇到字母，不需要切换状态，但需要将当前字符缓存到 chars 数组
+          chars.push(char);
+          // 2. 消费当前字符
+          str = str.slice(1);
+        } else if (char === ">") {
+          // 1. 遇到字符 >，切换到初始状态
+          currentState = State.initial;
+          // 2. 从 结束标签名称状态 --> 初始状态，应该保存结束标签名称 Token
+          // 注意，此时 chars 数组中缓存的内容就是标签名称
+          tokens.push({
+            type: "tagEnd",
+            name: chars.join("")
+          });
+          // 3. chars 数组的内容已经被消费，清空它
+          chars.length = 0;
+          // 4. 消费当前字符
+          str = str.slice(1);
+        }
+        break;
+    }
+  }
+
+  // 最后，返回 tokens
+  return tokens;
+}
+```
+
+## vue3 和 vue2 的响应式方案实现上，为什么 vue2 有 Watcher,Dep 等，但是 vue3 没有
 
 这是一个非常好的问题，它触及了 Vue2 和 Vue3 响应式系统核心架构的差异。简单来说，**Vue3 不是没有依赖管理，而是用更现代化、更高效的数据结构（`WeakMap`, `Map`, `Set`）替代了 Vue2 中 `Dep` 和 `Watcher` 的类实例架构。**
 
@@ -2322,14 +2511,16 @@ load(fetch, (retry, fail) => {
 Vue2 的响应式核心是 **“发布-订阅”模式** 的一种具体实现。
 
 1.  **`Dep` (Dependency - 依赖)**
-    *   **角色**：每个**响应式属性**都会有一个属于自己的 `Dep` 实例。它是一个发布者，负责收集所有依赖于这个属性的订阅者。
-    *   **功能**：当属性的 `getter` 被触发时，调用 `dep.depend()` 来收集当前的 `Watcher`；当属性的 `setter` 被触发时，调用 `dep.notify()` 来通知所有订阅的 `Watcher` 更新。
+
+    - **角色**：每个**响应式属性**都会有一个属于自己的 `Dep` 实例。它是一个发布者，负责收集所有依赖于这个属性的订阅者。
+    - **功能**：当属性的 `getter` 被触发时，调用 `dep.depend()` 来收集当前的 `Watcher`；当属性的 `setter` 被触发时，调用 `dep.notify()` 来通知所有订阅的 `Watcher` 更新。
 
 2.  **`Watcher` (观察者)**
-    *   **角色**：它是订阅者。一个 `Watcher` 可以代表一个组件渲染函数、一个计算属性或者一个用户定义的 `watch` 回调。
-    *   **功能**：在初始化或更新时，会执行一个 `getter` 函数（比如渲染组件会读取数据），从而触发响应式属性的 `getter`，将自己（`this`）订阅到对应的 `Dep` 中。当收到 `Dep` 的通知时，会重新执行 `getter` 函数来更新视图或计算新值。
+    - **角色**：它是订阅者。一个 `Watcher` 可以代表一个组件渲染函数、一个计算属性或者一个用户定义的 `watch` 回调。
+    - **功能**：在初始化或更新时，会执行一个 `getter` 函数（比如渲染组件会读取数据），从而触发响应式属性的 `getter`，将自己（`this`）订阅到对应的 `Dep` 中。当收到 `Dep` 的通知时，会重新执行 `getter` 函数来更新视图或计算新值。
 
 **Vue2 的依赖收集流程简化图：**
+
 ```
 组件渲染 -> 创建 Render Watcher -> 执行 render 函数读取 data.x -> 触发 data.x 的 getter -> data.x 的 Dep 收集当前 Render Watcher
 ```
@@ -2344,16 +2535,18 @@ Vue2 的响应式核心是 **“发布-订阅”模式** 的一种具体实现�
 Vue3 抛弃了 `Object.defineProperty`，转而使用 **`Proxy`**。这是一个根本性的改变，它带来了更强大的数据拦截能力，从而使得依赖管理的实现可以更加简洁和高效。
 
 1.  **`Proxy` (代理)**
-    *   **角色**：它可以直接拦截对一个**对象**的多种操作（`get`, `set`, `has`, `deleteProperty` 等），而不仅仅是 `get/set`。这意味着它可以监听属性的**添加和删除**，也可以监听数组的索引修改和 `length` 变化，这是 Vue2 的先天不足。
-    *   **功能**：当执行 `reactive(obj)` 时，返回的是 `obj` 的 `Proxy` 代理。
+
+    - **角色**：它可以直接拦截对一个**对象**的多种操作（`get`, `set`, `has`, `deleteProperty` 等），而不仅仅是 `get/set`。这意味着它可以监听属性的**添加和删除**，也可以监听数组的索引修改和 `length` 变化，这是 Vue2 的先天不足。
+    - **功能**：当执行 `reactive(obj)` 时，返回的是 `obj` 的 `Proxy` 代理。
 
 2.  **`Effect` (副作用) 和 `track`/`trigger`**
-    *   **角色**：`Effect` 取代了 Vue2 中的 `Watcher`。任何依赖于响应式数据的函数（如组件的渲染函数、`computed` 的计算函数、`watch` 的回调）都被视为一个“副作用”（`effect`）。
-    *   **功能**：
-        *   **`track` (追踪)**：在 `Proxy` 的 `get` 拦截器中被调用。它负责建立**响应式对象（target） -> 属性（key） -> 当前活跃的 Effect** 之间的关系。
-        *   **`trigger` (触发)**：在 `Proxy` 的 `set` 拦截器中被调用。它根据 `track` 阶段建立的映射关系，找到所有依赖于这个属性的 `effect`，并执行它们。
+    - **角色**：`Effect` 取代了 Vue2 中的 `Watcher`。任何依赖于响应式数据的函数（如组件的渲染函数、`computed` 的计算函数、`watch` 的回调）都被视为一个“副作用”（`effect`）。
+    - **功能**：
+      - **`track` (追踪)**：在 `Proxy` 的 `get` 拦截器中被调用。它负责建立**响应式对象（target） -> 属性（key） -> 当前活跃的 Effect** 之间的关系。
+      - **`trigger` (触发)**：在 `Proxy` 的 `set` 拦截器中被调用。它根据 `track` 阶段建立的映射关系，找到所有依赖于这个属性的 `effect`，并执行它们。
 
 **Vue3 的依赖收集流程简化图：**
+
 ```
 组件渲染 -> 执行 setupRenderEffect -> 执行组件渲染函数（一个effect）-> 读取 reactive(obj).x -> 触发 Proxy 的 get -> 调用 track(obj, ‘x’) -> 将当前 effect 存入 obj-x 的依赖集合中
 ```
@@ -2362,32 +2555,33 @@ Vue3 抛弃了 `Object.defineProperty`，转而使用 **`Proxy`**。这是一个
 
 Vue3 用一套**全局的依赖存储系统**替代了 Vue2 中附着在每个属性上的 `Dep` 实例。
 
-*   **Vue2 的 `Dep`**：是一个类，每个响应式属性都有一个 `dep` 实例。依赖关系存储在 `dep.subs`（一个 `Watcher` 数组）中。
-*   **Vue3 的依赖存储**：是一个全局的 `WeakMap` 数据结构。
-    *   `WeakMap<target, Map<key, Set<effect>>>`
-    *   **`WeakMap`**：键是**原始对象（target）**，值是一个 `Map`。使用 `WeakMap` 是为了不影响原始对象的垃圾回收。
-    *   **`Map`**：键是对象的**属性名（key）**，值是一个 `Set`。
-    *   **`Set`**：里面存储的是所有依赖于这个 `target.key` 的 **`effect` 函数**。
+- **Vue2 的 `Dep`**：是一个类，每个响应式属性都有一个 `dep` 实例。依赖关系存储在 `dep.subs`（一个 `Watcher` 数组）中。
+- **Vue3 的依赖存储**：是一个全局的 `WeakMap` 数据结构。
+  - `WeakMap<target, Map<key, Set<effect>>>`
+  - **`WeakMap`**：键是**原始对象（target）**，值是一个 `Map`。使用 `WeakMap` 是为了不影响原始对象的垃圾回收。
+  - **`Map`**：键是对象的**属性名（key）**，值是一个 `Set`。
+  - **`Set`**：里面存储的是所有依赖于这个 `target.key` 的 **`effect` 函数**。
 
 **所以，Vue3 不是没有“依赖”这个概念，而是把“依赖收集器”从一个个 `Dep` 类的实例，变成了一个全局的、结构化的“仓库”。** `track` 就是向这个仓库里添加依赖，`trigger` 就是从仓库里取出依赖并执行。
 
 ### 对比总结
 
-| 特性 | Vue2 | Vue3 |
-| :--- | :--- | :--- |
-| **核心 API** | `Object.defineProperty` | `Proxy` |
-| **依赖管理者** | `Dep` 类（每个属性一个实例） | 全局的 `WeakMap + Map + Set` 数据结构 |
-| **依赖代表** | `Watcher` 类 | `effect` 函数（一个函数本身） |
-| **收集过程** | `getter` 中 `dep.depend()` | `get` 拦截中 `track(target, key)` |
-| **触发过程** | `setter` 中 `dep.notify()` | `set` 拦截中 `trigger(target, key)` |
-| **对数组/新属性的监听** | 需要特殊处理，有局限性 | 原生支持，无感 |
-| **性能/内存** | 每个属性一个 `Dep` 实例，内存开销稍大 | 依赖存储在全局结构中，利用 `WeakMap` 自动清理，更高效 |
+| 特性                    | Vue2                                  | Vue3                                                  |
+| :---------------------- | :------------------------------------ | :---------------------------------------------------- |
+| **核心 API**            | `Object.defineProperty`               | `Proxy`                                               |
+| **依赖管理者**          | `Dep` 类（每个属性一个实例）          | 全局的 `WeakMap + Map + Set` 数据结构                 |
+| **依赖代表**            | `Watcher` 类                          | `effect` 函数（一个函数本身）                         |
+| **收集过程**            | `getter` 中 `dep.depend()`            | `get` 拦截中 `track(target, key)`                     |
+| **触发过程**            | `setter` 中 `dep.notify()`            | `set` 拦截中 `trigger(target, key)`                   |
+| **对数组/新属性的监听** | 需要特殊处理，有局限性                | 原生支持，无感                                        |
+| **性能/内存**           | 每个属性一个 `Dep` 实例，内存开销稍大 | 依赖存储在全局结构中，利用 `WeakMap` 自动清理，更高效 |
 
 ### 结论
 
 Vue3 之所以没有 Vue2 中显式的 `Dep` 和 `Watcher` 类，是因为 **`Proxy` 提供了更强大的元编程能力，使得依赖收集可以不再依赖于附着在属性上的“发布者实例”，而是通过一个全局的、更精细的映射系统来管理。**
 
 这种改变带来了：
+
 1.  **更简洁的实现**：代码更易于理解和维护。
 2.  **更强大的功能**：可以监听属性的增删和数组的变化。
 3.  **更好的性能**：减少了类实例的创建，利用了现代 JS 引擎对 `Map`/`Set` 的优化。
