@@ -419,4 +419,153 @@ Vue.prototype.$delete = function (target, key) {
 function isValidArrayIndex(val) {
   return typeof val === "number" && val > -1;
 }
+
+/**
+ * Vue 中的虚拟 DOM 定义
+ */
+class VNode {
+  constructor(
+    tag,
+    data,
+    children,
+    text,
+    elm,
+    context,
+    componentOptions,
+    asyncFactory
+  ) {
+    this.tag = tag;
+    this.data = data;
+    this.children = children;
+    this.text = text;
+    this.elm = elm;
+    this.ns = undefined;
+    this.context = context;
+    this.functionalContext = undefined; // 函数式组件的上下文
+    this.functionalOptions = undefined; // 函数式组件的选项
+    this.functionalScopeId = undefined; // 函数式组件的作用域 ID
+    this.key = data && data.key;
+    this.componentOptions = componentOptions; // 组件的选项
+    this.componentInstance = undefined; // 组件实例
+    this.parent = undefined;
+    this.raw = false;
+    this.isStatic = false;
+    this.isRootInsert = true;
+    this.isComment = false;
+    this.isCloned = false;
+    this.isOnce = false;
+    this.asyncFactory = asyncFactory;
+    this.asyncMeta = undefined;
+    this.isAsyncPlaceholder = false;
+  }
+
+  get child() {
+    return this.componentInstance;
+  }
+}
+
+/**
+ * 创建注释节点
+ */
+function createEmptyVNode(text) {
+  const node = new VNode();
+  node.text = text;
+  node.isComment = true;
+  return node;
+}
+
+/**
+ * 创建文本节点
+ */
+function createTextVNode(val) {
+  return new VNode(undefined, undefined, undefined, String(val));
+}
+
+/**
+ * 创建元素节点
+ */
+function createElementVNode(tag, data, children) {
+  return new VNode(tag, data, children);
+}
+
+/**
+ * 创建组件节点
+ */
+function createComponentVNode(
+  Ctor,
+  data,
+  children,
+  normalizationType,
+  alwaysNormalize
+) {
+  return new VNode(
+    "vue-component",
+    data,
+    children,
+    undefined,
+    undefined,
+    undefined,
+    { Ctor, propsData, listeners, tag, children: children },
+    asyncFactory
+  );
+}
+
+/**
+ * 创建函数式组件节点
+ */
+function createFunctionalComponentVNode(
+  Ctor,
+  propsData,
+  children,
+  normalizationType
+) {
+  return new VNode(
+    "vue-component",
+    data,
+    children,
+    undefined,
+    undefined,
+    undefined,
+    { Ctor, propsData, listeners, tag, children: children },
+    asyncFactory
+  );
+}
+
+/**
+ * 克隆 VNode
+ * 
+ * 克隆节点是将现有节点的属性复制到新节点中，让新创建的节点和被克隆节点的属性保持一致，从而实现克隆效果。
+ * 它的作用是优化静态节点和插槽节点（slot node）​。
+ * 
+ * 以静态节点为例，当组件内的某个状态发生变化后，当前组件会通过虚拟DOM重新渲染视图，静态节点因为它的内容
+ * 不会改变，所以除了首次渲染需要执行渲染函数获取vnode之外，后续更新不需要执行渲染函数重新生成vnode。因
+ * 此，这时就会使用创建克隆节点的方法将vnode克隆一份，使用克隆节点进行渲染。这样就不需要重新执行渲染函数
+ * 生成新的静态节点的vnode，从而提升一定程度的性能。
+ */
+function cloneVNode(vnode, deep) {
+  const cloned = new VNode(
+    vnode.tag,
+    vnode.data,
+    vnode.children,
+    vnode.text,
+    vnode.elm,
+    vnode.context,
+    vnode.componentOptions,
+    vnode.asyncFactory
+  );
+  cloned.ns = vnode.ns;
+  cloned.isStatic = vnode.isStatic;
+  cloned.key = vnode.key;
+  cloned.isCloned = true;
+  if (deep) {
+    if (vnode.children) {
+      cloned.children = vnode.children.map(child => cloneVNode(child, true));
+    }
+    if (vnode.componentOptions)
+      cloned.componentOptions.children = vnode.componentOptions.children.map(
+        child => cloneVNode(child, true)
+      );
+  }
+  return cloned;
+}
 ```
