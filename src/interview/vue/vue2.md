@@ -331,19 +331,19 @@ const arrayMethods = Object.create(arrayProto);
 Vue.prototype.$watch = function (expOrFn, cb, options) {
   const vm = this;
   options = options || {};
-  const wacher = new Watcher(vm, expOrFn, cb, options);
+  const watcher = new Watcher(vm, expOrFn, cb, options);
   if (options.immediate) {
-    cb.call(vm, wacher.value);
+    cb.call(vm, watcher.value);
   }
   return function unwatchFn() {
-    wacher.teardown();
+    watcher.teardown();
   };
 };
 
 /**
  * $set 内部实现原理
  */
-Vue.prootype.$set = function (target, key, val) {
+Vue.prototype.$set = function (target, key, val) {
   // 处理 target 为数组的情况
   if (Array.isArray(target) && isValidArrayIndex(key)) {
     target.length = Math.max(target.length, key);
