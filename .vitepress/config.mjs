@@ -67,7 +67,7 @@ export default defineConfig({
               },
               {
                 text: "二叉树",
-                link: "/data-structures-and-algorithms/leetcode/binary-tree"
+                link: "/data-structures-and-algorithms/leetcode/2.binary-tree"
               },
               {
                 text: "二分查找",
