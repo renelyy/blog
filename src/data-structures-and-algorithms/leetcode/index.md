@@ -8,8 +8,8 @@
 
 1. [链表](./1.linked-list) `3`
 2. [二叉树](./2.binary-tree) `5`
-3. [二分查找](./binary-search) `1`
-4. [动态规划](./dynamic-programming) `1`
+3. [二分查找](./3.binary-search) `1`
+4. [动态规划](./4.dynamic-programming) `1`
 5. [贪心算法](./greedy)
 6. [回溯算法](./backtracking) `2`
 7. [双指针](./two-pointers)

@@ -71,11 +71,11 @@ export default defineConfig({
               },
               {
                 text: "二分查找",
-                link: "/data-structures-and-algorithms/leetcode/binary-search"
+                link: "/data-structures-and-algorithms/leetcode/3.binary-search"
               },
               {
                 text: "动态规划",
-                link: "/data-structures-and-algorithms/leetcode/dynamic-programming"
+                link: "/data-structures-and-algorithms/leetcode/4.dynamic-programming"
               },
               {
                 text: "贪心算法",
