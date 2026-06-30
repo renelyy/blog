@@ -39,6 +39,8 @@ export default defineConfig({
         link: "/backend",
         collapsed: true,
         items: [
+          { text: "后端首页", link: "/backend" },
+          { text: "学习路线图", link: "/backend/roadmap" },
           {
             text: "Core Java",
             link: "/backend/java/core-java",
@@ -83,6 +85,21 @@ export default defineConfig({
             ]
           },
           {
+            text: "数据库与 SQL",
+            link: "/backend/database",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/database" },
+              { text: "章节覆盖说明", link: "/backend/database/coverage-map" },
+              { text: "1 SQL 基础", link: "/backend/database/01-sql-basics" },
+              { text: "2 索引与 EXPLAIN", link: "/backend/database/02-index-and-explain" },
+              { text: "3 事务与隔离", link: "/backend/database/03-transaction-isolation" },
+              { text: "4 InnoDB 与 MVCC", link: "/backend/database/04-innodb-and-mvcc" },
+              { text: "5 慢 SQL 优化", link: "/backend/database/05-slow-query-tuning" },
+              { text: "6 读写分离与分库", link: "/backend/database/06-sharding-readwrite" }
+            ]
+          },
+          {
             text: "MyBatis",
             link: "/backend/mybatis",
             collapsed: true,
@@ -101,6 +118,21 @@ export default defineConfig({
               { text: "SQL 构建器", link: "/backend/mybatis/10-sql-builder" },
               { text: "Spring Boot 集成", link: "/backend/mybatis/11-spring-boot" },
               { text: "附录：速查表", link: "/backend/mybatis/appendix-reference" }
+            ]
+          },
+          {
+            text: "JPA / Spring Data",
+            link: "/backend/jpa",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/jpa" },
+              { text: "章节覆盖说明", link: "/backend/jpa/coverage-map" },
+              { text: "1 JPA 概览", link: "/backend/jpa/01-jpa-overview" },
+              { text: "2 实体映射", link: "/backend/jpa/02-entity-mapping" },
+              { text: "3 关联关系", link: "/backend/jpa/03-relationships" },
+              { text: "4 JPQL 与查询", link: "/backend/jpa/04-jpql-and-query" },
+              { text: "5 Spring Data JPA", link: "/backend/jpa/05-spring-data-jpa" },
+              { text: "6 MyBatis vs JPA", link: "/backend/jpa/06-mybatis-vs-jpa" }
             ]
           },
           {
@@ -148,22 +180,142 @@ export default defineConfig({
                   { text: "生产运维", link: "/backend/spring/boot/11-production" },
                   { text: "打包与部署", link: "/backend/spring/boot/12-packaging-deploy" }
                 ]
-              },
-              {
-                text: "Spring Cloud",
-                collapsed: true,
-                items: [
-                  { text: "Cloud 首页", link: "/backend/spring/cloud" },
-                  { text: "架构与概念", link: "/backend/spring/cloud/01-overview" },
-                  { text: "服务注册与发现", link: "/backend/spring/cloud/02-discovery" },
-                  { text: "配置中心", link: "/backend/spring/cloud/03-config" },
-                  { text: "API 网关", link: "/backend/spring/cloud/04-gateway" },
-                  { text: "OpenFeign 与负载均衡", link: "/backend/spring/cloud/05-feign-loadbalancer" },
-                  { text: "熔断与容错", link: "/backend/spring/cloud/06-circuitbreaker" },
-                  { text: "Stream 与 Bus", link: "/backend/spring/cloud/07-stream-bus" },
-                  { text: "Contract 与其它", link: "/backend/spring/cloud/08-contract-function" }
-                ]
               }
+            ]
+          },
+          {
+            text: "API 设计",
+            link: "/backend/api-design",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/api-design" },
+              { text: "章节覆盖说明", link: "/backend/api-design/coverage-map" },
+              { text: "1 REST 原则", link: "/backend/api-design/01-rest-principles" },
+              { text: "2 分页与错误码", link: "/backend/api-design/02-pagination-error-codes" },
+              { text: "3 OpenAPI", link: "/backend/api-design/03-openapi-versioning" }
+            ]
+          },
+          {
+            text: "测试",
+            link: "/backend/testing",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/testing" },
+              { text: "章节覆盖说明", link: "/backend/testing/coverage-map" },
+              { text: "1 JUnit 5", link: "/backend/testing/01-junit5" },
+              { text: "2 Mockito", link: "/backend/testing/02-mockito" },
+              { text: "3 Spring Test", link: "/backend/testing/03-spring-test" },
+              { text: "4 Testcontainers", link: "/backend/testing/04-testcontainers" }
+            ]
+          },
+          {
+            text: "Redis",
+            link: "/backend/redis",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/redis" },
+              { text: "章节覆盖说明", link: "/backend/redis/coverage-map" },
+              { text: "1 概览", link: "/backend/redis/01-overview" },
+              { text: "2 数据结构", link: "/backend/redis/02-data-structures" },
+              { text: "3 缓存模式", link: "/backend/redis/03-cache-patterns" },
+              { text: "4 分布式锁", link: "/backend/redis/04-distributed-lock" },
+              { text: "5 Spring 集成", link: "/backend/redis/05-spring-redis" }
+            ]
+          },
+          {
+            text: "消息队列",
+            link: "/backend/messaging",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/messaging" },
+              { text: "章节覆盖说明", link: "/backend/messaging/coverage-map" },
+              { text: "1 MQ 模型与选型", link: "/backend/messaging/01-mq-overview" },
+              { text: "2 Kafka 基础", link: "/backend/messaging/02-kafka-basics" },
+              { text: "3 RabbitMQ 基础", link: "/backend/messaging/03-rabbitmq-basics" },
+              { text: "4 可靠性设计", link: "/backend/messaging/04-reliability-patterns" },
+              { text: "5 Spring 集成", link: "/backend/messaging/05-spring-integration" }
+            ]
+          },
+          {
+            text: "安全与鉴权",
+            link: "/backend/security",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/security" },
+              { text: "章节覆盖说明", link: "/backend/security/coverage-map" },
+              { text: "1 Spring Security", link: "/backend/security/01-spring-security-deep" },
+              { text: "2 JWT / OAuth2", link: "/backend/security/02-jwt-oauth2" },
+              { text: "3 Web 攻击防护", link: "/backend/security/03-web-attacks" },
+              { text: "4 数据安全", link: "/backend/security/04-data-security" }
+            ]
+          },
+          {
+            text: "分布式系统",
+            link: "/backend/distributed",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/distributed" },
+              { text: "章节覆盖说明", link: "/backend/distributed/coverage-map" },
+              { text: "1 CAP 与一致性", link: "/backend/distributed/01-theory-cap-base" },
+              { text: "2 幂等与重试", link: "/backend/distributed/02-idempotency-retry" },
+              { text: "3 分布式锁", link: "/backend/distributed/03-distributed-lock" },
+              { text: "4 分布式事务", link: "/backend/distributed/04-distributed-transaction" },
+              { text: "5 微服务模式", link: "/backend/distributed/05-microservice-patterns" }
+            ]
+          },
+          {
+            text: "Spring Cloud（微服务）",
+            link: "/backend/spring/cloud",
+            collapsed: true,
+            items: [
+              { text: "Cloud 首页", link: "/backend/spring/cloud" },
+              { text: "架构与概念", link: "/backend/spring/cloud/01-overview" },
+              { text: "服务注册与发现", link: "/backend/spring/cloud/02-discovery" },
+              { text: "配置中心", link: "/backend/spring/cloud/03-config" },
+              { text: "API 网关", link: "/backend/spring/cloud/04-gateway" },
+              { text: "OpenFeign 与负载均衡", link: "/backend/spring/cloud/05-feign-loadbalancer" },
+              { text: "熔断与容错", link: "/backend/spring/cloud/06-circuitbreaker" },
+              { text: "Stream 与 Bus", link: "/backend/spring/cloud/07-stream-bus" },
+              { text: "Contract 与其它", link: "/backend/spring/cloud/08-contract-function" }
+            ]
+          },
+          {
+            text: "JVM 与性能",
+            link: "/backend/jvm",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/jvm" },
+              { text: "章节覆盖说明", link: "/backend/jvm/coverage-map" },
+              { text: "1 内存结构", link: "/backend/jvm/01-memory-model" },
+              { text: "2 垃圾回收", link: "/backend/jvm/02-gc-algorithms" },
+              { text: "3 调优与 OOM", link: "/backend/jvm/03-tuning-and-oom" },
+              { text: "4 Arthas", link: "/backend/jvm/04-arthas-profiler" }
+            ]
+          },
+          {
+            text: "可观测性与部署",
+            link: "/backend/observability",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/observability" },
+              { text: "章节覆盖说明", link: "/backend/observability/coverage-map" },
+              { text: "1 日志与 MDC", link: "/backend/observability/01-logging-mdc" },
+              { text: "2 链路追踪", link: "/backend/observability/02-tracing" },
+              { text: "3 指标监控", link: "/backend/observability/03-metrics-actuator" },
+              { text: "4 Docker / K8s", link: "/backend/observability/04-docker-k8s-basics" }
+            ]
+          },
+          {
+            text: "设计模式",
+            link: "/backend/design-patterns",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/design-patterns" },
+              { text: "章节覆盖说明", link: "/backend/design-patterns/coverage-map" },
+              { text: "1 创建型", link: "/backend/design-patterns/01-creational" },
+              { text: "2 结构型", link: "/backend/design-patterns/02-structural" },
+              { text: "3 行为型", link: "/backend/design-patterns/03-behavioral" },
+              { text: "4 Spring 中的模式", link: "/backend/design-patterns/04-spring-patterns" }
             ]
           }
         ]
