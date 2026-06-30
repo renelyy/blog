@@ -321,6 +321,65 @@ export default defineConfig({
         ]
       },
       {
+        text: "个人复习库",
+        link: "/review",
+        collapsed: true,
+        items: [
+          { text: "复习首页", link: "/review" },
+          { text: "Profile 来源索引", link: "/review/profile-source-map" },
+          {
+            text: "JS 基础",
+            collapsed: true,
+            items: [
+              { text: "对象与继承", link: "/review/js-oop-prototype" },
+              { text: "Proxy 与 Vue2", link: "/review/proxy-vue2-notes" },
+              { text: "手写题速查", link: "/review/js-handwritten-cookbook" },
+              { text: "浏览器与运行时", link: "/review/browser-runtime" }
+            ]
+          },
+          {
+            text: "JS 手写题（完整代码）",
+            collapsed: true,
+            items: [
+              { text: "Array 篇", link: "/review/js-handwritten/array-methods" },
+              { text: "Function 篇", link: "/review/js-handwritten/function-methods" },
+              { text: "Object 篇", link: "/review/js-handwritten/object-methods" },
+              { text: "ES6 篇", link: "/review/js-handwritten/es6-methods" },
+              { text: "Ajax / JSONP", link: "/review/js-handwritten/ajax-jsonp" },
+              { text: "MyPromise", link: "/review/js-handwritten/promise-mypromise" },
+              { text: "其他与工具", link: "/review/js-handwritten/misc-utils" }
+            ]
+          },
+          {
+            text: "算法",
+            collapsed: true,
+            items: [
+              { text: "算法模式笔记", link: "/review/algorithm-patterns" },
+              { text: "排序实现", link: "/review/algorithms/sort-implementations" },
+              { text: "二分与 BST", link: "/review/algorithms/search-and-tree" },
+              { text: "LeetCode 题解 1", link: "/review/algorithms/leetcode-solutions-1" },
+              { text: "LeetCode 题解 2", link: "/review/algorithms/leetcode-solutions-2" },
+              { text: "LeetCode 题解 3", link: "/review/algorithms/leetcode-solutions-3" },
+              { text: "LeetCode 题解 4", link: "/review/algorithms/leetcode-solutions-4" },
+              { text: "LeetCode 题解 5", link: "/review/algorithms/leetcode-solutions-5" },
+              { text: "LeetCode 题解 6", link: "/review/algorithms/leetcode-solutions-6" },
+              { text: "进阶算法 2024–2025", link: "/review/algorithms/advanced-algorithms-2024-2025" }
+            ]
+          },
+          {
+            text: "Vue / TS / Node",
+            collapsed: true,
+            items: [
+              { text: "Vue 响应式 mini", link: "/review/vue/reactivity-implementations" },
+              { text: "Vue2 数组劫持", link: "/review/vue/vue2-array-method" },
+              { text: "TypeScript 笔记", link: "/review/typescript/notes" },
+              { text: "Koa 与 HTTP", link: "/review/node/koa-and-http" }
+            ]
+          },
+          { text: "前端复习路线", link: "/review/frontend-roadmap" }
+        ]
+      },
+      {
         text: "学习随笔记录",
         link: "/learn-notes"
       },
