@@ -113,6 +113,11 @@
 |------|------|
 | `ofType` | 集合**元素**类型（必填语义） |
 | `javaType` | 集合类型如 `ArrayList`（常可省略） |
+| `fetchType` | `lazy` / `eager`，覆盖全局 `lazyLoadingEnabled` |
+| `select` | 嵌套查询的 statement id |
+| `column` | 传给嵌套 select 的列 |
+| `notNullColumn` | 指定列非空才创建子对象 |
+| `columnPrefix` | 多表 JOIN 列名前缀 |
 
 嵌套 Select 与嵌套结果的选择逻辑同 `association`。
 

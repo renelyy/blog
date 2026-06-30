@@ -40,8 +40,47 @@ export default defineConfig({
         collapsed: true,
         items: [
           {
-            text: "Java",
-            link: "/backend/java"
+            text: "Core Java",
+            link: "/backend/java/core-java",
+            collapsed: true,
+            items: [
+              { text: "Java 入口", link: "/backend/java" },
+              { text: "指南首页", link: "/backend/java/core-java" },
+              { text: "章节覆盖说明", link: "/backend/java/core-java/coverage-map" },
+              {
+                text: "卷 I 基础",
+                collapsed: true,
+                items: [
+                  { text: "1 Java 概述", link: "/backend/java/core-java/vol1/01-introduction" },
+                  { text: "2 编程环境", link: "/backend/java/core-java/vol1/02-environment" },
+                  { text: "3 基本程序结构", link: "/backend/java/core-java/vol1/03-fundamentals" },
+                  { text: "4 对象与类", link: "/backend/java/core-java/vol1/04-objects-classes" },
+                  { text: "5 继承", link: "/backend/java/core-java/vol1/05-inheritance" },
+                  { text: "6 接口与 Lambda", link: "/backend/java/core-java/vol1/06-interfaces-lambda" },
+                  { text: "7 异常与日志", link: "/backend/java/core-java/vol1/07-exceptions-logging" },
+                  { text: "8 泛型", link: "/backend/java/core-java/vol1/08-generics" },
+                  { text: "9 集合", link: "/backend/java/core-java/vol1/09-collections" },
+                  { text: "12 并发", link: "/backend/java/core-java/vol1/12-concurrency" }
+                ]
+              },
+              {
+                text: "卷 II 高级",
+                collapsed: true,
+                items: [
+                  { text: "1 Stream API", link: "/backend/java/core-java/vol2/01-streams" },
+                  { text: "2 输入输出", link: "/backend/java/core-java/vol2/02-input-output" },
+                  { text: "3 XML", link: "/backend/java/core-java/vol2/03-xml" },
+                  { text: "4 网络编程", link: "/backend/java/core-java/vol2/04-networking" },
+                  { text: "5 JDBC", link: "/backend/java/core-java/vol2/05-jdbc" },
+                  { text: "6 日期与时间", link: "/backend/java/core-java/vol2/06-date-time" },
+                  { text: "7 国际化", link: "/backend/java/core-java/vol2/07-i18n" },
+                  { text: "8 注解", link: "/backend/java/core-java/vol2/08-annotations" },
+                  { text: "9 模块系统", link: "/backend/java/core-java/vol2/09-modules" },
+                  { text: "10 安全", link: "/backend/java/core-java/vol2/10-security" }
+                ]
+              },
+              { text: "补充笔记（历史）", link: "/backend/java/index-legacy" }
+            ]
           },
           {
             text: "MyBatis",
@@ -49,6 +88,7 @@ export default defineConfig({
             collapsed: true,
             items: [
               { text: "指南首页", link: "/backend/mybatis" },
+              { text: "官方覆盖说明", link: "/backend/mybatis/coverage-map" },
               { text: "快速上手", link: "/backend/mybatis/01-quick-start" },
               { text: "核心概念", link: "/backend/mybatis/02-core-concepts" },
               { text: "配置详解", link: "/backend/mybatis/03-configuration" },
@@ -59,7 +99,71 @@ export default defineConfig({
               { text: "注解映射", link: "/backend/mybatis/08-annotations" },
               { text: "缓存与日志", link: "/backend/mybatis/09-cache-and-logging" },
               { text: "SQL 构建器", link: "/backend/mybatis/10-sql-builder" },
+              { text: "Spring Boot 集成", link: "/backend/mybatis/11-spring-boot" },
               { text: "附录：速查表", link: "/backend/mybatis/appendix-reference" }
+            ]
+          },
+          {
+            text: "Spring 生态",
+            link: "/backend/spring",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/spring" },
+              { text: "官方覆盖说明", link: "/backend/spring/coverage-map" },
+              { text: "附录：官方索引", link: "/backend/spring/appendix-spring-reference" },
+              {
+                text: "Spring Framework",
+                collapsed: true,
+                items: [
+                  { text: "Framework 首页", link: "/backend/spring/framework" },
+                  { text: "IoC 与依赖注入", link: "/backend/spring/framework/01-ioc-di" },
+                  { text: "AOP", link: "/backend/spring/framework/02-aop" },
+                  { text: "Spring MVC / Web", link: "/backend/spring/framework/03-mvc-web" },
+                  { text: "数据访问与事务", link: "/backend/spring/framework/04-data-transaction" },
+                  { text: "Bean 进阶", link: "/backend/spring/framework/05-bean-advanced" },
+                  { text: "校验与数据绑定", link: "/backend/spring/framework/06-validation" },
+                  { text: "Spring 测试", link: "/backend/spring/framework/07-testing" },
+                  { text: "WebSocket", link: "/backend/spring/framework/08-websocket" },
+                  { text: "WebFlux 入门", link: "/backend/spring/framework/09-webflux" },
+                  { text: "事件/调度/缓存", link: "/backend/spring/framework/10-integration" }
+                ]
+              },
+              {
+                text: "Spring Boot",
+                collapsed: true,
+                items: [
+                  { text: "Boot 首页", link: "/backend/spring/boot" },
+                  { text: "快速上手", link: "/backend/spring/boot/01-quick-start" },
+                  { text: "自动配置原理", link: "/backend/spring/boot/02-auto-configuration" },
+                  { text: "配置与 Profile", link: "/backend/spring/boot/03-configuration" },
+                  { text: "Web 与 REST", link: "/backend/spring/boot/04-web-rest" },
+                  { text: "数据访问", link: "/backend/spring/boot/05-data-access" },
+                  { text: "Actuator 与测试", link: "/backend/spring/boot/06-actuator-test" },
+                  { text: "日志与 DevTools", link: "/backend/spring/boot/07-logging-devtools" },
+                  { text: "Security 入门", link: "/backend/spring/boot/08-security" },
+                  { text: "Redis / NoSQL", link: "/backend/spring/boot/08-nosql-redis" },
+                  { text: "Kafka / RabbitMQ", link: "/backend/spring/boot/09-messaging" },
+                  { text: "响应式 Web", link: "/backend/spring/boot/09-reactive" },
+                  { text: "调度与异步", link: "/backend/spring/boot/10-scheduling-async" },
+                  { text: "生产运维", link: "/backend/spring/boot/11-production" },
+                  { text: "打包与部署", link: "/backend/spring/boot/12-packaging-deploy" }
+                ]
+              },
+              {
+                text: "Spring Cloud",
+                collapsed: true,
+                items: [
+                  { text: "Cloud 首页", link: "/backend/spring/cloud" },
+                  { text: "架构与概念", link: "/backend/spring/cloud/01-overview" },
+                  { text: "服务注册与发现", link: "/backend/spring/cloud/02-discovery" },
+                  { text: "配置中心", link: "/backend/spring/cloud/03-config" },
+                  { text: "API 网关", link: "/backend/spring/cloud/04-gateway" },
+                  { text: "OpenFeign 与负载均衡", link: "/backend/spring/cloud/05-feign-loadbalancer" },
+                  { text: "熔断与容错", link: "/backend/spring/cloud/06-circuitbreaker" },
+                  { text: "Stream 与 Bus", link: "/backend/spring/cloud/07-stream-bus" },
+                  { text: "Contract 与其它", link: "/backend/spring/cloud/08-contract-function" }
+                ]
+              }
             ]
           }
         ]
