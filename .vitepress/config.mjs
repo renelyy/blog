@@ -45,7 +45,22 @@ export default defineConfig({
           },
           {
             text: "MyBatis",
-            link: "/backend/mybatis"
+            link: "/backend/mybatis",
+            collapsed: true,
+            items: [
+              { text: "指南首页", link: "/backend/mybatis" },
+              { text: "快速上手", link: "/backend/mybatis/01-quick-start" },
+              { text: "核心概念", link: "/backend/mybatis/02-core-concepts" },
+              { text: "配置详解", link: "/backend/mybatis/03-configuration" },
+              { text: "XML 映射基础", link: "/backend/mybatis/04-xml-mapper" },
+              { text: "结果映射", link: "/backend/mybatis/05-result-mapping" },
+              { text: "动态 SQL", link: "/backend/mybatis/06-dynamic-sql" },
+              { text: "Java API", link: "/backend/mybatis/07-java-api" },
+              { text: "注解映射", link: "/backend/mybatis/08-annotations" },
+              { text: "缓存与日志", link: "/backend/mybatis/09-cache-and-logging" },
+              { text: "SQL 构建器", link: "/backend/mybatis/10-sql-builder" },
+              { text: "附录：速查表", link: "/backend/mybatis/appendix-reference" }
+            ]
           }
         ]
       },
