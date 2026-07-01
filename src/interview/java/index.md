@@ -2,6 +2,8 @@
 
 > 基础语法、对象语义、集合选型等高频考点。与 [Core Java 集合章](../../backend/java/core-java/vol1/09-collections)、[对象与类](../../backend/java/core-java/vol1/04-objects-classes) 互补。
 
+**专题：** [Java 8 面试题](./java8)（Lambda、Stream、HashMap 1.7/1.8、Optional）
+
 ---
 
 ## 1. `==` 和 `equals` 有什么区别？

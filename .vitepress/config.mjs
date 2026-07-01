@@ -701,7 +701,8 @@ export default defineConfig({
                 text: "Java",
                 collapsed: true,
                 items: [
-                  { text: "常见面试题", link: "/interview/java" }
+                  { text: "常见面试题", link: "/interview/java" },
+                  { text: "Java 8 面试题", link: "/interview/java/java8" }
                 ]
               },
               { text: "React", link: "/interview/react" },
