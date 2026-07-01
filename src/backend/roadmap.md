@@ -2,6 +2,10 @@
 
 > 在 [Core Java](./java/core-java/)、[MyBatis](./mybatis/)、[Spring 生态](./spring/) 之外，按**企业实战优先级**排列的扩展模块。**11 个模块正文均已写完** ✅。
 
+::: tip 零基础同学
+若还在学语言、框架、做第一个项目，请先看 [Java 零基础学习路线](./java/learning-roadmap)（阶段 1–8）；本文档适合**已掌握 Java + Spring Boot 基础**后的模块深化。
+:::
+
 ---
 
 ## 推荐补充顺序

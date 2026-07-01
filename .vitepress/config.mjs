@@ -47,6 +47,7 @@ export default defineConfig({
             collapsed: true,
             items: [
               { text: "Java 入口", link: "/backend/java" },
+              { text: "零基础学习路线", link: "/backend/java/learning-roadmap" },
               { text: "指南首页", link: "/backend/java/core-java" },
               { text: "章节覆盖说明", link: "/backend/java/core-java/coverage-map" },
               {
@@ -696,6 +697,13 @@ export default defineConfig({
               { text: "浏览器", link: "/interview/browser" },
               { text: "HTTP", link: "/interview/http" },
               { text: "Node.js", link: "/interview/node" },
+              {
+                text: "Java",
+                collapsed: true,
+                items: [
+                  { text: "常见面试题", link: "/interview/java" }
+                ]
+              },
               { text: "React", link: "/interview/react" },
               { text: "Typescript", link: "/interview/typescript" },
               { text: "微信小程序", link: "/interview/wechat" },
